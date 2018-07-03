@@ -86,130 +86,36 @@ class CorrectTFGCommand extends UserCommand
 
         $context = stream_context_create($context_options);
 //        $fp = fopen('https://languagetool.org/api/v2/check', 'r', false, $context);
+
         $fp = fopen('http://localhost:8081/v2/check', 'r', false, $context);
 
+        if($fp){
+            $contents = stream_get_contents($fp);
+            //        echo $contents;
 
-        $contents = stream_get_contents($fp);
-//        echo $contents;
+            //        $json = json_decode($contents, true);
 
-//        $json = json_decode($contents, true);
+            //         $json_string = json_encode($json, JSON_PRETTY_PRINT);
+            //
+            //        foreach ($json['matches'] as $error){
+            //            echo $error['message'];
+            //        }
 
-//         $json_string = json_encode($json, JSON_PRETTY_PRINT);
-//
-//        foreach ($json['matches'] as $error){
-//            echo $error['message'];
-//        }
+            //Guardar correccion en txt
+            $path_correction = dirname($txt_path) . "/correction.txt";
+            $fitx = fopen($path_correction, "wr") or die("Unable to open file!");
+            fwrite($fitx, $contents);
+            fclose($fitx);
 
-        //Guardar correccion en txt
-        $path_correction = dirname($txt_path)."/correction.txt";
-        $fitx = fopen($path_correction, "wr") or die("Unable to open file!");
-        fwrite($fitx,$contents);
-        fclose($fitx);
+            //actualizar la BD
+            $db = DBikastenbot::getInstance();
 
-        //actualizar la BD
-        $db = DBikastenbot::getInstance();
+            $db->updateCorrectionTFGversion($tfg['id'], $path_correction);
 
-        $db->updateCorrectionTFGversion($tfg['id'],$path_correction);
-
-        return $path_correction;
-
-    }
-
-
-    private function mostrarCorreccion($correction_path,$pagina){
-        $entradas_por_pagina = 3;
-
-
-        $callback_query = $this->getUpdate()->getCallbackQuery();
-        $message = $this->getMessage();
-        $data = [];
-
-        //si pagina negativa (boton terminar) devolver mensaje
-        if($pagina<0){
-            $message = $callback_query->getMessage();
-            $message_id = $message->getMessageId();
-            $chat = $message->getChat();
-            $user = $callback_query->getFrom();
-            $text = $callback_query->getData();
-            $chat_id = $chat->getId();
-            $user_id = $user->getId();
-            $text_callback = $callback_query->getData();
-            echo "borrando....".PHP_EOL;
-            $data['parse_mode'] = 'HTML';
-            $data['chat_id'] = $chat_id;
-            $data['message_id'] = $message_id;
-            $data['text'] =$message->getText();
-//            $data['reply_markup'] = Keyboard::remove(['selective' => true]);
-
-            $this->conversation->stop();
-            return Request::editMessageText($data);
-        }
-
-
-
-
-//echo "PATH".PHP_EOL.$correction_path.PHP_EOL;
-        $fitx = fopen($correction_path, "r") or die("Unable to open file!");
-        $correction = fread($fitx,filesize($correction_path));
-        fclose($fitx);
-//        echo $correction;
-
-        $json_correction = json_decode($correction, true);
-        $errors = $json_correction['matches'];
-        $texto = '<b>A continuación se muestran algunos de los errores encontrados.</b>'.PHP_EOL.PHP_EOL;
-        $data['parse_mode'] = 'HTML';
-
-
-//        //Para ver que poner en negrita
-//        foreach ($errors as $error){
-//            $context = $error['context'];
-//            $texto_frase = $context['text'];
-//            $offset = $context['offset'];
-//            $length = $context['length'];
-//            echo PHP_EOL.$texto_frase;
-//            echo PHP_EOL."Offset: ".$offset." Length: ".$length." Texto: ".substr($texto_frase,$offset,$length);
-//        }
-
-        $i = 0;
-        while ($i<3 && ((($pagina-1)*$entradas_por_pagina+$i)<count($errors))) {
-            //conseguir $entradas_por_pagina errores (indice con la pagina)
-            $error = $errors[($pagina-1)*$entradas_por_pagina+$i];
-            $texto_error = "<b>". $error['message']."</b>".PHP_EOL;
-            $context = $error['context'];
-            $texto_frase = $context['text'];
-            $offset = $context['offset'];
-            $length = $context['length'];
-//            preg_match_all('[áéíóúÁÉÍÓÚÑñ¿¡Üü]',substr($texto_frase,0,$offset),$matches);
-//            $offset = $offset + count($matches);
-            $texto_negrita = mb_substr($texto_frase,0,$offset,'utf-8')."<b>**".mb_substr($texto_frase,$offset,$length,'utf-8')."**</b>".mb_substr($texto_frase,$offset+$length,null,'utf-8').PHP_EOL;
-//            $texto_negrita = substr($texto_frase,0,$offset).substr($texto_frase,$offset,$length).substr($texto_frase,$offset+$length).PHP_EOL;
-            $texto_error .= "Contexto: " .$texto_negrita;
-            $texto .=$texto_error.PHP_EOL;
-            $i++;
-//            echo "INDICE :".(($pagina-1)*$entradas_por_pagina+$i).PHP_EOL.PHP_EOL;
-//            echo substr($texto_frase,$offset+$length-1);
-//            echo mb_detect_encoding(substr($texto_frase,$offset+$length-1));
-        }
-        $data['text'] = $texto;
-
-
-        //crear teclado
-        $paginas_pasar = 5;
-        $paginas_anteriores = max(1,$pagina-$paginas_pasar);
-        $paginas_siguientes = min((ceil(count($errors)/$entradas_por_pagina)),$pagina+$paginas_pasar);
-        $inline_keyboard = new InlineKeyboard([
-            ['text' => '<<'.$paginas_anteriores, 'callback_data' => '{"mostrar_pagina":'.$entradas_por_pagina.'}'],
-            ['text' => '<'.max(1,$pagina-1), 'callback_data' => '{"mostrar_pagina":'.max(1,$pagina-1).'}'],
-            ['text' => $pagina, 'callback_data' => '{"mostrar_pagina":'.$pagina.'}'],
-            ['text' => min((ceil(count($errors)/$entradas_por_pagina)),$pagina+1).'>', 'callback_data' => '{"mostrar_pagina":'.min((ceil(count($errors)/$entradas_por_pagina)),$pagina+1).'}'],
-            ['text' => $paginas_siguientes.'>>', 'callback_data' => '{"mostrar_pagina":'.$paginas_siguientes.'}'],
-            ],[
-            ['text' => 'Terminar', 'callback_data' => '{"mostrar_pagina":-1}']
-        ]);
-        $data['reply_markup'] = $inline_keyboard;
-
-
-        if ($message) {
+            return $path_correction;
+        }else{
+            echo "Error, posiblemente servidor de languagetool no iniciado";
+            $message = $this->getMessage();
             $chat = $message->getChat();
             $user = $message->getFrom();
             $text = trim($message->getText(true));
@@ -217,24 +123,136 @@ class CorrectTFGCommand extends UserCommand
             $user_id = $user->getId();
             $message_id = $message->getMessageId();
 
-
+            $data = [];
+            $data['text'] = "Ha habido algún error al corregir el texto";
             $data['chat_id'] = $chat_id;
 
-            return Request::sendMessage($data);
-        }elseif ($callback_query) {
-            $message = $callback_query->getMessage();
-            $message_id = $message->getMessageId();
-            $chat = $message->getChat();
-            $user = $callback_query->getFrom();
-            $text = $callback_query->getData();
-            $chat_id = $chat->getId();
-            $user_id = $user->getId();
-            $text_callback = $callback_query->getData();
+            Request::sendMessage($data);
 
-            $data['chat_id'] = $chat_id;
-            $data['message_id'] = $message_id;
+        }
 
-            return Request::editMessageText($data);
+    }
+
+
+    private function mostrarCorreccion($correction_path,$pagina){
+        $entradas_por_pagina = 3;
+
+        if($correction_path) {
+
+            $callback_query = $this->getUpdate()->getCallbackQuery();
+            $message = $this->getMessage();
+            $data = [];
+
+            //si pagina negativa (boton terminar) devolver mensaje
+            if ($pagina < 0) {
+                $message = $callback_query->getMessage();
+                $message_id = $message->getMessageId();
+                $chat = $message->getChat();
+                $user = $callback_query->getFrom();
+                $text = $callback_query->getData();
+                $chat_id = $chat->getId();
+                $user_id = $user->getId();
+                $text_callback = $callback_query->getData();
+                echo "borrando...." . PHP_EOL;
+                $data['parse_mode'] = 'HTML';
+                $data['chat_id'] = $chat_id;
+                $data['message_id'] = $message_id;
+                $data['text'] = $message->getText();
+                //            $data['reply_markup'] = Keyboard::remove(['selective' => true]);
+
+                $this->conversation->stop();
+                return Request::editMessageText($data);
+            }
+
+
+            //echo "PATH".PHP_EOL.$correction_path.PHP_EOL;
+            $fitx = fopen($correction_path, "r") or die("Unable to open file!");
+            $correction = fread($fitx, filesize($correction_path));
+            fclose($fitx);
+            //        echo $correction;
+
+            $json_correction = json_decode($correction, true);
+            $errors = $json_correction['matches'];
+            $texto = '<b>A continuación se muestran algunos de los errores encontrados.</b>' . PHP_EOL . PHP_EOL;
+            $data['parse_mode'] = 'HTML';
+
+
+            //        //Para ver que poner en negrita
+            //        foreach ($errors as $error){
+            //            $context = $error['context'];
+            //            $texto_frase = $context['text'];
+            //            $offset = $context['offset'];
+            //            $length = $context['length'];
+            //            echo PHP_EOL.$texto_frase;
+            //            echo PHP_EOL."Offset: ".$offset." Length: ".$length." Texto: ".substr($texto_frase,$offset,$length);
+            //        }
+
+            $i = 0;
+            while ($i < 3 && ((($pagina - 1) * $entradas_por_pagina + $i) < count($errors))) {
+                //conseguir $entradas_por_pagina errores (indice con la pagina)
+                $error = $errors[($pagina - 1) * $entradas_por_pagina + $i];
+                $texto_error = "<b>" . $error['message'] . "</b>" . PHP_EOL;
+                $context = $error['context'];
+                $texto_frase = $context['text'];
+                $offset = $context['offset'];
+                $length = $context['length'];
+                //            preg_match_all('[áéíóúÁÉÍÓÚÑñ¿¡Üü]',substr($texto_frase,0,$offset),$matches);
+                //            $offset = $offset + count($matches);
+                $texto_negrita = mb_substr($texto_frase, 0, $offset, 'utf-8') . "<b>**" . mb_substr($texto_frase, $offset, $length, 'utf-8') . "**</b>" . mb_substr($texto_frase, $offset + $length, null, 'utf-8') . PHP_EOL;
+                //            $texto_negrita = substr($texto_frase,0,$offset).substr($texto_frase,$offset,$length).substr($texto_frase,$offset+$length).PHP_EOL;
+                $texto_error .= "Contexto: " . $texto_negrita;
+                $texto .= $texto_error . PHP_EOL;
+                $i++;
+                //            echo "INDICE :".(($pagina-1)*$entradas_por_pagina+$i).PHP_EOL.PHP_EOL;
+                //            echo substr($texto_frase,$offset+$length-1);
+                //            echo mb_detect_encoding(substr($texto_frase,$offset+$length-1));
+            }
+            $data['text'] = $texto;
+
+
+            //crear teclado
+            $paginas_pasar = 5;
+            $paginas_anteriores = max(1, $pagina - $paginas_pasar);
+            $paginas_siguientes = min((ceil(count($errors) / $entradas_por_pagina)), $pagina + $paginas_pasar);
+            $inline_keyboard = new InlineKeyboard([
+                ['text' => '<<' . $paginas_anteriores, 'callback_data' => '{"mostrar_pagina":' . $entradas_por_pagina . '}'],
+                ['text' => '<' . max(1, $pagina - 1), 'callback_data' => '{"mostrar_pagina":' . max(1, $pagina - 1) . '}'],
+                ['text' => $pagina, 'callback_data' => '{"mostrar_pagina":' . $pagina . '}'],
+                ['text' => min((ceil(count($errors) / $entradas_por_pagina)), $pagina + 1) . '>', 'callback_data' => '{"mostrar_pagina":' . min((ceil(count($errors) / $entradas_por_pagina)), $pagina + 1) . '}'],
+                ['text' => $paginas_siguientes . '>>', 'callback_data' => '{"mostrar_pagina":' . $paginas_siguientes . '}'],
+            ], [
+                ['text' => 'Terminar', 'callback_data' => '{"mostrar_pagina":-1}']
+            ]);
+            $data['reply_markup'] = $inline_keyboard;
+
+
+            if ($message) {
+                $chat = $message->getChat();
+                $user = $message->getFrom();
+                $text = trim($message->getText(true));
+                $chat_id = $chat->getId();
+                $user_id = $user->getId();
+                $message_id = $message->getMessageId();
+
+
+                $data['chat_id'] = $chat_id;
+
+                return Request::sendMessage($data);
+            } elseif ($callback_query) {
+                $message = $callback_query->getMessage();
+                $message_id = $message->getMessageId();
+                $chat = $message->getChat();
+                $user = $callback_query->getFrom();
+                $text = $callback_query->getData();
+                $chat_id = $chat->getId();
+                $user_id = $user->getId();
+                $text_callback = $callback_query->getData();
+
+                $data['chat_id'] = $chat_id;
+                $data['message_id'] = $message_id;
+
+                return Request::editMessageText($data);
+            }
         }
 
 

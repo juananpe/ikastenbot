@@ -246,7 +246,52 @@ class addTFGCommand extends UserCommand
                                 case "doc":
                                 case "docx":
                                 case "odt":
-//                                    echo "Convertir a pdf";
+                                    echo "Convertir a pdf";
+                                       $hash = md5_file($path_local);
+                                       $versionAnterior = $db->existVersion($user_id,$hash);
+                                       if($versionAnterior){
+                                           $data['text'] = 'La versión añadida ya está añadida el '. $versionAnterior['date'];
+                                           $data['reply_markup'] = Keyboard::remove(['selective' => true]);
+
+                                           $this->conversation->stop();
+
+                                           $result = Request::sendMessage($data);
+                                       }else{
+                                           //añadir la version a la base de datos y mover el archivo
+                                           $lastVersion = $db->getLastVersionNumber($user_id);
+                                           $newPath = $this->telegram->getDownloadPath() .'/'. $user_id . '/'.($lastVersion+1). '/' .$hash.'.'.$tipo ;
+                                           if (!is_dir(dirname($newPath))) {
+                                               mkdir(dirname($newPath), 0777, true);
+                                           }
+                                           rename($path_local,$newPath);
+                                           exec("unoconv -f pdf $newPath", $output, $return_var);
+                                           if($return_var==0){
+                                               $partes_ruta = pathinfo($newPath);
+                                               $dir_name =  $partes_ruta['dirname'];
+                                               $file_name =  $partes_ruta['filename'];
+
+                                               $pdfpath =$dir_name.'/'.$file_name.'.pdf';
+                                               if($db->registerTFGversion($user_id,$lastVersion+1,$hash,$newPath,$pdfpath)){
+                                                   try{
+                                                       $this->pdf2text($pdfpath,$user_id,$lastVersion+1);
+
+                                                       $data['text'] = 'La versión ha sido añadida';
+
+                                                   }catch (Exception $e){
+                                                       $data['text'] = 'Ha ocurrido un error. Asegurate que el archivo enviado este bien.';
+                                                   }
+
+                                                   $data['reply_markup'] = Keyboard::remove(['selective' => true]);
+
+                                                   $this->conversation->stop();
+
+                                                   $result = Request::sendMessage($data);
+                                               }
+                                           }
+
+                                       }
+                                       break;
+
                                 case "pdf":
 //                                    echo "comprobar md5";
 

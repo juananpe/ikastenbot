@@ -17,6 +17,7 @@
         }
     ],
     "require": {
-        "longman/telegram-bot": "*"
+        "longman/telegram-bot": "*",
+        "spatie/pdf-to-text": "^1.1"
     }
 }
