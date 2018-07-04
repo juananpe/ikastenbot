@@ -208,7 +208,12 @@ class addTFGCommand extends UserCommand
                     $tfg = $db->getTFGbyUser($user_id);
 
                     if (!$tfg) {
-                        $data['text'] = 'Primero tienes que registrar un TFG. Para ello puedes utilizar el comando /registerTFG';
+                        $r = $db->getUserLang($user_id);
+                        $lang = $r[0]['language'];
+
+                        $res = $db->getSystemMessageById(7, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $texto;
                         $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                         $this->conversation->stop();
@@ -216,7 +221,12 @@ class addTFGCommand extends UserCommand
                         $result = Request::sendMessage($data);
                         break;
                     }else{
-                        $data['text'] = 'Envía el documento';
+                        $r = $db->getUserLang($user_id);
+                        $lang = $r[0]['language'];
+
+                        $res = $db->getSystemMessageById(8, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $texto;
                         $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
 
@@ -246,11 +256,16 @@ class addTFGCommand extends UserCommand
                                 case "doc":
                                 case "docx":
                                 case "odt":
-                                    echo "Convertir a pdf";
+//                                    echo "Convertir a pdf";
                                        $hash = md5_file($path_local);
                                        $versionAnterior = $db->existVersion($user_id,$hash);
                                        if($versionAnterior){
-                                           $data['text'] = 'La versión añadida ya está añadida el '. $versionAnterior['date'];
+                                           $r = $db->getUserLang($user_id);
+                                           $lang = $r[0]['language'];
+
+                                           $res = $db->getSystemMessageById(9, $lang);
+                                           $texto = $res[$lang];
+                                           $data['text'] = $texto. $versionAnterior['date'];
                                            $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                                            $this->conversation->stop();
@@ -274,11 +289,20 @@ class addTFGCommand extends UserCommand
                                                if($db->registerTFGversion($user_id,$lastVersion+1,$hash,$newPath,$pdfpath)){
                                                    try{
                                                        $this->pdf2text($pdfpath,$user_id,$lastVersion+1);
+                                                       $r = $db->getUserLang($user_id);
+                                                       $lang = $r[0]['language'];
 
-                                                       $data['text'] = 'La versión ha sido añadida';
+                                                       $res = $db->getSystemMessageById(10, $lang);
+                                                       $texto = $res[$lang];
+                                                       $data['text'] = $texto;
 
                                                    }catch (Exception $e){
-                                                       $data['text'] = 'Ha ocurrido un error. Asegurate que el archivo enviado este bien.';
+                                                       $r = $db->getUserLang($user_id);
+                                                       $lang = $r[0]['language'];
+
+                                                       $res = $db->getSystemMessageById(11, $lang);
+                                                       $texto = $res[$lang];
+                                                       $data['text'] = $texto;
                                                    }
 
                                                    $data['reply_markup'] = Keyboard::remove(['selective' => true]);
@@ -298,7 +322,12 @@ class addTFGCommand extends UserCommand
                                     $hash = md5_file($path_local);
                                     $versionAnterior = $db->existVersion($user_id,$hash);
                                     if($versionAnterior){
-                                        $data['text'] = 'La versión añadida ya está añadida el '. $versionAnterior['date'];
+                                        $r = $db->getUserLang($user_id);
+                                        $lang = $r[0]['language'];
+
+                                        $res = $db->getSystemMessageById(9, $lang);
+                                        $texto = $res[$lang];
+                                        $data['text'] = $texto. $versionAnterior['date'];
                                         $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                                         $this->conversation->stop();
@@ -316,10 +345,20 @@ class addTFGCommand extends UserCommand
                                             try{
                                                 $this->pdf2text($newPath,$user_id,$lastVersion+1);
 
-                                                $data['text'] = 'La versión ha sido añadida';
+                                                $r = $db->getUserLang($user_id);
+                                                $lang = $r[0]['language'];
+
+                                                $res = $db->getSystemMessageById(10, $lang);
+                                                $texto = $res[$lang];
+                                                $data['text'] = $texto;
 
                                             }catch (Exception $e){
-                                                $data['text'] = 'Ha ocurrido un error. Asegurate que el archivo enviado este bien.';
+                                                $r = $db->getUserLang($user_id);
+                                                $lang = $r[0]['language'];
+
+                                                $res = $db->getSystemMessageById(11, $lang);
+                                                $texto = $res[$lang];
+                                                $data['text'] = $texto;
                                             }
 
                                             $data['reply_markup'] = Keyboard::remove(['selective' => true]);
@@ -332,7 +371,12 @@ class addTFGCommand extends UserCommand
 
                                     break;
                                 default:
-                                    $data['text'] = 'El archivo enviado no es correcto.';
+                                    $r = $db->getUserLang($user_id);
+                                    $lang = $r[0]['language'];
+
+                                    $res = $db->getSystemMessageById(1, $lang);
+                                    $texto = $res[$lang];
+                                    $data['text'] = $texto;
                                     $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                                     $this->conversation->stop();

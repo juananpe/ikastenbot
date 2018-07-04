@@ -66,7 +66,7 @@ class CorrectTFGCommand extends UserCommand
 
 
 
-    private function corregir($tfg){
+    private function corregir($tfg,$notes){
 
         $txt_path =$tfg['txtPath'];
         $fitx = fopen($txt_path, "r") or die("Unable to open file!");
@@ -124,9 +124,15 @@ class CorrectTFGCommand extends UserCommand
             $message_id = $message->getMessageId();
 
             $data = [];
-            $data['text'] = "Ha habido algún error al corregir el texto";
+            $db = DBikastenbot::getInstance();
+            $lang = $notes['user_lang'];
+
+            $res = $db->getSystemMessageById(18, $lang);
+            $texto = $res[$lang];
+            $data['text'] = $texto;
             $data['chat_id'] = $chat_id;
 
+            $this->conversation->stop();
             Request::sendMessage($data);
 
         }
@@ -134,7 +140,7 @@ class CorrectTFGCommand extends UserCommand
     }
 
 
-    private function mostrarCorreccion($correction_path,$pagina){
+    private function mostrarCorreccion($correction_path,$pagina,$notes){
         $entradas_por_pagina = 3;
 
         if($correction_path) {
@@ -173,7 +179,12 @@ class CorrectTFGCommand extends UserCommand
 
             $json_correction = json_decode($correction, true);
             $errors = $json_correction['matches'];
-            $texto = '<b>A continuación se muestran algunos de los errores encontrados.</b>' . PHP_EOL . PHP_EOL;
+            $db = DBikastenbot::getInstance();
+            $lang = $notes['user_lang'];
+
+            $res = $db->getSystemMessageById(34, $lang);
+            $texto_db = $res[$lang];
+            $texto = '<b>'.$texto_db.'</b>' . PHP_EOL . PHP_EOL;
             $data['parse_mode'] = 'HTML';
 
 
@@ -318,18 +329,25 @@ class CorrectTFGCommand extends UserCommand
         $tfg = $db->getLastTFGversionbyUser($user_id);
 
 
+
         //State machine
         //Entrypoint of the machine state if given by the track
         //Every time a step is achieved the track is updated
         switch ($state) {
             case 0:
                 if ($text === ''|| !in_array($text, ['SI', 'NO'])) {
+                    $r = $db->getUserLang($user_id);
+                    $user_lang = $r[0]['language'];
+                    $notes['user_lang'] = $user_lang;
                     $notes['state'] = 0;
                     $notes['last_TFGid'] = $tfg['id'];
                     $this->conversation->update();
 
                     if (!$tfg) {
-                        $data['text'] = 'No tienes ningún TFG añadido. Si quieres añadir una nueva versión utiliza el comando /addTFG';
+                        $lang = $notes['user_lang'];
+                        $res = $db->getSystemMessageById(19, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $texto;
                         $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                         $this->conversation->stop();
@@ -337,8 +355,15 @@ class CorrectTFGCommand extends UserCommand
                         $result = Request::sendMessage($data);
                         break;
                     }else{
-                        $data['text'] = 'La última versión es de la fecha: ' . $tfg['date'];
-                        $data['text'] = $data['text'] . PHP_EOL. '¿Quieres corregir esta versión?';
+                        $lang = $notes['user_lang'];
+
+                        $res = $db->getSystemMessageById(20, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $texto . $tfg['date'];
+
+                        $res = $db->getSystemMessageById(21, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $data['text'] . PHP_EOL. $texto;
 
                         $keyboard = new Keyboard('SI','NO');
                         $keyboard->setResizeKeyboard(true)
@@ -356,7 +381,11 @@ class CorrectTFGCommand extends UserCommand
                 $notes['corregir'] = $text;
                 $text          = '';
                 if($notes['corregir'] =='NO'){
-                    $data['text'] = 'Has cancelado el proceso de corrección';
+
+                    $lang = $notes['user_lang'];
+                    $res = $db->getSystemMessageById(22, $lang);
+                    $texto = $res[$lang];
+                    $data['text'] = $texto;
                     $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                     $this->conversation->stop();
@@ -374,17 +403,28 @@ class CorrectTFGCommand extends UserCommand
 
                             $this->conversation->update();
 
-                            $data['text'] = 'A continuación se va a corregir el TFG. Esto puede tardar un poco.';
+
+                            $lang = $notes['user_lang'];
+
+                            $res = $db->getSystemMessageById(23, $lang);
+                            $texto = $res[$lang];
+
+                            $data['text'] = $texto;
                             $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                             $result = Request::sendMessage($data);
 
                             //corregir (llamada API)
-                            $tfg['correction'] = $this->corregir($tfg);
+                            $tfg['correction'] = $this->corregir($tfg,$notes);
 
 
                         }else{
-                            $data['text'] = 'Todavía no se puede corregir en el idioma del TFG.';
+                            $lang = $notes['user_lang'];
+
+                            $res = $db->getSystemMessageById(24, $lang);
+                            $texto = $res[$lang];
+
+                            $data['text'] = $texto;
                             $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                             $this->conversation->stop();

@@ -355,4 +355,19 @@ class DBikastenbot
         return $result;
     }
 
+    public function getSystemMessageById($id, $lang){
+        if (!self::isDbConnected()) {
+            return null;
+        }
+        try {
+            $query = "select $lang from system_message where id=$id";
+            $sth = self::$pdo->prepare($query);
+            $sth->execute();
+            $result = $sth->fetch(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new TelegramException($e->getMessage());
+        }
+        return $result;
+    }
+
 }

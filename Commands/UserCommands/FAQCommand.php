@@ -118,11 +118,9 @@ class FAQCommand extends UserCommand
         $r = $db->getUserLang($user_id);
         $lang = $r[0]['language'];
 
-        $res = $db->getMessageByTag("faq", $lang);
-        $texto = "";
-        foreach ($res as $r) {
-            $texto = $r[$lang];
-        }
+        $res = $db->getSystemMessageById(1, $lang);
+        $texto = $res[$lang];
+
         $data['text'] =$texto;
         $data['parse_mode'] = 'HTML';
         $questions = $db->getFAQquestions($lang);

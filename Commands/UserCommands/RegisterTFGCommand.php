@@ -123,7 +123,12 @@ class registerTFGCommand extends UserCommand
                     $tfg = $db->getTFGbyUser($user_id);
 
                     if ($tfg) {
-                        $data['text'] = 'Ya tienes un TFG registrado. Si quieres añadir una nueva versión utiliza el comando /addTFG';
+                        $r = $db->getUserLang($user_id);
+                        $lang = $r[0]['language'];
+
+                        $res = $db->getSystemMessageById(13, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $texto;
                         $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                         $this->conversation->stop();
@@ -131,7 +136,12 @@ class registerTFGCommand extends UserCommand
                         $result = Request::sendMessage($data);
                         break;
                     }else{
-                        $data['text'] = 'Escribe el título del TFG';
+                        $r = $db->getUserLang($user_id);
+                        $lang = $r[0]['language'];
+
+                        $res = $db->getSystemMessageById(14, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $texto;
                         $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
 
@@ -149,7 +159,12 @@ class registerTFGCommand extends UserCommand
                     $notes['state'] = 1;
                     $this->conversation->update();
 
-                    $data['text'] = 'Selecciona el idioma del TFG';
+                    $r = $db->getUserLang($user_id);
+                    $lang = $r[0]['language'];
+
+                    $res = $db->getSystemMessageById(15, $lang);
+                    $texto = $res[$lang];
+                    $data['text'] = $texto;
 //                    $keyboard = new Keyboard('es','eus');
                     $keyboard = new Keyboard([]);
                     $i=0;
@@ -176,9 +191,19 @@ class registerTFGCommand extends UserCommand
 
                 $anadido = $db->registerTFG($user_id,$notes['name'],$notes['lang']);
                 if($anadido) {
-                    $data['text'] = 'El TFG ha sido añadido';
+                    $r = $db->getUserLang($user_id);
+                    $lang = $r[0]['language'];
+
+                    $res = $db->getSystemMessageById(16, $lang);
+                    $texto = $res[$lang];
+                    $data['text'] = $texto;
                 }else{
-                    $data['text'] = 'No se ha podido añadir el TFG';
+                    $r = $db->getUserLang($user_id);
+                    $lang = $r[0]['language'];
+
+                    $res = $db->getSystemMessageById(17, $lang);
+                    $texto = $res[$lang];
+                    $data['text'] = $texto;
                 }
 
                 $data['reply_markup'] = Keyboard::remove(['selective' => true]);

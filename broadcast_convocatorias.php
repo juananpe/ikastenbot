@@ -33,22 +33,22 @@ $users= $sth->fetchAll(\PDO::FETCH_ASSOC);
 foreach($fecha as $convo){
     switch ($convo['what']){
         case "matricula":
-            $id_msg=18;
+            $id_msg=2;
             break;
         case "secretaria":
-            $id_msg=19;
+            $id_msg=3;
             break;
         case "solicitud defensa":
-            $id_msg=20;
+            $id_msg=4;
             break;
         case "visto bueno":
-            $id_msg=21;
+            $id_msg=5;
             break;
         case "defensa":
-            $id_msg=22;
+            $id_msg=6;
             break;
     }
-    $query = "select es,eus from messages_lang where id=$id_msg";
+    $query = "select es,eus from system_message where id=$id_msg";
     $sth = $pdo->prepare($query);
     $sth->execute();
     $msg= $sth->fetch(\PDO::FETCH_ASSOC);

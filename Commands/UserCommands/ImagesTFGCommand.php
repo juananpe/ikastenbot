@@ -156,13 +156,17 @@ class ImagesTFGCommand extends UserCommand
         $data['chat_id']= $chat_id;
 
 //                $data['parse_mode'] = 'HTML';
-        $data['text'] = "A continuación se mostraran posibles imágenes sacadas de internet. Asegurate de que tengas permiso para usarlas.";
+
+        $db = DBikastenbot::getInstance();
+        $r = $db->getUserLang($user_id);
+        $lang = $r[0]['language'];
+
+        $res = $db->getSystemMessageById(25, $lang);
+        $texto = $res[$lang];
+        $data['text'] = $texto;
         $result = Request::sendMessage($data);
 
         $data = [];
-
-
-        $db = DBikastenbot::getInstance();
 
         $images = $db->getImagesByTFGid($last_TFGid);
 
@@ -183,11 +187,15 @@ class ImagesTFGCommand extends UserCommand
                 echo PHP_EOL."score >>";
                 if($webEntities[0]['description']) {
                     echo " description  ";
-                    $text .= "Esta imagen se ha detectado como: " . $webEntities[0]['description']. PHP_EOL . PHP_EOL;
+                    $res = $db->getSystemMessageById(26, $lang);
+                    $texto = $res[$lang];
+                    $text .= $texto. $webEntities[0]['description']. PHP_EOL . PHP_EOL;
                 }
                 if(isset($web_detection['pagesWithMatchingImages']) ){
                     echo " pagesWithMatchingImages  ";
-                    $text .= "Se ha encontrado posibles coincidencias de esta imagen o alguna parecida en las siguientes páginas de internet:".PHP_EOL.PHP_EOL;
+                    $res = $db->getSystemMessageById(27, $lang);
+                    $texto = $res[$lang];
+                    $text .= $texto.PHP_EOL.PHP_EOL;
                     $pagesWithMatchingImages =$web_detection['pagesWithMatchingImages'];
                     for($cont =0; $cont<min(count($pagesWithMatchingImages),$this->maxImagesToShow);$cont++){
                         if(isset($pagesWithMatchingImages[$cont]['url'])){
@@ -197,7 +205,9 @@ class ImagesTFGCommand extends UserCommand
                 }else{
 
                     if(isset($web_detection['fullMatchingImages']) ) {
-                        $text .= "Se ha encontrado posibles coincidencias de esta imagen o alguna parecida en las siguientes páginas de internet:".PHP_EOL.PHP_EOL;
+                        $res = $db->getSystemMessageById(27, $lang);
+                        $texto = $res[$lang];
+                        $text .= $texto.PHP_EOL.PHP_EOL;
                         $fullMatchingImages = $web_detection['fullMatchingImages'];
                         for ($cont = 0; $cont < min(count($fullMatchingImages), $this->maxImagesToShow); $cont++) {
                             if (isset($pagesWithMatchingImages[$cont]['url'])) {
@@ -214,7 +224,7 @@ class ImagesTFGCommand extends UserCommand
 //                $data['caption'] = $text;
 //
                 $result = Request::sendPhoto($data);
-$data=[];
+                $data=[];
                 $data['chat_id']= $chat_id;
                 $data['text'] = $text;
 
@@ -227,7 +237,9 @@ $data=[];
             $data['chat_id']= $chat_id;
 
 //                $data['parse_mode'] = 'HTML';
-            $data['text'] = "No se ha encontrado ninguna coincidencia";
+            $res = $db->getSystemMessageById(28, $lang);
+            $texto = $res[$lang];
+            $data['text'] = $texto;
             $result = Request::sendMessage($data);
         }
 
@@ -287,7 +299,12 @@ $data=[];
                     $this->conversation->update();
 
                     if (!$tfg) {
-                        $data['text'] = 'No tienes ningún TFG añadido. Si quieres añadir una nueva versión utiliza el comando /addTFG';
+                        $r = $db->getUserLang($user_id);
+                        $lang = $r[0]['language'];
+
+                        $res = $db->getSystemMessageById(29, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $texto;
                         $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                         $this->conversation->stop();
@@ -295,8 +312,18 @@ $data=[];
                         $result = Request::sendMessage($data);
                         break;
                     }else{
-                        $data['text'] = 'La última versión es de la fecha: ' . $tfg['date'];
-                        $data['text'] = $data['text'] . PHP_EOL. '¿Quieres analizar las imágenes esta versión?';
+                        $r = $db->getUserLang($user_id);
+                        $lang = $r[0]['language'];
+
+                        $res = $db->getSystemMessageById(30, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $texto . $tfg['date'];
+                        $r = $db->getUserLang($user_id);
+                        $lang = $r[0]['language'];
+
+                        $res = $db->getSystemMessageById(31, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $data['text'] . PHP_EOL. $texto;
 
                         $keyboard = new Keyboard('SI','NO');
                         $keyboard->setResizeKeyboard(true)
@@ -314,7 +341,12 @@ $data=[];
                 $notes['comprobar'] = $text;
                 $text          = '';
                 if($notes['comprobar'] =='NO'){
-                    $data['text'] = 'Has cancelado el proceso.';
+                    $r = $db->getUserLang($user_id);
+                    $lang = $r[0]['language'];
+
+                    $res = $db->getSystemMessageById(32, $lang);
+                    $texto = $res[$lang];
+                    $data['text'] = $texto;
                     $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
                     $this->conversation->stop();
@@ -329,8 +361,13 @@ $data=[];
                     $notes['state'] = 1;
                     $this->conversation->update();
                     if(!isset($tfg['imagesPath'])){
-                        echo "  CASE 1 DEntro isset";
-                        $data['text'] = 'A continuación se van a analizar las imágenes. Esto puede tardar un poco..';
+//                        echo "  CASE 1 DEntro isset";
+                        $r = $db->getUserLang($user_id);
+                        $lang = $r[0]['language'];
+
+                        $res = $db->getSystemMessageById(33, $lang);
+                        $texto = $res[$lang];
+                        $data['text'] = $texto;
                         $data['reply_markup'] = Keyboard::remove(['selective' => true]);
 
 
