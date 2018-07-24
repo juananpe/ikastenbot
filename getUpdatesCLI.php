@@ -28,10 +28,10 @@ $commands_paths = [
 
 // Enter your MySQL database credentials
 $mysql_credentials = [
-    'host'     => '',
-    'user'     => '',
-    'password' => '',
-    'database' => '',
+    'host'     => $host,
+    'user'     => $user,
+    'password' => $pass,
+    'database' => $db,
 ];
 
 try {
