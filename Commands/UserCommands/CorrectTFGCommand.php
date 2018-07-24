@@ -446,7 +446,7 @@ class CorrectTFGCommand extends UserCommand
                 $this->conversation->update();
 
 
-                $this->mostrarCorreccion($tfg['correction'], $notes['pagina']);
+                $this->mostrarCorreccion($tfg['correction'], $notes['pagina'],$notes);
         }
 
 

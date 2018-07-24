@@ -50,8 +50,8 @@ class CallbackqueryCommand extends SystemCommand
     private function insertDates($text, $dates){
         $db = DBikastenbot::getInstance();
         $fechas=$db->getNextDate($dates);
-            $texto = str_replace("##", $fechas[0]['to'], $text);
-
+//            $texto = str_replace("##", $fechas[0]['to'], $text);
+        $texto = $text . " ". $fechas['to'];
         return $texto;
     }
 

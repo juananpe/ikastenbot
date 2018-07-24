@@ -374,7 +374,7 @@ class addTFGCommand extends UserCommand
                                     $r = $db->getUserLang($user_id);
                                     $lang = $r[0]['language'];
 
-                                    $res = $db->getSystemMessageById(1, $lang);
+                                    $res = $db->getSystemMessageById(12, $lang);
                                     $texto = $res[$lang];
                                     $data['text'] = $texto;
                                     $data['reply_markup'] = Keyboard::remove(['selective' => true]);

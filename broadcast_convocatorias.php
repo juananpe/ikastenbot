@@ -6,11 +6,11 @@ require __DIR__ . '/vendor/autoload.php';
 
 function insertDates($text, $dates){
 
-        $texto = str_replace("##", $dates, $text);
-
+//        $texto = str_replace("##", $dates, $text);
+$texto = $text . " " . $dates;
     return $texto;
 }
-
+require ('config.php');
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $opt = [
@@ -20,7 +20,7 @@ $opt = [
 ];
 $pdo = new PDO($dsn, $user, $pass, $opt);
 
-$query = "select `to`,what from dates where `to`=CURDATE() + INTERVAL 7 DAY and notification_prep=FALSE ";
+$query = "select id,`to`,what from dates where `to`=CURDATE() + INTERVAL 7 DAY and notification_prep=FALSE ";
 $sth = $pdo->prepare($query);
 $sth->execute();
 $fecha = $sth->fetchAll(\PDO::FETCH_ASSOC);
@@ -68,8 +68,8 @@ foreach($fecha as $convo){
         }
     }
 
-    $id = $not['id'];
-    $query = "Update `dates` SET notification_prep=true where id=$id;";
+    $id = $convo['id'];
+    $query = "Update `dates` SET notification_prep=true where id=$id";
     $sth = $pdo->prepare($query);
     $sth->execute();
 

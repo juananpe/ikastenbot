@@ -73,7 +73,7 @@ class ImagesTFGCommand extends UserCommand
 
         $db= DBikastenbot::getInstance();
         $pathImages = $this->telegram->getDownloadPath() .'/'. $user_id . '/'.$tfg['version']. '/images'  ;
-        echo $pathImages;
+//        echo $pathImages;
 //        error_log( dirname($pathImages) . "\n" , 3, "/tmp/error.log");
 
         if (!is_dir($pathImages)) {
@@ -87,7 +87,7 @@ class ImagesTFGCommand extends UserCommand
             //actulizar TFGversion DB
 
 
-//            $db->updateImagesPathTFGversion($tfg['id'],$pathImages);
+            $db->updateImagesPathTFGversion($tfg['id'],$pathImages);
 
             $files = array_diff(scandir($pathImages), array('.', '..'));
             foreach ($files as $file){
@@ -173,63 +173,80 @@ class ImagesTFGCommand extends UserCommand
         $i = 0;
         $imagesSent = 0;
 
-        while($i<count($images) && $imagesSent<$this->maxImagesToShow){
+        while($i<count($images) && $imagesSent<$this->maxImagesToShow) {
             $text = '';
             $image = $images[$i];
             $api_result = $image['api_result'];
 //            echo $api_result.PHP_EOL.PHP_EOL;
-            $api_result_json = json_decode($api_result,true);
-            $responses = $api_result_json['responses'][0];
-            $web_detection = $responses['webDetection'];
-            $webEntities =$web_detection['webEntities'];
-            echo PHP_EOL."IMAGE: ".$image['path']."   SCORE:  ".$webEntities[0]['score'];
-            if($webEntities[0]['score']>=$this->minScore){
-                echo PHP_EOL."score >>";
-                if($webEntities[0]['description']) {
-                    echo " description  ";
-                    $res = $db->getSystemMessageById(26, $lang);
-                    $texto = $res[$lang];
-                    $text .= $texto. $webEntities[0]['description']. PHP_EOL . PHP_EOL;
-                }
-                if(isset($web_detection['pagesWithMatchingImages']) ){
-                    echo " pagesWithMatchingImages  ";
-                    $res = $db->getSystemMessageById(27, $lang);
-                    $texto = $res[$lang];
-                    $text .= $texto.PHP_EOL.PHP_EOL;
-                    $pagesWithMatchingImages =$web_detection['pagesWithMatchingImages'];
-                    for($cont =0; $cont<min(count($pagesWithMatchingImages),$this->maxImagesToShow);$cont++){
-                        if(isset($pagesWithMatchingImages[$cont]['url'])){
-                            $text .= $pagesWithMatchingImages[$cont]['url'].PHP_EOL.PHP_EOL;
-                        }
+            $api_result_json = json_decode($api_result, true);
+            if (isset($api_result_json['responses'])){
+                $responses = $api_result_json['responses'][0];
+                $web_detection = $responses['webDetection'];
+                $webEntities = $web_detection['webEntities'];
+//                echo PHP_EOL."IMAGE: ".$image['path']."   SCORE:  ".$webEntities[0]['score'];
+                if ($webEntities[0]['score'] >= $this->minScore) {
+    //                echo PHP_EOL."score >>";
+                    if ($webEntities[0]['description']) {
+    //                    echo " description  ";
+                        $res = $db->getSystemMessageById(26, $lang);
+                        $texto = $res[$lang];
+                        $text .= $texto . $webEntities[0]['description'] . PHP_EOL . PHP_EOL;
                     }
-                }else{
-
-                    if(isset($web_detection['fullMatchingImages']) ) {
+                    if (isset($web_detection['pagesWithMatchingImages'])) {
+//                        echo " pagesWithMatchingImages  ";
                         $res = $db->getSystemMessageById(27, $lang);
                         $texto = $res[$lang];
-                        $text .= $texto.PHP_EOL.PHP_EOL;
-                        $fullMatchingImages = $web_detection['fullMatchingImages'];
-                        for ($cont = 0; $cont < min(count($fullMatchingImages), $this->maxImagesToShow); $cont++) {
+                        $text .= $texto . PHP_EOL . PHP_EOL;
+                        $pagesWithMatchingImages = $web_detection['pagesWithMatchingImages'];
+                        for ($cont = 0; $cont < min(count($pagesWithMatchingImages), $this->maxImagesToShow); $cont++) {
                             if (isset($pagesWithMatchingImages[$cont]['url'])) {
-                                $text .= $fullMatchingImages[$cont]['url'] . PHP_EOL . PHP_EOL;
+                                $text .= $pagesWithMatchingImages[$cont]['url'] . PHP_EOL . PHP_EOL;
                             }
                         }
+//                         echo $text;
+                        $data['chat_id'] = $chat_id;
+                        $data['photo'] = Request::encodeFile($image['path']);
+
+        //                $data['parse_mode'] = 'HTML';
+        //                $data['caption'] = $text;
+        //
+                        $result = Request::sendPhoto($data);
+                        $data = [];
+                        $data['chat_id'] = $chat_id;
+                        $data['text'] = $text;
+
+                        $result = Request::sendMessage($data);
+                        $imagesSent++;
+                    } else {
+
+                        if (isset($web_detection['fullMatchingImages'])) {
+                            $res = $db->getSystemMessageById(27, $lang);
+                            $texto = $res[$lang];
+                            $text .= $texto . PHP_EOL . PHP_EOL;
+                            $fullMatchingImages = $web_detection['fullMatchingImages'];
+                            for ($cont = 0; $cont < min(count($fullMatchingImages), $this->maxImagesToShow); $cont++) {
+                                if (isset($fullMatchingImages[$cont]['url'])) {
+                                    $text .= $fullMatchingImages[$cont]['url'] . PHP_EOL . PHP_EOL;
+                                }
+                            }
+//                            echo $text;
+                            $data['chat_id'] = $chat_id;
+                            $data['photo'] = Request::encodeFile($image['path']);
+
+            //                $data['parse_mode'] = 'HTML';
+            //                $data['caption'] = $text;
+            //
+                            $result = Request::sendPhoto($data);
+                            $data = [];
+                            $data['chat_id'] = $chat_id;
+                            $data['text'] = $text;
+
+                            $result = Request::sendMessage($data);
+                            $imagesSent++;
+                        }
                     }
+
                 }
-                echo $text;
-                $data['chat_id']= $chat_id;
-                $data['photo'] = Request::encodeFile($image['path']);
-
-//                $data['parse_mode'] = 'HTML';
-//                $data['caption'] = $text;
-//
-                $result = Request::sendPhoto($data);
-                $data=[];
-                $data['chat_id']= $chat_id;
-                $data['text'] = $text;
-
-                $result = Request::sendMessage($data);
-                $imagesSent++;
             }
             $i++;
         }

@@ -132,10 +132,10 @@ class DBikastenbot
             return null;
         }
         try {
-            $query = "select dates.to from dates where what='matricula' and dates.to>now()  order by dates.to limit 1";
+            $query = "select dates.to from dates where what='$tag' and dates.to>now()  order by dates.to limit 1";
             $sth = self::$pdo->prepare($query);
             $sth->execute();
-            $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
+            $result = $sth->fetch(\PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
