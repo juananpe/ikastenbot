@@ -11,5 +11,8 @@
             "name": "MikelAlejoBR",
             "email": "mikelalejobr@outlook.com"
         }
-    ]
+    ],
+    "require-dev": {
+        "symfony/dotenv": "^4.1"
+    }
 }
