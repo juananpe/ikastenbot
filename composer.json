@@ -1,0 +1,15 @@
+{
+    "name": "mikelalejobr/php-telegram-bot-ganttproject",
+    "description": "A take on importing GanttProject's milestones to remind the users when the deadlines are close",
+    "type": "project",
+    "require": {
+        "longman/telegram-bot": "*"
+    },
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "MikelAlejoBR",
+            "email": "mikelalejobr@outlook.com"
+        }
+    ]
+}
