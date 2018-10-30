@@ -3,7 +3,8 @@
     "description": "A take on importing GanttProject's milestones to remind the users when the deadlines are close",
     "type": "project",
     "require": {
-        "longman/telegram-bot": "*"
+        "longman/telegram-bot": "*",
+        "symfony/serializer": "^4.1"
     },
     "license": "GPLv3",
     "authors": [
