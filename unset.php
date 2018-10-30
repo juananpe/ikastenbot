@@ -8,9 +8,14 @@
 // Load composer
 require_once __DIR__ . '/vendor/autoload.php';
 
+use Symfony\Component\Dotenv\Dotenv;
+
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/.env');
+
 // Add you bot's API key and name
-$bot_api_key  = 'your:bot_api_key';
-$bot_username = 'username_bot';
+$bot_api_key  = getenv('TELEGRAM_BOT_API_KEY');
+$bot_username = getenv('TELEGRAM_BOT_USERNAME');
 
 try {
     // Create Telegram API object
