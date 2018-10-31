@@ -3,7 +3,9 @@
     "description": "A take on importing GanttProject's milestones to remind the users when the deadlines are close",
     "type": "project",
     "require": {
-        "longman/telegram-bot": "*"
+        "longman/telegram-bot": "*",
+        "symfony/serializer": "^4.1",
+        "symfony/property-access": "^4.1"
     },
     "license": "GPLv3",
     "authors": [
@@ -14,5 +16,10 @@
     ],
     "require-dev": {
         "symfony/dotenv": "^4.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "MikelAlejoBR\\TelegramBotGanttProject\\": "src/"
+        }
     }
 }
