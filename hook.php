@@ -30,13 +30,27 @@ $commands_paths = [
 //    __DIR__ . '/Commands/',
 ];
 
-// Enter your MySQL database credentials
-//$mysql_credentials = [
-//    'host'     => 'localhost',
-//    'user'     => 'dbuser',
-//    'password' => 'dbpass',
-//    'database' => 'dbname',
-//];
+$mysql_host             = getenv('MYSQL_HOST');
+$mysql_database         = getenv('MYSQL_DATABASE_NAME');
+$mysql_user             = getenv('MYSQL_USERNAME');
+$mysql_user_password    = getenv('MYSQL_USER_PASSWORD');
+
+$isMysqlEnabled = !(empty($mysql_host) || empty($mysql_database) || empty($mysql_user) || empty($mysql_user_password));
+
+if($isMysqlEnabled) {
+    $mysql_credentials = [
+        'host'     => $mysql_host,
+        'user'     => $mysql_user,
+        'password' => $mysql_user_password,
+        'database' => $mysql_database,
+    ];
+}
+
+unset($mysql_host);
+unset($mysql_database);
+unset($mysql_user);
+unset($mysql_user_password);
+
 
 try {
     // Create Telegram API object
@@ -49,8 +63,9 @@ try {
     $telegram->enableAdmins($admin_users);
 
     // Enable MySQL
-    //$telegram->enableMySql($mysql_credentials);
-
+    if ($isMysqlEnabled) {
+        $telegram->enableMySql($mysql_credentials);
+    }
     // Logging (Error, Debug and Raw Updates)
     //Longman\TelegramBot\TelegramLog::initErrorLog(__DIR__ . "/{$bot_username}_error.log");
     //Longman\TelegramBot\TelegramLog::initDebugLog(__DIR__ . "/{$bot_username}_debug.log");
