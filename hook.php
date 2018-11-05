@@ -75,8 +75,16 @@ try {
     //Longman\TelegramBot\TelegramLog::initialize($your_external_monolog_instance);
 
     // Set custom Upload and Download paths
-    //$telegram->setDownloadPath(__DIR__ . '/Download');
-    //$telegram->setUploadPath(__DIR__ . '/Upload');
+    $downloadDirectory = getenv('TELEGRAM_DOWNLOAD_DIRECTORY');
+    $uploadDirectory   = getenv('TELEGRAM_UPLOAD_DIRECTORY');
+
+    if (!(empty($downloadDirectory) || empty($uploadDirectory))) {
+        $telegram->setDownloadPath(__DIR__ . getenv('TELEGRAM_DOWNLOAD_DIRECTORY'));
+        $telegram->setUploadPath(__DIR__ . getenv('TELEGRAM_UPLOAD_DIRECTORY'));
+    }
+
+    unset($downloadDirectory);
+    unset($uploadDirectory);
 
     // Here you can set some command specific parameters
     // e.g. Google geocode/timezone api key for /date command
