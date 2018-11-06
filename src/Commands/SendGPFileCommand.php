@@ -117,51 +117,31 @@ class SendGpFileCommand extends UserCommand
 
         $this->conversation = new Conversation($user_id, $chat_id, $this->getName());
 
-        $notes = &$this->conversation->notes;
-        !is_array($notes) && $notes = [];
-
-        //cache data from the tracking session if any
-        $state = 0;
-        if (isset($notes['state'])) {
-            $state = $notes['state'];
+        $document = $message->getDocument();
+        if (null === $document) {
+            $this->conversation->update();
+            return $this->sendSimpleMessage('Please send your GanttProject\'s XML file.');
         }
 
-        $result = Request::emptyResponse();
+        $document_id = $document->getFileId();
 
-        switch ($state) {
-            case 0:
-                $document = $message->getDocument();
-                if (null === $document) {
-                    $notes['state'] = 0;
-                    $this->conversation->update();
-                    $result = $this->sendSimpleMessage('Please send your GanttProject\'s XML file.');
-                    break;
-                }
-
-                $document_id        = $document->getFileId();
-
-                $response = Request::getFile(['file_id' => $document_id]);
-                if (!Request::downloadFile($response->getResult())) {
-                    $result = $this->sendSimpleMessage('There was an error obtaining your file. Please send it again.');
-                    break;
-                }
-
-                $xmlManCon = new XmlManagerController();
-
-                $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
-                try {
-                    $tasks = $xmlManCon->extractStoreTasks($file_path, $user);
-
-                    $this->data['parse_mode']     = 'HTML';
-
-                    $result = $this->sendSimpleMessage($this->prepareFormattedMessage($tasks));
-                    $this->conversation->stop();
-                } catch (NoMilestonesException $e) {
-                    $result = $this->sendSimpleMessage('There were no milestones in the file you provided.');
-                    break;
-                }
+        $response = Request::getFile(['file_id' => $document_id]);
+        if (!Request::downloadFile($response->getResult())) {
+            return $this->sendSimpleMessage('There was an error obtaining your file. Please send it again.');
         }
 
-        return $result;
+        $xmlManCon = new XmlManagerController();
+
+        $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
+        try {
+            $tasks = $xmlManCon->extractStoreTasks($file_path, $user);
+
+            $this->data['parse_mode']     = 'HTML';
+
+            $this->conversation->stop();
+            return $this->sendSimpleMessage($this->prepareFormattedMessage($tasks));
+        } catch (NoMilestonesException $e) {
+            return $this->sendSimpleMessage('There were no milestones in the file you provided.');
+        }
     }
 }
