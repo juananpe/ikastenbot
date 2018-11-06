@@ -78,7 +78,7 @@ class Task
     /**
      * Set start time of the task
      *
-     * @param \DateTime  $start  Start time of the task
+     * @param \DateTime $start Start time of the task
      *
      * @return self
      */
@@ -102,9 +102,9 @@ class Task
     /**
      * Set end time of the task
      *
-     * @param  \DateTime  $finish  End time of the task
+     * @param \DateTime $finish End time of the task
      *
-     * @return  self
+     * @return self
      */
     public function setFinish(\DateTime $finish)
     {
@@ -126,8 +126,8 @@ class Task
     /**
      * Set check if the task is a milestone
      *
-     * @param string $milestone   Check if the task is a milestone.
-     *                            The value is casted to bool.
+     * @param string $milestone Check if the task is a milestone.
+     *                          The value is casted to bool.
      *
      * @return self
      */
