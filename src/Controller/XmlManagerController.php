@@ -29,8 +29,8 @@ class XmlManagerController
     {
         $encoder = array(new XmlEncoder());
         $normalizers = array(
-            new ObjectNormalizer(null, null, null, new ReflectionExtractor()),
-            new DateTimeNormalizer()
+            new DateTimeNormalizer(),
+            new ObjectNormalizer(null, null, null, new ReflectionExtractor())
         );
 
         $serializer = new Serializer($normalizers, $encoder);
