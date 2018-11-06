@@ -57,7 +57,7 @@ class SendGpFileCommand extends UserCommand
      * @param array $tasks Array of Task objects
      * @return string      Formatted message in HTML
      */
-    public function prepareFormattedMessage(array $tasks): string
+    private function prepareFormattedMessage(array $tasks): string
     {
         $message = 'You will be reminded about the following milestones:' . PHP_EOL;
         foreach ($tasks as $task) {
