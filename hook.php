@@ -27,7 +27,7 @@ $admin_users = [
 
 // Define all paths for your custom commands in this array (leave as empty array if not used)
 $commands_paths = [
-//    __DIR__ . '/Commands/',
+    __DIR__ . '/src/Commands/',
 ];
 
 $mysql_host             = getenv('MYSQL_HOST');
