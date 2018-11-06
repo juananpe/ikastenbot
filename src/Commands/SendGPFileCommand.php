@@ -127,17 +127,20 @@ class SendGpFileCommand extends UserCommand
 
     public function execute()
     {
+        // Get the sent document
         $document = $this->getMessage()->getDocument();
         if (null === $document) {
             $this->conversation->update();
             return $this->sendSimpleMessage('Please send your GanttProject\'s XML file.');
         }
 
+        // Download the file
         $response = Request::getFile(['file_id' => $document->getFileId()]);
         if (!Request::downloadFile($response->getResult())) {
             return $this->sendSimpleMessage('There was an error obtaining your file. Please send it again.');
         }
 
+        // Extract the milestones and store them in the database
         $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
         $xmlManCon = new XmlManagerController();
         try {
