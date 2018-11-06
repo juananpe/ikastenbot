@@ -123,9 +123,7 @@ class SendGpFileCommand extends UserCommand
             return $this->sendSimpleMessage('Please send your GanttProject\'s XML file.');
         }
 
-        $document_id = $document->getFileId();
-
-        $response = Request::getFile(['file_id' => $document_id]);
+        $response = Request::getFile(['file_id' => $document->getFileId()]);
         if (!Request::downloadFile($response->getResult())) {
             return $this->sendSimpleMessage('There was an error obtaining your file. Please send it again.');
         }
