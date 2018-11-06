@@ -70,7 +70,7 @@ class Task
      *
      * @return \DateTime
      */
-    public function getStart()
+    public function getStart(): \DateTime
     {
         return $this->start;
     }
@@ -94,7 +94,7 @@ class Task
      *
      * @return \DateTime
      */
-    public function getFinish()
+    public function getFinish(): \DateTime
     {
         return $this->finish;
     }
@@ -118,7 +118,7 @@ class Task
      *
      * @return bool
      */
-    public function getMilestone()
+    public function getMilestone(): bool
     {
         return $this->milestone;
     }

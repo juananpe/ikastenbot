@@ -28,7 +28,7 @@ class XmlManagerController
      * @return  array   $tasks     Array containing Task objects which are
      *                             milestones
      */
-    public function deserializeFromFile(string $file_path)
+    public function deserializeFromFile(string $file_path): array
     {
         $encoder = array(new XmlEncoder());
         $normalizers = array(
