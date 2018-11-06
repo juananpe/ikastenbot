@@ -74,13 +74,7 @@ class SendGpFileCommand extends UserCommand
         parent::__construct($telegram, $update);
 
         $chat       = $this->getMessage()->getChat();
-        $this->user = $this->getMessage()->getFrom();
-        $text       = $this->getMessage()->getText(true);
-        if (!empty($text)) {
-            $text = trim($text);
-        }
-        $chat_id = $chat->getId();
-        $user_id = $this->user->getId();
+        $chat_id    = $chat->getId();
 
         $this->data = [
             'chat_id' => $chat_id,
@@ -91,6 +85,9 @@ class SendGpFileCommand extends UserCommand
             //Force reply is applied by default so it can work with privacy on
             $this->data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
         }
+
+        $this->user = $this->getMessage()->getFrom();
+        $user_id    = $this->user->getId();
 
         $this->conversation = new Conversation($user_id, $chat_id, $this->getName());
     }
