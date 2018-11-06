@@ -10,6 +10,7 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\Keyboard;
+use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Entities\Update;
 use MikelAlejoBR\TelegramBotGanttProject\Controller\XmlManagerController;
 use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
@@ -52,6 +53,13 @@ class SendGpFileCommand extends UserCommand
     protected $private_only = true;
 
     /**
+     * Data to be sent to the Telegram API
+     *
+     * @var array
+     */
+    protected $data;
+
+    /**
      * Prepare a formatted message with the tasks to be reminded of
      *
      * @param array $tasks Array of Task objects
@@ -70,6 +78,20 @@ class SendGpFileCommand extends UserCommand
         return $message;
     }
 
+    /**
+     * Send a text message to the user
+     *
+     * @param   string            $text The text to be sent
+     * @return  ServerResponse          The server response object
+     */
+    private function sendSimpleMessage(string $text): ServerResponse
+    {
+        $this->data['text']           = $text;
+        $this->data['reply_markup']   = Keyboard::remove(['selective' => true]);
+
+        return Request::sendMessage($this->data);
+    }
+
     public function execute()
     {
         $message = $this->getMessage();
@@ -83,14 +105,14 @@ class SendGpFileCommand extends UserCommand
         $chat_id = $chat->getId();
         $user_id = $user->getId();
 
-        $data = [
+        $this->data = [
             'chat_id' => $chat_id,
         ];
 
         if ($chat->isGroupChat() || $chat->isSuperGroup()) {
             //reply to message id is applied by default
             //Force reply is applied by default so it can work with privacy on
-            $data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
+            $this->data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
         }
 
         $this->conversation = new Conversation($user_id, $chat_id, $this->getName());
@@ -112,11 +134,7 @@ class SendGpFileCommand extends UserCommand
                 if (null === $document) {
                     $notes['state'] = 0;
                     $this->conversation->update();
-
-                    $data['text']           = 'Please send your GanttProject\'s XML file.';
-                    $data['reply_markup']   = Keyboard::remove(['selective' => true]);
-
-                    $result = Request::sendMessage($data);
+                    $result = $this->sendSimpleMessage('Please send your GanttProject\'s XML file.');
                     break;
                 }
 
@@ -124,10 +142,7 @@ class SendGpFileCommand extends UserCommand
 
                 $response = Request::getFile(['file_id' => $document_id]);
                 if (!Request::downloadFile($response->getResult())) {
-                    $data['text']           = 'There was an error obtaining your file. Please send it again.';
-                    $data['reply_markup']   = Keyboard::remove(['selective' => true]);
-
-                    $result = Request::sendMessage($data);
+                    $result = $this->sendSimpleMessage('There was an error obtaining your file. Please send it again.');
                     break;
                 }
 
@@ -136,17 +151,13 @@ class SendGpFileCommand extends UserCommand
                 $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
                 try {
                     $tasks = $xmlManCon->extractStoreTasks($file_path, $user);
-                    $data['text']           = $this->prepareFormattedMessage($tasks);
-                    $data['parse_mode']     = 'HTML';
-                    $data['reply_markup']   = Keyboard::remove(['selective' => true]);
 
-                    $result = Request::sendMessage($data);
+                    $this->data['parse_mode']     = 'HTML';
+
+                    $result = $this->sendSimpleMessage($this->prepareFormattedMessage($tasks));
                     $this->conversation->stop();
                 } catch (NoMilestonesException $e) {
-                    $data['text']           = 'There were no milestones in the file you provided.';
-                    $data['reply_markup']   = Keyboard::remove(['selective' => true]);
-
-                    $result = Request::sendMessage($data);
+                    $result = $this->sendSimpleMessage('There were no milestones in the file you provided.');
                     break;
                 }
         }
