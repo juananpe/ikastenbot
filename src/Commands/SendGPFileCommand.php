@@ -60,6 +60,42 @@ class SendGpFileCommand extends UserCommand
     protected $data;
 
     /**
+     * The user who sent the message
+     *
+     * @var User
+     */
+    protected $user;
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct(Telegram $telegram, Update $update = null)
+    {
+        parent::__construct($telegram, $update);
+
+        $chat       = $this->getMessage()->getChat();
+        $this->user = $this->getMessage()->getFrom();
+        $text       = $this->getMessage()->getText(true);
+        if (!empty($text)) {
+            $text = trim($text);
+        }
+        $chat_id = $chat->getId();
+        $user_id = $this->user->getId();
+
+        $this->data = [
+            'chat_id' => $chat_id,
+        ];
+
+        if ($chat->isGroupChat() || $chat->isSuperGroup()) {
+            //reply to message id is applied by default
+            //Force reply is applied by default so it can work with privacy on
+            $this->data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
+        }
+
+        $this->conversation = new Conversation($user_id, $chat_id, $this->getName());
+    }
+
+    /**
      * Prepare a formatted message with the tasks to be reminded of
      *
      * @param array $tasks Array of Task objects
@@ -94,30 +130,7 @@ class SendGpFileCommand extends UserCommand
 
     public function execute()
     {
-        $message = $this->getMessage();
-
-        $chat    = $message->getChat();
-        $user    = $message->getFrom();
-        $text    = $message->getText(true);
-        if (!empty($text)) {
-            $text = trim($text);
-        }
-        $chat_id = $chat->getId();
-        $user_id = $user->getId();
-
-        $this->data = [
-            'chat_id' => $chat_id,
-        ];
-
-        if ($chat->isGroupChat() || $chat->isSuperGroup()) {
-            //reply to message id is applied by default
-            //Force reply is applied by default so it can work with privacy on
-            $this->data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
-        }
-
-        $this->conversation = new Conversation($user_id, $chat_id, $this->getName());
-
-        $document = $message->getDocument();
+        $document = $this->getMessage()->getDocument();
         if (null === $document) {
             $this->conversation->update();
             return $this->sendSimpleMessage('Please send your GanttProject\'s XML file.');
@@ -132,7 +145,7 @@ class SendGpFileCommand extends UserCommand
 
         $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
         try {
-            $tasks = $xmlManCon->extractStoreTasks($file_path, $user);
+            $tasks = $xmlManCon->extractStoreTasks($file_path, $this->user);
 
             $this->data['parse_mode']     = 'HTML';
 
