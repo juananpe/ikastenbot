@@ -138,18 +138,15 @@ class SendGpFileCommand extends UserCommand
             return $this->sendSimpleMessage('There was an error obtaining your file. Please send it again.');
         }
 
-        $xmlManCon = new XmlManagerController();
-
         $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
+        $xmlManCon = new XmlManagerController();
         try {
             $tasks = $xmlManCon->extractStoreTasks($file_path, $this->user);
-
-            $this->data['parse_mode']     = 'HTML';
-
-            $this->conversation->stop();
-            return $this->sendSimpleMessage($this->prepareFormattedMessage($tasks));
         } catch (NoMilestonesException $e) {
             return $this->sendSimpleMessage('There were no milestones in the file you provided.');
         }
+        $this->data['parse_mode'] = 'HTML';
+        $this->conversation->stop();
+        return $this->sendSimpleMessage($this->prepareFormattedMessage($tasks));
     }
 }
