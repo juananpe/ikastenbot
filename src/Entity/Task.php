@@ -10,6 +10,13 @@ namespace MikelAlejoBR\TelegramBotGanttProject\Entity;
 class Task
 {
     /**
+     * Name of the task
+     *
+     * @var string
+     */
+    protected $name;
+
+    /**
      * Start time of the task
      *
      * @var \DateTime
@@ -35,6 +42,30 @@ class Task
     }
 
     /**
+     * Get name of the task
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set name of the task
+     *
+     * @param string $name Name of the task
+     *
+     * @return self
+     */
+    public function setName(string $name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
      * Get start time of the task
      *
      * @return \DateTime
@@ -51,7 +82,7 @@ class Task
      *
      * @return self
      */
-    public function setStart(\DateTimeInterface $start)
+    public function setStart(\DateTime $start)
     {
         $this->start = $start;
 
@@ -75,7 +106,7 @@ class Task
      *
      * @return  self
      */
-    public function setFinish(\DateTimeInterface $finish)
+    public function setFinish(\DateTime $finish)
     {
         $this->finish = $finish;
 
