@@ -51,7 +51,7 @@ class Task
      *
      * @return self
      */
-    public function setStart(\DateTimeInterface $start)
+    public function setStart(\DateTime $start)
     {
         $this->start = $start;
 
@@ -75,7 +75,7 @@ class Task
      *
      * @return  self
      */
-    public function setFinish(\DateTimeInterface $finish)
+    public function setFinish(\DateTime $finish)
     {
         $this->finish = $finish;
 
