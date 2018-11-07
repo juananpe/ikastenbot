@@ -93,18 +93,18 @@ class SendGpFileCommand extends UserCommand
     }
 
     /**
-     * Prepare a formatted message with the tasks to be reminded of
+     * Prepare a formatted message with the milestones to be reminded of
      *
-     * @param array $tasks Array of Task objects
-     * @return string      Formatted message in HTML
+     * @param   array   $milestones Array of Milestone objects
+     * @return  string              Formatted message in HTML
      */
-    private function prepareFormattedMessage(array $tasks): string
+    private function prepareFormattedMessage(array $milestones): string
     {
         $message = 'You will be reminded about the following milestones:' . PHP_EOL;
-        foreach ($tasks as $task) {
-            $message .= '<b>Milestone name:</b> ' . $task->getName() . PHP_EOL;
-            $message .= '<b>Start date:</b> ' . $task->getStart()->format('Y-m-d H:i:s') . PHP_EOL;
-            $message .= '<b>Finish date:</b> ' . $task->getFinish()->format('Y-m-d H:i:s') . PHP_EOL;
+        foreach ($milestones as $milestone) {
+            $message .= '<b>Milestone name:</b> ' . $milestone->getName() . PHP_EOL;
+            $message .= '<b>Start date:</b> ' . $milestone->getStart()->format('Y-m-d H:i:s') . PHP_EOL;
+            $message .= '<b>Finish date:</b> ' . $milestone->getFinish()->format('Y-m-d H:i:s') . PHP_EOL;
             $message .= PHP_EOL;
         }
 
@@ -144,12 +144,12 @@ class SendGpFileCommand extends UserCommand
         $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
         $xmlManCon = new XmlManagerController();
         try {
-            $tasks = $xmlManCon->extractStoreTasks($file_path, $this->user);
+            $milestones = $xmlManCon->extractStoreMilestones($file_path, $this->user);
         } catch (NoMilestonesException $e) {
             return $this->sendSimpleMessage('There were no milestones in the file you provided.');
         }
         $this->data['parse_mode'] = 'HTML';
         $this->conversation->stop();
-        return $this->sendSimpleMessage($this->prepareFormattedMessage($tasks));
+        return $this->sendSimpleMessage($this->prepareFormattedMessage($milestones));
     }
 }

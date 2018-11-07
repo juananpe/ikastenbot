@@ -5,26 +5,26 @@ declare(strict_types=1);
 namespace MikelAlejoBR\TelegramBotGanttProject\Entity;
 
 /**
- * Class that represents the tasks of a GanttProject project
+ * Class that represents the milestones of a GanttProject project
  */
-class Task
+class Milestone
 {
     /**
-     * Name of the task
+     * Name of the milestone
      *
      * @var string
      */
     protected $name;
 
     /**
-     * Start time of the task
+     * Start time of the milestone
      *
      * @var \DateTime
      */
     protected $start;
 
     /**
-     * End time of the task
+     * End time of the milestone
      *
      * @var \DateTime
      */
@@ -42,7 +42,7 @@ class Task
     }
 
     /**
-     * Get name of the task
+     * Get name of the milestone
      *
      * @return string
      */
@@ -52,9 +52,9 @@ class Task
     }
 
     /**
-     * Set name of the task
+     * Set name of the milestone
      *
-     * @param string $name Name of the task
+     * @param string $name Name of the milestone
      *
      * @return self
      */
@@ -66,7 +66,7 @@ class Task
     }
 
     /**
-     * Get start time of the task
+     * Get start time of the milestone
      *
      * @return \DateTime
      */
@@ -76,9 +76,9 @@ class Task
     }
 
     /**
-     * Set start time of the task
+     * Set start time of the milestone
      *
-     * @param \DateTime $start Start time of the task
+     * @param \DateTime $start Start time of the milestone
      *
      * @return self
      */
@@ -90,7 +90,7 @@ class Task
     }
 
     /**
-     * Get end time of the task
+     * Get end time of the milestone
      *
      * @return \DateTime
      */
@@ -100,9 +100,9 @@ class Task
     }
 
     /**
-     * Set end time of the task
+     * Set end time of the milestone
      *
-     * @param \DateTime $finish End time of the task
+     * @param \DateTime $finish End time of the milestone
      *
      * @return self
      */
@@ -114,7 +114,7 @@ class Task
     }
 
     /**
-     * Get check if the task is a milestone
+     * Get check if the milestone is a milestone
      *
      * @return bool
      */
@@ -124,9 +124,9 @@ class Task
     }
 
     /**
-     * Set check if the task is a milestone
+     * Set check if the milestone is a milestone
      *
-     * @param string $milestone Check if the task is a milestone.
+     * @param string $milestone Check if the milestone is a milestone.
      *                          The value is casted to bool.
      *
      * @return self
