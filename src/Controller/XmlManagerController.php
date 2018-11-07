@@ -6,7 +6,7 @@ namespace MikelAlejoBR\TelegramBotGanttProject\Controller;
 
 use Longman\TelegramBot\DB;
 use Longman\TelegramBot\Entities\User;
-use MikelAlejoBR\TelegramBotGanttProject\Entity\Task;
+use MikelAlejoBR\TelegramBotGanttProject\Entity\Milestone;
 use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Serializer;
@@ -24,9 +24,8 @@ class XmlManagerController
     /**
      * Deserialize GanntProjects' XML file
      *
-     * @param   string  $file_path The path of the XML file
-     * @return  array   $tasks     Array containing Task objects which are
-     *                             milestones
+     * @param   string  $file_path  The path of the XML file
+     * @return  array   $milestones Array containing Milestone objects
      */
     public function deserializeFromFile(string $file_path): array
     {
@@ -40,14 +39,14 @@ class XmlManagerController
 
         $data = simplexml_load_file($file_path);
 
-        $tasks = [];
+        $milestones = [];
         foreach ($data->Tasks->Task as $task) {
             if ((int)$task->Milestone) {
-                $tasks[] = $serializer->deserialize($task->asXML(), Task::class, 'xml');
+                $milestones[] = $serializer->deserialize($task->asXML(), Milestone::class, 'xml');
             }
         }
 
-        return $tasks;
+        return $milestones;
     }
 
     /**
@@ -56,27 +55,27 @@ class XmlManagerController
      * @param   string  $file_path The path to the XML file
      * @param   User    $user      The User to which the milestones will be
      *                             assigned to
-     * @return  array              Array of Tasks
+     * @return  array              Array of Milestones
      * @throws  NoMilestonesException When no milestones have been found in the
      *                               XML file.
      */
-    public function extractStoreTasks(string $file_path, User $user): array
+    public function extractStoreMilestones(string $file_path, User $user): array
     {
-        $tasks = $this->deserializeFromFile($file_path);
-        if (empty($tasks)) {
+        $milestones = $this->deserializeFromFile($file_path);
+        if (empty($milestones)) {
             throw new NoMilestonesException(
                 'The provided file doesn\'t contain any milestones'
             );
         }
 
-        foreach ($tasks as $task) {
+        foreach ($milestones as $milestone) {
             $sql = '';
             $parameters = [
                 ':user_id'                  => $user->getId(),
-                ':milestone_start_date'     => $task->getStart()->format('Y-m-d H:i:s'),
-                ':milestone_finish_date'    => $task->getFinish()->format('Y-m-d H:i:s')
+                ':milestone_start_date'     => $milestone->getStart()->format('Y-m-d H:i:s'),
+                ':milestone_finish_date'    => $milestone->getFinish()->format('Y-m-d H:i:s')
             ];
-            $hasName = !empty($task->getName());
+            $hasName = !empty($milestone->getName());
 
             if ($hasName) {
                 $sql = '
@@ -92,7 +91,7 @@ class XmlManagerController
                         :milestone_finish_date
                     );
                 ';
-                $parameters[':milestone_name'] = $task->getName();
+                $parameters[':milestone_name'] = $milestone->getName();
             } else {
                 $sql = '
                     INSERT INTO milestone(
@@ -111,6 +110,6 @@ class XmlManagerController
             $statement->execute($parameters);
         }
 
-        return $tasks;
+        return $milestones;
     }
 }
