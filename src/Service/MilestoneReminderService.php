@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManager;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use MikelAlejoBR\TelegramBotGanttProject\Entity\Milestone;
+use MikelAlejoBR\TelegramBotGanttProject\Service\MessageSenderService;
 use Symfony\Component\Dotenv\Dotenv;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -34,6 +35,13 @@ class MilestoneReminderService
      * @var Environment
      */
     protected $twig;
+
+    /**
+     * Message sender service
+     *
+     * @var MessageSenderService
+     */
+    protected $mss;
 
     /**
      * Constructor. Reads the database parameters from the environment variables
@@ -62,6 +70,8 @@ class MilestoneReminderService
         $this->twig = new Environment($loader, array(
             'cache' => __DIR__ . '/../../var/cache/',
         ));
+
+        $this->mss = new MessageSenderService();
     }
 
     /**
@@ -112,12 +122,7 @@ class MilestoneReminderService
                 'milestones' => $results
             ]);
 
-            $data = [
-                'chat_id'       => $milestone->getUser_id(),
-                'parse_mode'    => 'HTML',
-                'text'          => $text
-            ];
-            Request::sendMessage($data);
+            $this->mss->sendSimpleMessage($milestone->getUser_id(), $text, 'HTML');
         }
     }
 
@@ -138,12 +143,7 @@ class MilestoneReminderService
                 'days_left'     => $row[1]
             ]);
 
-            $data = [
-                'chat_id'       => $row[0]->getUser_id(),
-                'parse_mode'    => 'HTML',
-                'text'          => $text
-            ];
-            Request::sendMessage($data);
+            $this->mss->sendSimpleMessage($row[0]->getUser_id(), $text, 'HTML');
         }
     }
 
