@@ -99,7 +99,6 @@ class SendGpFileCommand extends UserCommand
         $this->twig = new Environment($loader, array(
             'cache' => __DIR__ . '/../../var/cache/',
         ));
-        $this->conversation = new Conversation($user_id, $this->chat_id, $this->getName());
     }
 
     /**
