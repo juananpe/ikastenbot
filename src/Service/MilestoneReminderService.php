@@ -10,6 +10,8 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use MikelAlejoBR\TelegramBotGanttProject\Entity\Milestone;
 use Symfony\Component\Dotenv\Dotenv;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class MilestoneReminderService
 {
@@ -25,6 +27,13 @@ class MilestoneReminderService
      * @var EntityManager
      */
     protected $em;
+
+    /**
+     * Twig templating engine
+     *
+     * @var Environment
+     */
+    protected $twig;
 
     /**
      * Constructor. Reads the database parameters from the environment variables
@@ -48,6 +57,11 @@ class MilestoneReminderService
         );
 
         $this->em = EntityManager::create($connectionParams, $config);
+
+        $loader = new FilesystemLoader(__DIR__ . '/../../templates/');
+        $this->twig = new Environment($loader, array(
+            'cache' => __DIR__ . '/../../var/cache/',
+        ));
     }
 
     /**
@@ -94,14 +108,9 @@ class MilestoneReminderService
     {
         $results = $this->findMilestonesReachToday();
         foreach ($results as $milestone) {
-            $text = 'This is a reminder to inform you that your milestone '
-                . '<b>' . $milestone->getName() . '</b> should be reached '
-                . '<b>today</b> according to your planning. The details of the '
-                . 'milestone are: ' . PHP_EOL . PHP_EOL
-                . '<b>Milestone name:</b> ' . $milestone->getName() . PHP_EOL
-                . '<b>Start date:</b> ' . $milestone->getStart()->format('Y-m-d H:i:s') . PHP_EOL
-                . '<b>Finish date:</b> ' . $milestone->getFinish()->format('Y-m-d H:i:s')
-            ;
+            $text = $this->twig->render('notifications/singleMilestoneNotification.txt.twig', [
+                'milestones' => $results
+            ]);
 
             $data = [
                 'chat_id'       => $milestone->getUser_id(),
@@ -124,17 +133,13 @@ class MilestoneReminderService
             . 'these milestones are:' . PHP_EOL . PHP_EOL;
 
         foreach ($results as $row) {
-            $milestone = $row[0];
-            $daysLeft = $row[1];
-
-            $text .= '<b>Milestone name:</b> ' . $milestone->getName() . PHP_EOL;
-            $text .= '<b>Start date:</b> ' . $milestone->getStart()->format('Y-m-d H:i:s') . PHP_EOL;
-            $text .= '<b>Finish date:</b> ' . $milestone->getFinish()->format('Y-m-d H:i:s') . PHP_EOL;
-            $text .= 'You have <b>' . $daysLeft . ' days</b> to reach this milestone!' . PHP_EOL;
-            $text .= PHP_EOL;
+            $text = $this->twig->render('notifications/multipleMilestoneNotification.txt.twig', [
+                'milestones'    => [$row[0]],
+                'days_left'     => $row[1]
+            ]);
 
             $data = [
-                'chat_id'       => $milestone->getUser_id(),
+                'chat_id'       => $row[0]->getUser_id(),
                 'parse_mode'    => 'HTML',
                 'text'          => $text
             ];

@@ -14,6 +14,8 @@ use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Entities\Update;
 use MikelAlejoBR\TelegramBotGanttProject\Controller\XmlManagerController;
 use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class SendGpFileCommand extends UserCommand
 {
@@ -67,6 +69,13 @@ class SendGpFileCommand extends UserCommand
     protected $user;
 
     /**
+     * Twig templating engine
+     *
+     * @var Environment
+     */
+    protected $twig;
+
+    /**
      * @inheritDoc
      */
     public function __construct(Telegram $telegram, Update $update = null)
@@ -90,6 +99,11 @@ class SendGpFileCommand extends UserCommand
         $user_id    = $this->user->getId();
 
         $this->conversation = new Conversation($user_id, $chat_id, $this->getName());
+
+        $loader = new FilesystemLoader(__DIR__ . '/../../templates/');
+        $this->twig = new Environment($loader, array(
+            'cache' => __DIR__ . '/../../var/cache/',
+        ));
     }
 
     /**
@@ -100,15 +114,9 @@ class SendGpFileCommand extends UserCommand
      */
     private function prepareFormattedMessage(array $milestones): string
     {
-        $message = 'You will be reminded about the following milestones:' . PHP_EOL;
-        foreach ($milestones as $milestone) {
-            $message .= '<b>Milestone name:</b> ' . $milestone->getName() . PHP_EOL;
-            $message .= '<b>Start date:</b> ' . $milestone->getStart()->format('Y-m-d H:i:s') . PHP_EOL;
-            $message .= '<b>Finish date:</b> ' . $milestone->getFinish()->format('Y-m-d H:i:s') . PHP_EOL;
-            $message .= PHP_EOL;
-        }
-
-        return $message;
+        return $this->twig->render('notifications/remindedOfNotification.txt.twig', [
+            'milestones' => $milestones
+        ]);
     }
 
     /**
