@@ -29,10 +29,18 @@ class XmlManagerController
      */
     public function deserializeFromFile(string $file_path): array
     {
+        $objectNormalizer = new ObjectNormalizer(null, null, null, new ReflectionExtractor());
+        
+        // Ignores attributes from the file, not from the entity
+        $objectNormalizer->setIgnoredAttributes([
+            'ID',
+            'Milestone'
+        ]);
+
         $encoder = array(new XmlEncoder());
         $normalizers = array(
             new DateTimeNormalizer(),
-            new ObjectNormalizer(null, null, null, new ReflectionExtractor())
+            $objectNormalizer
         );
 
         $serializer = new Serializer($normalizers, $encoder);
