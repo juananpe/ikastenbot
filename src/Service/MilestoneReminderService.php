@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace MikelAlejoBR\TelegramBotGanttProject\Service;
 
-use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use MikelAlejoBR\TelegramBotGanttProject\Entity\Milestone;
 use MikelAlejoBR\TelegramBotGanttProject\Service\MessageSenderService;
-use Symfony\Component\Dotenv\Dotenv;
-use Twig\Environment;
+use Twig\Environment as TemplatingEngine;
 use Twig\Loader\FilesystemLoader;
 
 class MilestoneReminderService
@@ -32,7 +30,7 @@ class MilestoneReminderService
     /**
      * Twig templating engine
      *
-     * @var Environment
+     * @var TemplatingEngine
      */
     protected $twig;
 
@@ -44,34 +42,17 @@ class MilestoneReminderService
     protected $mss;
 
     /**
-     * Constructor. Reads the database parameters from the environment variables
-     * and creates a database connection.
+     * Construct MilestoneReminderService object
      *
-     * @param boolean $isDevMode Initialize Doctrine in development mode
+     * @param EntityManager         $em     Doctrine entity manager
+     * @param MessageSenderService  $mss    Message sender service
+     * @param Twig                  $twig   Templating engine
      */
-    public function __construct(bool $isDevMode = false)
+    public function __construct(EntityManager $em, MessageSenderService $mss, TemplatingEngine $twig)
     {
-        $dotenv = new Dotenv();
-        $dotenv->load(__DIR__.'/../../.env');
-
-        $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/../Entity/"), $isDevMode);
-
-        // database configuration parameters
-        $connectionParams = array(
-            'driver'   => 'pdo_mysql',
-            'user'     => getenv('MYSQL_USERNAME'),
-            'password' => getenv('MYSQL_USER_PASSWORD'),
-            'dbname'   => getenv('MYSQL_DATABASE_NAME'),
-        );
-
-        $this->em = EntityManager::create($connectionParams, $config);
-
-        $loader = new FilesystemLoader(__DIR__ . '/../../templates/');
-        $this->twig = new Environment($loader, array(
-            'cache' => __DIR__ . '/../../var/cache/',
-        ));
-
-        $this->mss = new MessageSenderService();
+        $this->em = $em;
+        $this->mss = $mss;
+        $this->twig = $twig;
     }
 
     /**
