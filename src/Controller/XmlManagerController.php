@@ -11,7 +11,6 @@ use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
@@ -32,10 +31,7 @@ class XmlManagerController
         $objectNormalizer = new ObjectNormalizer(null, null, null, new ReflectionExtractor());
         
         // Ignores attributes from the file, not from the entity
-        $objectNormalizer->setIgnoredAttributes([
-            'ID',
-            'Milestone'
-        ]);
+        $objectNormalizer->setIgnoredAttributes(['ID']);
 
         $encoder = array(new XmlEncoder());
         $normalizers = array(

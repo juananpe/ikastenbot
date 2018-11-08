@@ -1,0 +1,10 @@
+{% for milestone in milestones %}
+<b>Milestone name:</b> {{ milestone.name }}
+<b>Start date:</b> {{ milestone.start|date("Y-m-d") }}
+<b>Finish date:</b> {{ milestone.finish|date("Y-m-d") }}
+{% if days_left %}
+You have <b>{{ days_left }} days</b> to reach this milestone!
+{% endif %}
+{# The line break below is also rendered to make the list —if any— clearer #}
+
+{% endfor %}

@@ -51,13 +51,6 @@ class Milestone
      */
     protected $finish;
 
-    /**
-     * Check if the task is a milestone
-     *
-     * @var bool
-     */
-    protected $milestone;
-
     public function __construct()
     {
     }
@@ -178,31 +171,6 @@ class Milestone
     public function setFinish(\DateTime $finish)
     {
         $this->finish = $finish;
-
-        return $this;
-    }
-
-    /**
-     * Get check if the milestone is a milestone
-     *
-     * @return bool
-     */
-    public function getMilestone(): bool
-    {
-        return $this->milestone;
-    }
-
-    /**
-     * Set check if the milestone is a milestone
-     *
-     * @param string $milestone Check if the milestone is a milestone.
-     *                          The value is casted to bool.
-     *
-     * @return self
-     */
-    public function setMilestone(string $milestone)
-    {
-        $this->milestone = (bool)$milestone;
 
         return $this;
     }
