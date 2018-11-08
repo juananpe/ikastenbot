@@ -32,10 +32,7 @@ class XmlManagerController
         $objectNormalizer = new ObjectNormalizer(null, null, null, new ReflectionExtractor());
         
         // Ignores attributes from the file, not from the entity
-        $objectNormalizer->setIgnoredAttributes([
-            'ID',
-            'Milestone'
-        ]);
+        $objectNormalizer->setIgnoredAttributes(['ID']);
 
         $encoder = array(new XmlEncoder());
         $normalizers = array(
