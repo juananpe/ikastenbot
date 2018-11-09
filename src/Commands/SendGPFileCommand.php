@@ -69,6 +69,13 @@ class SendGpFileCommand extends UserCommand
     protected $chat_id;
 
     /**
+     * Is selective reply enabled?
+     *
+     * @var bool
+     */
+    protected $selective_reply;
+
+    /**
      * The user who sent the message
      *
      * @var User
@@ -92,11 +99,9 @@ class SendGpFileCommand extends UserCommand
         $this->chat     = $this->getMessage()->getChat();
         $this->chat_id  = $this->chat->getId();
 
-        if ($this->chat->isGroupChat() || $this->chat->isSuperGroup()) {
-            //reply to message id is applied by default
-            //Force reply is applied by default so it can work with privacy on
-            $this->data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
-        }
+        //reply to message id is applied by default
+        //Force reply is applied by default so it can work with privacy on
+        $this->selective_reply = $this->chat->isGroupChat() || $this->chat->isSuperGroup();
 
         $this->user = $this->getMessage()->getFrom();
         $user_id    = $this->user->getId();
@@ -130,13 +135,13 @@ class SendGpFileCommand extends UserCommand
         $document = $this->getMessage()->getDocument();
         if (null === $document) {
             $this->conversation->update();
-            return $ms->sendSimpleMessage($this->chat_id, 'Please send your GanttProject\'s XML file.');
+            return $ms->sendSimpleMessage($this->chat_id, 'Please send your GanttProject\'s XML file.', null, $this->selective_reply);
         }
 
         // Download the file
         $response = Request::getFile(['file_id' => $document->getFileId()]);
         if (!Request::downloadFile($response->getResult())) {
-            return $ms->sendSimpleMessage($this->chat_id, 'There was an error obtaining your file. Please send it again.');
+            return $ms->sendSimpleMessage($this->chat_id, 'There was an error obtaining your file. Please send it again.', null, $this->selective_reply);
         }
 
         // Extract the milestones and store them in the database
@@ -145,11 +150,11 @@ class SendGpFileCommand extends UserCommand
         try {
             $milestones = $xmlManCon->extractStoreMilestones($file_path, $this->chat);
         } catch (NoMilestonesException $e) {
-            return $ms->sendSimpleMessage($this->chat_id, $e->getMessage());
+            return $ms->sendSimpleMessage($this->chat_id, $e->getMessage(), null, $this->selective_reply);
         } catch (IncorrectFileException $e) {
-            return $ms->sendSimpleMessage($this->chat_id, $e->getMessage());
+            return $ms->sendSimpleMessage($this->chat_id, $e->getMessage(), null, $this->selective_reply);
         }
         $this->conversation->stop();
-        return $ms->sendSimpleMessage($this->chat_id, $this->prepareFormattedMessage($milestones), 'HTML');
+        return $ms->sendSimpleMessage($this->chat_id, $this->prepareFormattedMessage($milestones), 'HTML', $this->selective_reply);
     }
 }

@@ -23,14 +23,14 @@ class MessageSenderService
      * @param   string    $parseMode                Parse mode for advanced formatting.
      *                                              Telegram's API supports 'HTML' or
      *                                              'Markdown' options
-     * @param   boolean   $removeSelectiveReply     Remove selective reply keyboard
+     * @param   boolean   $selectiveReply           Enable selective reply
      * @return  ServerResponse                      A ServerResponse object
      */
-    public function sendSimpleMessage(int $chat_id, string $text, string $parseMode = null, bool $removeSelectiveReply = true): ServerResponse
+    public function sendSimpleMessage(int $chat_id, string $text, string $parseMode = null, bool $selectiveReply = null): ServerResponse
     {
         $data['chat_id']        = $chat_id;
         $data['text']           = $text;
-        $data['reply_markup']   = Keyboard::remove(['selective' => $removeSelectiveReply]);
+
         if (
             !\is_null($parseMode) &&
             (
@@ -39,6 +39,14 @@ class MessageSenderService
             )
         ) {
             $data['parse_mode'] = $parseMode;
+        }
+
+        if (!\is_null($selectiveReply)) {
+            if($selectiveReply) {
+                $data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
+            } else {
+                $data['reply_markup'] = Keyboard::remove(['selective' => true]);
+            }
         }
 
         return Request::sendMessage($data);
