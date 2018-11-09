@@ -18,7 +18,7 @@ class MessageSenderService
      * Sends a text message to the user. A Longman\TelegramBot\Telegram object
      * must have been previously created for this function to work.
      *
-     * @param   string       $chat_id                  The chat id to send the message
+     * @param   int       $chat_id                  The chat id to send the message
      * @param   string    $text                     The text to be sent
      * @param   string    $parseMode                Parse mode for advanced formatting.
      *                                              Telegram's API supports 'HTML' or
@@ -26,7 +26,7 @@ class MessageSenderService
      * @param   boolean   $removeSelectiveReply     Remove selective reply keyboard
      * @return  ServerResponse                      A ServerResponse object
      */
-    public function sendSimpleMessage(string $chat_id, string $text, string $parseMode = null, bool $removeSelectiveReply = true): ServerResponse
+    public function sendSimpleMessage(int $chat_id, string $text, string $parseMode = null, bool $removeSelectiveReply = true): ServerResponse
     {
         $data['chat_id']        = $chat_id;
         $data['text']           = $text;
