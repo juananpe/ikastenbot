@@ -7,6 +7,7 @@ namespace MikelAlejoBR\TelegramBotGanttProject\Controller;
 use Longman\TelegramBot\DB;
 use Longman\TelegramBot\Entities\User;
 use MikelAlejoBR\TelegramBotGanttProject\Entity\Milestone;
+use MikelAlejoBR\TelegramBotGanttProject\Exception\IncorrectFileExtensionException;
 use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Serializer;
@@ -21,6 +22,56 @@ class XmlManagerController
     }
 
     /**
+     * Traverse through XML finding tasks and returns either an empty
+     * array or an array of \SimpleXMLElement that are tasks
+     *
+     * @param   \SimpleXMLElement   $xml    XML task element
+     * @param   array               $tasks  Array containing tasks
+     * @return  array                       Array containing tasks
+     */
+    public function recursiveXmlLookup(\SimpleXMLElement $xml, array $tasks): array
+    {
+        if (!$xml->task) {
+            return [$xml];
+        }
+
+        $tasks[] = $xml;
+        return \array_merge($tasks, $this->recursiveXmlLookup($xml->task, $tasks));
+    }
+
+    /**
+     * Deserialize a Gan format exported XML file
+     *
+     * @param   string $file_path   The path of the Gan file
+     * @return  array               Array containing Milestone objects
+     */
+    public function dedeserializeGanFile(string $file_path): array
+    {
+        $data = simplexml_load_file($file_path);
+
+        $tasks = [];
+        foreach ($data->tasks->task as $task) {
+            $tasks = \array_merge($tasks, $this->recursiveXmlLookup($task, []));
+        }
+
+        $milestones = [];
+        foreach ($tasks as $key => $task) {
+            if ("true" === (string)$task->attributes()->meeting) {
+                $milestone = new Milestone();
+                $milestone->setName((string)$task->attributes()->name);
+
+                $date = new \DateTime((string)$task->attributes()->start);
+                $milestone->setStart($date);
+                $milestone->setFinish($date);
+
+               $milestones[] = $milestone;
+            }
+        }
+
+        return $milestones;
+    }
+
+    /**
      * Deserialize MSPDI format exported XML file
      *
      * @param   string  $file_path  The path of the XML file
@@ -29,7 +80,7 @@ class XmlManagerController
     public function deserializeMsdpiFile(string $file_path): array
     {
         $objectNormalizer = new ObjectNormalizer(null, null, null, new ReflectionExtractor());
-        
+
         // Ignores attributes from the file, not from the entity
         $objectNormalizer->setIgnoredAttributes(['ID']);
 
@@ -65,7 +116,20 @@ class XmlManagerController
      */
     public function extractStoreMilestones(string $file_path, User $user): array
     {
-        $milestones = $this->deserializeMsdpiFile($file_path);
+        $file_info = new \SplFileInfo($file_path);
+        $file_extension = $file_info->getExtension();
+
+        $milestones = [];
+        if ('gan' === $file_extension) {
+            $milestones = $this->dedeserializeGanFile($file_path);
+        } elseif ('xml' === $file_extension) {
+            $milestones = $this->deserializeMsdpiFile($file_path);
+        } else {
+            throw new IncorrectFileException(
+                'The provided file isn\'t a GanttProject file or an MSPDI XML file'
+            );
+        }
+
         if (empty($milestones)) {
             throw new NoMilestonesException(
                 'The provided file doesn\'t contain any milestones'
