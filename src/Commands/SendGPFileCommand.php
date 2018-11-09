@@ -93,7 +93,7 @@ class SendGpFileCommand extends UserCommand
         $this->user = $this->getMessage()->getFrom();
         $user_id    = $this->user->getId();
 
-        $this->conversation = new Conversation($user_id, $chat_id, $this->getName());
+        $this->conversation = new Conversation($user_id, $this->chat_id, $this->getName());
 
         $loader = new FilesystemLoader(__DIR__ . '/../../templates/');
         $this->twig = new Environment($loader, array(
