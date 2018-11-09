@@ -114,9 +114,6 @@ class MilestoneReminderService
     private function notifyUsersMilestonesClose()
     {
         $results = $this->findMilestonesToNotifyAbout();
-        $text = 'This is a reminder to inform you that the following '
-            . 'milestones are relatively close to be reached. The details of '
-            . 'these milestones are:' . PHP_EOL . PHP_EOL;
 
         foreach ($results as $row) {
             $text = $this->twig->render('notifications/multipleMilestoneNotification.txt.twig', [
