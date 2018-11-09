@@ -10,9 +10,9 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\Update;
-use MikelAlejoBR\TelegramBotGanttProject\Controller\XmlManagerController;
 use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
 use MikelAlejoBR\TelegramBotGanttProject\Service\MessageSenderService;
+use MikelAlejoBR\TelegramBotGanttProject\Utils\XmlUtils;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -133,7 +133,7 @@ class SendGpFileCommand extends UserCommand
 
         // Extract the milestones and store them in the database
         $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
-        $xmlManCon = new XmlManagerController();
+        $xmlManCon = new XmlUtils();
         try {
             $milestones = $xmlManCon->extractStoreMilestones($file_path, $this->user);
         } catch (NoMilestonesException $e) {

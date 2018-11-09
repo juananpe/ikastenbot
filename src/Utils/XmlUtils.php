@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MikelAlejoBR\TelegramBotGanttProject\Controller;
+namespace MikelAlejoBR\TelegramBotGanttProject\Utils;
 
 use Longman\TelegramBot\DB;
 use Longman\TelegramBot\Entities\User;
 use MikelAlejoBR\TelegramBotGanttProject\Entity\Milestone;
-use MikelAlejoBR\TelegramBotGanttProject\Exception\IncorrectFileExtensionException;
+use MikelAlejoBR\TelegramBotGanttProject\Exception\IncorrectFileException;
 use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Serializer;
@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
-class XmlManagerController
+class XmlUtils
 {
     public function __construct()
     {
