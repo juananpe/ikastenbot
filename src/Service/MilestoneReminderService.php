@@ -18,7 +18,7 @@ class MilestoneReminderService
      * The function to be used in order to calculate the difference between
      * dates
      */
-    const DATEDIFFFUNCTION = 'DATE_DIFF(m.start, CURRENT_DATE())';
+    const DATEDIFFFUNCTION = 'DATE_DIFF(m.date, CURRENT_DATE())';
 
     /**
      * Entity manager
@@ -103,7 +103,7 @@ class MilestoneReminderService
                 'milestones' => $results
             ]);
 
-            $this->mss->sendSimpleMessage($milestone->getUser_id(), $text, 'HTML');
+            $this->mss->sendSimpleMessage((int)$milestone->getChat_id(), $text, 'HTML');
         }
     }
 
@@ -124,7 +124,7 @@ class MilestoneReminderService
                 'days_left'     => $row[1]
             ]);
 
-            $this->mss->sendSimpleMessage($row[0]->getUser_id(), $text, 'HTML');
+            $this->mss->sendSimpleMessage((int)$row[0]->getChat_id(), $text, 'HTML');
         }
     }
 
