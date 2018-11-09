@@ -21,12 +21,12 @@ class XmlManagerController
     }
 
     /**
-     * Deserialize GanntProjects' XML file
+     * Deserialize MSPDI format exported XML file
      *
      * @param   string  $file_path  The path of the XML file
      * @return  array   $milestones Array containing Milestone objects
      */
-    public function deserializeFromFile(string $file_path): array
+    public function deserializeMsdpiFile(string $file_path): array
     {
         $objectNormalizer = new ObjectNormalizer(null, null, null, new ReflectionExtractor());
         
@@ -65,7 +65,7 @@ class XmlManagerController
      */
     public function extractStoreMilestones(string $file_path, User $user): array
     {
-        $milestones = $this->deserializeFromFile($file_path);
+        $milestones = $this->deserializeMsdpiFile($file_path);
         if (empty($milestones)) {
             throw new NoMilestonesException(
                 'The provided file doesn\'t contain any milestones'
