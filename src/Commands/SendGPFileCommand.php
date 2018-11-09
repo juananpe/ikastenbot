@@ -138,7 +138,7 @@ class SendGpFileCommand extends UserCommand
         try {
             $milestones = $xmlManCon->extractStoreMilestones($file_path, $this->user);
         } catch (NoMilestonesException $e) {
-            return $ms->sendSimpleMessage($this->chat_id, 'There were no milestones in the file you provided.');
+            return $ms->sendSimpleMessage($this->chat_id, $e->getMessage());
         } catch (IncorrectFileException $e) {
             return $ms->sendSimpleMessage($this->chat_id, $e->getMessage());
         }
