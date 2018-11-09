@@ -40,7 +40,7 @@ class XmlUtils
      * @param   string $file_path   The path of the Gan file
      * @return  array               Array containing Milestone objects
      */
-    public function dedeserializeGanFile(string $file_path): array
+    public function deserializeGanFile(string $file_path): array
     {
         $data = simplexml_load_file($file_path);
 
@@ -108,7 +108,7 @@ class XmlUtils
 
         $milestones = [];
         if ('gan' === $file_extension) {
-            $milestones = $this->dedeserializeGanFile($file_path);
+            $milestones = $this->deserializeGanFile($file_path);
         } elseif ('xml' === $file_extension) {
             $milestones = $this->deserializeMsdpiFile($file_path);
         } else {
