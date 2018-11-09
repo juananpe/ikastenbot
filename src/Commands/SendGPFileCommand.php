@@ -10,6 +10,7 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\Update;
+use MikelAlejoBR\TelegramBotGanttProject\Exception\IncorrectFileException;
 use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
 use MikelAlejoBR\TelegramBotGanttProject\Service\MessageSenderService;
 use MikelAlejoBR\TelegramBotGanttProject\Utils\XmlUtils;
@@ -138,6 +139,8 @@ class SendGpFileCommand extends UserCommand
             $milestones = $xmlManCon->extractStoreMilestones($file_path, $this->user);
         } catch (NoMilestonesException $e) {
             return $ms->sendSimpleMessage($this->chat_id, 'There were no milestones in the file you provided.');
+        } catch (IncorrectFileException $e) {
+            return $ms->sendSimpleMessage($this->chat_id, $e->getMessage());
         }
         $this->conversation->stop();
         return $ms->sendSimpleMessage($this->chat_id, $this->prepareFormattedMessage($milestones), 'HTML');
