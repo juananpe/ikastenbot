@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace MikelAlejoBR\TelegramBotGanttProject\Utils;
 
 use Longman\TelegramBot\DB;
-use Longman\TelegramBot\Entities\User;
+use Longman\TelegramBot\Entities\Chat;
 use MikelAlejoBR\TelegramBotGanttProject\Entity\Milestone;
 use MikelAlejoBR\TelegramBotGanttProject\Exception\IncorrectFileException;
 use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 class XmlUtils
 {
@@ -61,8 +56,7 @@ class XmlUtils
                 $milestone->setName((string)$task->attributes()->name);
 
                 $date = new \DateTime((string)$task->attributes()->start);
-                $milestone->setStart($date);
-                $milestone->setFinish($date);
+                $milestone->setDate($date);
 
                $milestones[] = $milestone;
             }
@@ -79,25 +73,18 @@ class XmlUtils
      */
     public function deserializeMsdpiFile(string $file_path): array
     {
-        $objectNormalizer = new ObjectNormalizer(null, null, null, new ReflectionExtractor());
-
-        // Ignores attributes from the file, not from the entity
-        $objectNormalizer->setIgnoredAttributes(['ID']);
-
-        $encoder = array(new XmlEncoder());
-        $normalizers = array(
-            new DateTimeNormalizer(),
-            $objectNormalizer
-        );
-
-        $serializer = new Serializer($normalizers, $encoder);
-
         $data = simplexml_load_file($file_path);
 
         $milestones = [];
         foreach ($data->Tasks->Task as $task) {
             if ((int)$task->Milestone) {
-                $milestones[] = $serializer->deserialize($task->asXML(), Milestone::class, 'xml');
+                $milestone = new Milestone();
+                $milestone->setName((string)$task->Name);
+
+                $date = new \DateTime((string)$task->Start);
+                $milestone->setDate($date);
+
+                $milestones[] = $milestone;
             }
         }
 
@@ -108,13 +95,13 @@ class XmlUtils
      * Extract milestones from the XML file and store them in the database
      *
      * @param   string  $file_path The path to the XML file
-     * @param   User    $user      The User to which the milestones will be
+     * @param   Chat    $chat      The chat to which the milestones will be
      *                             assigned to
      * @return  array              Array of Milestones
      * @throws  NoMilestonesException When no milestones have been found in the
      *                               XML file.
      */
-    public function extractStoreMilestones(string $file_path, User $user): array
+    public function extractStoreMilestones(string $file_path, Chat $chat): array
     {
         $file_info = new \SplFileInfo($file_path);
         $file_extension = $file_info->getExtension();
@@ -139,37 +126,32 @@ class XmlUtils
         foreach ($milestones as $milestone) {
             $sql = '';
             $parameters = [
-                ':user_id'                  => $user->getId(),
-                ':milestone_start_date'     => $milestone->getStart()->format('Y-m-d H:i:s'),
-                ':milestone_finish_date'    => $milestone->getFinish()->format('Y-m-d H:i:s')
+                ':chat_id'          => $chat->getId(),
+                ':milestone_date'   => $milestone->getDate()->format('Y-m-d'),
             ];
             $hasName = !empty($milestone->getName());
 
             if ($hasName) {
                 $sql = '
                     INSERT INTO milestone(
-                        user_id,
+                        chat_id,
                         milestone_name,
-                        milestone_start_date,
-                        milestone_finish_date
+                        milestone_date
                     ) VALUES (
-                        :user_id,
+                        :chat_id,
                         :milestone_name,
-                        :milestone_start_date,
-                        :milestone_finish_date
+                        :milestone_date
                     );
                 ';
                 $parameters[':milestone_name'] = $milestone->getName();
             } else {
                 $sql = '
                     INSERT INTO milestone(
-                        user_id,
-                        milestone_start_date,
-                        milestone_finish_date
+                        chat_id,
+                        milestone_date
                     ) VALUES (
-                        :user_id
-                        :milestone_start_date,
-                        :milestone_finish_date
+                        :chat_id
+                        :milestone_date
                     );
                 ';
             }

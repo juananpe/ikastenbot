@@ -4,9 +4,6 @@
     "type": "project",
     "require": {
         "longman/telegram-bot": "*",
-        "symfony/serializer": "^4.1",
-        "symfony/property-access": "^4.1",
-        "symfony/property-info": "^4.1",
         "doctrine/orm": "^2.6",
         "symfony/yaml": "^4.1",
         "twig/twig": "^2.0"

@@ -20,12 +20,12 @@ class Milestone
     protected $id;
 
     /**
-     * Id of the user associated to the milestone
+     * Id of the chat to which the milestone is associated
      *
      * @Column(type="bigint")
      * @var string
      */
-    protected $user_id;
+    protected $chat_id;
 
     /**
      * Name of the milestone
@@ -36,20 +36,12 @@ class Milestone
     protected $name;
 
     /**
-     * Start time of the milestone
+     * Date of the milestone
      *
-     * @Column(type="datetime", name="milestone_start_date")
+     * @Column(type="datetime", name="milestone_date")
      * @var \DateTime
      */
-    protected $start;
-
-    /**
-     * End time of the milestone
-     *
-     * @Column(type="datetime", name="milestone_finish_date")
-     * @var \DateTime
-     */
-    protected $finish;
+    protected $date;
 
     public function __construct()
     {
@@ -80,25 +72,25 @@ class Milestone
     }
 
     /**
-     * Get id of the user associated to the milestone
+     * Get id of the chat to which the milestone is associated
      *
      * @return string
-     */
-    public function getUser_id(): string
+     */ 
+    public function getChat_id(): string
     {
-        return $this->user_id;
+        return $this->chat_id;
     }
 
     /**
-     * Set id of the user associated to the milestone
+     * Set id of the chat to which the milestone is associated
      *
-     * @param string $user_id Id of the user associated to the milestone
+     * @param   string $chat_id  Id of the chat to which the milestone is associated
      *
-     * @return self
-     */
-    public function setUser_id(string $user_id)
+     * @return  self
+     */ 
+    public function setChat_id(string $chat_id)
     {
-        $this->user_id = $user_id;
+        $this->chat_id = $chat_id;
 
         return $this;
     }
@@ -128,49 +120,25 @@ class Milestone
     }
 
     /**
-     * Get start time of the milestone
+     * Get date of the milestone
      *
      * @return \DateTime
-     */
-    public function getStart(): \DateTime
+     */ 
+    public function getDate(): \DateTime
     {
-        return $this->start;
+        return $this->date;
     }
 
     /**
-     * Set start time of the milestone
+     * Set date of the milestone
      *
-     * @param \DateTime $start Start time of the milestone
+     * @param  \DateTime  $date  Date of the milestone
      *
-     * @return self
-     */
-    public function setStart(\DateTime $start)
+     * @return  self
+     */ 
+    public function setDate(\DateTime $date)
     {
-        $this->start = $start;
-
-        return $this;
-    }
-
-    /**
-     * Get end time of the milestone
-     *
-     * @return \DateTime
-     */
-    public function getFinish(): \DateTime
-    {
-        return $this->finish;
-    }
-
-    /**
-     * Set end time of the milestone
-     *
-     * @param \DateTime $finish End time of the milestone
-     *
-     * @return self
-     */
-    public function setFinish(\DateTime $finish)
-    {
-        $this->finish = $finish;
+        $this->date = $date;
 
         return $this;
     }

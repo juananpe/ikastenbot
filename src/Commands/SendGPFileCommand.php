@@ -55,6 +55,13 @@ class SendGpFileCommand extends UserCommand
     protected $private_only = true;
 
     /**
+     * The chat to which the response will be sent
+     *
+     * @var Chat
+     */
+    protected $chat;
+
+    /**
      * The chat id to which the response will be sent
      *
      * @var int
@@ -82,10 +89,10 @@ class SendGpFileCommand extends UserCommand
     {
         parent::__construct($telegram, $update);
 
-        $chat           = $this->getMessage()->getChat();
-        $this->chat_id  = $chat->getId();
+        $this->chat     = $this->getMessage()->getChat();
+        $this->chat_id  = $this->chat->getId();
 
-        if ($chat->isGroupChat() || $chat->isSuperGroup()) {
+        if ($this->chat->isGroupChat() || $this->chat->isSuperGroup()) {
             //reply to message id is applied by default
             //Force reply is applied by default so it can work with privacy on
             $this->data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
@@ -136,7 +143,7 @@ class SendGpFileCommand extends UserCommand
         $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
         $xmlManCon = new XmlUtils();
         try {
-            $milestones = $xmlManCon->extractStoreMilestones($file_path, $this->user);
+            $milestones = $xmlManCon->extractStoreMilestones($file_path, $this->chat);
         } catch (NoMilestonesException $e) {
             return $ms->sendSimpleMessage($this->chat_id, $e->getMessage());
         } catch (IncorrectFileException $e) {
