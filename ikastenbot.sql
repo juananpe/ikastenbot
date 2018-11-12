@@ -1,5 +1,5 @@
 /* Add language column to Longman's user table */
-ALTER TABLE `user` ADD `language` char(10) DEFAULT 'es'; 
+ALTER TABLE `user` ADD IF NOT EXISTS `language` char(10) DEFAULT 'es'; 
 
 DROP TABLE IF EXISTS `TFG`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -13,25 +13,6 @@ CREATE TABLE `TFG` (
   KEY `fk_TFG_1_idx` (`user`),
   CONSTRAINT `fk_TFG_1` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `TFGimage`
---
-
-DROP TABLE IF EXISTS `TFGimage`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `TFGimage` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `TFGversion_id` int(11) DEFAULT NULL,
-  `hash` varchar(100) DEFAULT NULL,
-  `path` varchar(200) DEFAULT NULL,
-  `api_result` longtext,
-  PRIMARY KEY (`id`),
-  KEY `fk_TFG_image_1_idx` (`TFGversion_id`),
-  CONSTRAINT `fk_TFG_image_1` FOREIGN KEY (`TFGversion_id`) REFERENCES `TFGversion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=298 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -59,6 +40,25 @@ CREATE TABLE `TFGversion` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `TFGimage`
+--
+
+DROP TABLE IF EXISTS `TFGimage`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `TFGimage` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `TFGversion_id` int(11) DEFAULT NULL,
+  `hash` varchar(100) DEFAULT NULL,
+  `path` varchar(200) DEFAULT NULL,
+  `api_result` longtext,
+  PRIMARY KEY (`id`),
+  KEY `fk_TFG_image_1_idx` (`TFGversion_id`),
+  CONSTRAINT `fk_TFG_image_1` FOREIGN KEY (`TFGversion_id`) REFERENCES `TFGversion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=298 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `auth_group`
 --
 
@@ -71,6 +71,42 @@ CREATE TABLE `auth_group` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `django_content_type`
+--
+
+DROP TABLE IF EXISTS `django_content_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `django_content_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `app_label` varchar(100) NOT NULL,
+  `model` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `django_content_type_app_label_45f3b1d93ec8c61c_uniq` (`app_label`,`model`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `auth_permission`
+--
+
+DROP TABLE IF EXISTS `auth_permission`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_permission` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `content_type_id` int(11) NOT NULL,
+  `codename` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `content_type_id` (`content_type_id`,`codename`),
+  KEY `auth_permission_417f1b1c` (`content_type_id`),
+  CONSTRAINT `auth__content_type_id_508cf46651277a81_fk_django_content_type_id` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,25 +127,6 @@ CREATE TABLE `auth_group_permissions` (
   CONSTRAINT `auth_group__permission_id_1f49ccbbdc69d2fc_fk_auth_permission_id` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
   CONSTRAINT `auth_group_permission_group_id_689710a9a73b7457_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `auth_permission`
---
-
-DROP TABLE IF EXISTS `auth_permission`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `auth_permission` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  `content_type_id` int(11) NOT NULL,
-  `codename` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `content_type_id` (`content_type_id`,`codename`),
-  KEY `auth_permission_417f1b1c` (`content_type_id`),
-  CONSTRAINT `auth__content_type_id_508cf46651277a81_fk_django_content_type_id` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -218,23 +235,6 @@ CREATE TABLE `django_admin_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `django_content_type`
---
-
-DROP TABLE IF EXISTS `django_content_type`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `django_content_type` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `app_label` varchar(100) NOT NULL,
-  `model` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `django_content_type_app_label_45f3b1d93ec8c61c_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `django_migrations`
 --
 
@@ -264,6 +264,22 @@ CREATE TABLE `django_session` (
   PRIMARY KEY (`session_key`),
   KEY `django_session_de54fa62` (`expire_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `messages_lang`
+--
+
+DROP TABLE IF EXISTS `messages_lang`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `messages_lang` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tag` varchar(45) DEFAULT NULL,
+  `es` varchar(500) DEFAULT NULL,
+  `eus` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -304,22 +320,6 @@ CREATE TABLE `faq_response` (
   CONSTRAINT `fk_faq_response_question` FOREIGN KEY (`question`) REFERENCES `faq_question` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_faq_response_text` FOREIGN KEY (`text`) REFERENCES `messages_lang` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `messages_lang`
---
-
-DROP TABLE IF EXISTS `messages_lang`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `messages_lang` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tag` varchar(45) DEFAULT NULL,
-  `es` varchar(500) DEFAULT NULL,
-  `eus` varchar(500) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
