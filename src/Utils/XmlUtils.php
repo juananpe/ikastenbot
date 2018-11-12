@@ -17,24 +17,6 @@ class XmlUtils
     }
 
     /**
-     * Traverse through XML finding tasks and returns either an empty
-     * array or an array of \SimpleXMLElement that are tasks
-     *
-     * @param   \SimpleXMLElement   $xml    XML task element
-     * @param   array               $tasks  Array containing tasks
-     * @return  array                       Array containing tasks
-     */
-    public function recursiveXmlLookup(\SimpleXMLElement $xml, array $tasks): array
-    {
-        if (!$xml->task) {
-            return [$xml];
-        }
-
-        $tasks[] = $xml;
-        return \array_merge($tasks, $this->recursiveXmlLookup($xml->task, $tasks));
-    }
-
-    /**
      * Deserialize a Gan format exported XML file
      *
      * @param   string $file_path   The path of the Gan file
@@ -44,22 +26,17 @@ class XmlUtils
     {
         $data = simplexml_load_file($file_path);
 
-        $tasks = [];
-        foreach ($data->tasks->task as $task) {
-            $tasks = \array_merge($tasks, $this->recursiveXmlLookup($task, []));
-        }
+        $xmlMilestones = $data->xpath('//task[@meeting=\'true\']');
 
         $milestones = [];
-        foreach ($tasks as $key => $task) {
-            if ("true" === (string)$task->attributes()->meeting) {
-                $milestone = new Milestone();
-                $milestone->setName((string)$task->attributes()->name);
+        foreach ($xmlMilestones as $xmlMilestone) {
+            $milestone = new Milestone();
+            $milestone->setName((string)$xmlMilestone->attributes()->name);
 
-                $date = new \DateTime((string)$task->attributes()->start);
-                $milestone->setDate($date);
+            $date = new \DateTime((string)$xmlMilestone->attributes()->start);
+            $milestone->setDate($date);
 
-               $milestones[] = $milestone;
-            }
+            $milestones[] = $milestone;
         }
 
         return $milestones;
@@ -74,18 +51,19 @@ class XmlUtils
     public function deserializeMsdpiFile(string $file_path): array
     {
         $data = simplexml_load_file($file_path);
+        $data->registerXPathNamespace('project', 'http://schemas.microsoft.com/project');
+
+        $xmlMilestones = $data->xpath('//project:Task[./project:Milestone=\'1\']');
 
         $milestones = [];
-        foreach ($data->Tasks->Task as $task) {
-            if ((int)$task->Milestone) {
-                $milestone = new Milestone();
-                $milestone->setName((string)$task->Name);
+        foreach ($xmlMilestones as $xmlMilestone) {
+            $milestone = new Milestone();
+            $milestone->setName((string)$xmlMilestone->Name);
 
-                $date = new \DateTime((string)$task->Start);
-                $milestone->setDate($date);
+            $date = new \DateTime((string)$xmlMilestone->Start);
+            $milestone->setDate($date);
 
-                $milestones[] = $milestone;
-            }
+            $milestones[] = $milestone;
         }
 
         return $milestones;
