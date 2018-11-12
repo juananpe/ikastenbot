@@ -5,12 +5,22 @@ require __DIR__ . '/vendor/autoload.php';
 use Longman\TelegramBot\DB;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
+use Symfony\Component\Dotenv\Dotenv;
 
-require("config.php");
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/.env');
+
+$bot_api_key    = getenv('TELEGRAM_BOT_API_KEY');
+$bot_username   = getenv('TELEGRAM_BOT_USERNAME');
 
 
 $telegram = new Telegram($bot_api_key,$bot_username);
 
+$charset    = getenv('MYSQL_CHARSET');
+$host       = getenv('MYSQL_HOST');
+$db         = getenv('MYSQL_DATABASE_NAME');
+$user       = getenv('MYSQL_USERNAME');
+$pass       = getenv('MYSQL_USER_PASSWORD');
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $opt = [

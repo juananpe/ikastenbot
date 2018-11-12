@@ -2,7 +2,16 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-require ('config.php');
+use Symfony\Component\Dotenv\Dotenv;
+
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/.env');
+
+$charset    = getenv('MYSQL_CHARSET');
+$host       = getenv('MYSQL_HOST');
+$db         = getenv('MYSQL_DATABASE_NAME');
+$user       = getenv('MYSQL_USERNAME');
+$pass       = getenv('MYSQL_USER_PASSWORD');
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $opt = [
