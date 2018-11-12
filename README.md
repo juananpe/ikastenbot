@@ -8,7 +8,9 @@ of creating reminders for users.
 # Configuration
 1. Substitute the contents of `.env.dist` with your own data.
 2. Rename `.env.dist` to `.env`.
-3. Import `setUpDatabase.sql` file with
+3. Import `ikastenbot.sql` file with
+    `mysql -u USER -p DATABASE < ikastenbot.sql`
+4. Import `setUpDatabase.sql` file with
     `mysql -u USER -p DATABASE < setUpDatabase.sql`.
 
 # Setting up cron jobs to remind users about their milestones
