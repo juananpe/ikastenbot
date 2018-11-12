@@ -6,7 +6,8 @@
         "longman/telegram-bot": "*",
         "doctrine/orm": "^2.6",
         "symfony/yaml": "^4.1",
-        "twig/twig": "^2.0"
+        "twig/twig": "^2.0",
+        "spatie/pdf-to-text": "^1.1"
     },
     "license": "GPLv3",
     "authors": [
