@@ -17,6 +17,7 @@ use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
+use Symfony\Component\Dotenv\Dotenv;
 
 
 class ImagesTFGCommand extends UserCommand
@@ -69,7 +70,6 @@ class ImagesTFGCommand extends UserCommand
         //lamada a la API y guardar en la base de datos
         //devuelve false si ocurre algun error (como que el archivo esté protegido por contraseña)
 
-        require('config.php');
 
         $db= DBikastenbot::getInstance();
         $pathImages = $this->telegram->getDownloadPath() .'/'. $user_id . '/'.$tfg['version']. '/images'  ;
@@ -113,6 +113,9 @@ class ImagesTFGCommand extends UserCommand
                         ),
                     );
 
+                    $dotenv = new Dotenv();
+                    $dotenv->load(__DIR__.'/../../../.env');
+                    $google_apiKey = getenv('GOOGLE_API_KEY');
 
                     $ch = curl_init('https://vision.googleapis.com/v1/images:annotate?key='.$google_apiKey);
                     curl_setopt_array($ch, array(
