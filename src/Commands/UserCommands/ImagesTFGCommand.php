@@ -16,7 +16,6 @@ use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
-use Symfony\Component\Dotenv\Dotenv;
 use TelegramBotGanttProject\Utils\DBikastenbot;
 
 
@@ -113,8 +112,6 @@ class ImagesTFGCommand extends UserCommand
                         ),
                     );
 
-                    $dotenv = new Dotenv();
-                    $dotenv->load(__DIR__.'/../../../.env');
                     $google_apiKey = getenv('GOOGLE_API_KEY');
 
                     $ch = curl_init('https://vision.googleapis.com/v1/images:annotate?key='.$google_apiKey);

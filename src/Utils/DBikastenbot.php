@@ -10,7 +10,6 @@ namespace TelegramBotGanttProject\Utils;
 
 use Longman\TelegramBot\Exception\TelegramException;
 use \PDO;
-use Symfony\Component\Dotenv\Dotenv;
 
 class DBikastenbot
 {
@@ -25,8 +24,6 @@ class DBikastenbot
      */
     public function __construct()
     {
-        $dotenv = new Dotenv();
-        $dotenv->load(__DIR__.'/../../.env');
 
         $charset    = getenv('MYSQL_CHARSET');
         $host       = getenv('MYSQL_HOST');
