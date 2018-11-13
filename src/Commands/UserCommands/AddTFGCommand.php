@@ -10,7 +10,6 @@ namespace Longman\TelegramBot\Commands\UserCommands;
 
 
 use Longman\TelegramBot\Commands\UserCommand;
-use Longman\TelegramBot\Commands\DBikastenbot;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\File;
 use Longman\TelegramBot\Entities\InlineKeyboard;
@@ -20,6 +19,7 @@ use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use finfo;
+use MikelAlejoBR\TelegramBotGanttProject\Utils\DBikastenbot;
 use Spatie\PdfToText\Pdf;
 
 class addTFGCommand extends UserCommand

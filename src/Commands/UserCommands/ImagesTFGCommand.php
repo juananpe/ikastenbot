@@ -10,7 +10,6 @@ namespace Longman\TelegramBot\Commands\UserCommands;
 
 
 use Longman\TelegramBot\Commands\UserCommand;
-use Longman\TelegramBot\Commands\DBikastenbot;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\Keyboard;
@@ -18,6 +17,7 @@ use Longman\TelegramBot\Entities\KeyboardButton;
 use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
 use Symfony\Component\Dotenv\Dotenv;
+use MikelAlejoBR\TelegramBotGanttProject\Utils\DBikastenbot;
 
 
 class ImagesTFGCommand extends UserCommand

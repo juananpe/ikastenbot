@@ -11,9 +11,9 @@
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use Longman\TelegramBot\Commands\SystemCommand;
-use Longman\TelegramBot\Commands\DBikastenbot;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Conversation;
+use MikelAlejoBR\TelegramBotGanttProject\Utils\DBikastenbot;
 
 
 /**

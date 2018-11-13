@@ -6,9 +6,7 @@
  * Time: 0:16
  */
 
-namespace Longman\TelegramBot\Commands;
-
-require __DIR__ . '/vendor/autoload.php';
+namespace MikelAlejoBR\TelegramBotGanttProject\Utils;
 
 use Longman\TelegramBot\Exception\TelegramException;
 use \PDO;
@@ -28,7 +26,7 @@ class DBikastenbot
     public function __construct()
     {
         $dotenv = new Dotenv();
-        $dotenv->load(__DIR__.'/.env');
+        $dotenv->load(__DIR__.'/../../.env');
 
         $charset    = getenv('MYSQL_CHARSET');
         $host       = getenv('MYSQL_HOST');
