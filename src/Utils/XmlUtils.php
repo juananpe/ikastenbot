@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MikelAlejoBR\TelegramBotGanttProject\Utils;
+namespace TelegramBotGanttProject\Utils;
 
 use Longman\TelegramBot\DB;
 use Longman\TelegramBot\Entities\Chat;
-use MikelAlejoBR\TelegramBotGanttProject\Entity\Milestone;
-use MikelAlejoBR\TelegramBotGanttProject\Exception\IncorrectFileException;
-use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
+use TelegramBotGanttProject\Entity\Milestone;
+use TelegramBotGanttProject\Exception\IncorrectFileException;
+use TelegramBotGanttProject\Exception\NoMilestonesException;
 
 class XmlUtils
 {

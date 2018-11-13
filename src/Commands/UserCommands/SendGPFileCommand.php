@@ -10,10 +10,10 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\Update;
-use MikelAlejoBR\TelegramBotGanttProject\Exception\IncorrectFileException;
-use MikelAlejoBR\TelegramBotGanttProject\Exception\NoMilestonesException;
-use MikelAlejoBR\TelegramBotGanttProject\Service\MessageSenderService;
-use MikelAlejoBR\TelegramBotGanttProject\Utils\XmlUtils;
+use TelegramBotGanttProject\Exception\IncorrectFileException;
+use TelegramBotGanttProject\Exception\NoMilestonesException;
+use TelegramBotGanttProject\Service\MessageSenderService;
+use TelegramBotGanttProject\Utils\XmlUtils;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

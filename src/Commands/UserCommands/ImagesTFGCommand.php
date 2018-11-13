@@ -17,7 +17,7 @@ use Longman\TelegramBot\Entities\KeyboardButton;
 use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
 use Symfony\Component\Dotenv\Dotenv;
-use MikelAlejoBR\TelegramBotGanttProject\Utils\DBikastenbot;
+use TelegramBotGanttProject\Utils\DBikastenbot;
 
 
 class ImagesTFGCommand extends UserCommand

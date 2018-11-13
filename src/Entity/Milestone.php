@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MikelAlejoBR\TelegramBotGanttProject\Entity;
+namespace TelegramBotGanttProject\Entity;
 
 /**
  * Class that represents the milestones of a GanttProject project

@@ -6,9 +6,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
-use MikelAlejoBR\TelegramBotGanttProject\Service\MilestoneReminderService;
-use MikelAlejoBR\TelegramBotGanttProject\Service\MessageSenderService;
 use Symfony\Component\Dotenv\Dotenv;
+use TelegramBotGanttProject\Service\MilestoneReminderService;
+use TelegramBotGanttProject\Service\MessageSenderService;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

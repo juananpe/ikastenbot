@@ -17,7 +17,7 @@ use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
-use MikelAlejoBR\TelegramBotGanttProject\Utils\DBikastenbot;
+use TelegramBotGanttProject\Utils\DBikastenbot;
 
 
 class registerTFGCommand extends UserCommand

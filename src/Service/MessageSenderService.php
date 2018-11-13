@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MikelAlejoBR\TelegramBotGanttProject\Service;
+namespace TelegramBotGanttProject\Service;
 
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Entities\Keyboard;

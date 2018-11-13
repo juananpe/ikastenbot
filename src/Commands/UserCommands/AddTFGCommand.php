@@ -19,8 +19,8 @@ use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use finfo;
-use MikelAlejoBR\TelegramBotGanttProject\Utils\DBikastenbot;
 use Spatie\PdfToText\Pdf;
+use TelegramBotGanttProject\Utils\DBikastenbot;
 
 class addTFGCommand extends UserCommand
 {

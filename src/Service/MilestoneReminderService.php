@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MikelAlejoBR\TelegramBotGanttProject\Service;
+namespace TelegramBotGanttProject\Service;
 
 use Doctrine\ORM\EntityManager;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
-use MikelAlejoBR\TelegramBotGanttProject\Entity\Milestone;
-use MikelAlejoBR\TelegramBotGanttProject\Service\MessageSenderService;
+use TelegramBotGanttProject\Entity\Milestone;
+use TelegramBotGanttProject\Service\MessageSenderService;
 use Twig\Environment as TemplatingEngine;
 use Twig\Loader\FilesystemLoader;
 
