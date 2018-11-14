@@ -3,3 +3,4 @@ Upload/
 /vendor/
 var/
 .env
+phpunit.xml
