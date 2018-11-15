@@ -26,6 +26,15 @@ a cron job would be the one below, in which the check is performed every day at
 Check [CronHowto][2] and [crontab.guru][3] to create proper cron jobs which can
 suit your needs.
 
+# Running tests
+In order to run tests you have to make the following steps:
+
+1. Import Longman's `structure.sql` file, and this project's `setUpDatabase.sql`
+    and `ikastenbot.sql` files to the testing database.
+2. Copy `phpunit.xml.dist` to `phpunit.xml` as follows: `cp phpunit.xml.dist phpunit.xml`.
+3. Set the testing database parameters in the `phpunit.xml` file.
+4. Run `phpunit` with `vendor/bin/phpunit` from the project root.
+
 # Notes
 * When using conversations, make sure the names don't contain spaces, as
     php-telegram bot seems not to be able to keep up with the conversation if

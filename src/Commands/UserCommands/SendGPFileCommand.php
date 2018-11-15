@@ -112,7 +112,7 @@ class SendGpFileCommand extends UserCommand
         $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
         $xmlManCon = new XmlUtils();
         try {
-            $milestones = $xmlManCon->extractStoreMilestones($file_path, $chat);
+            $milestones = $xmlManCon->extractStoreMilestones($file_path, $chat->getId());
         } catch (NoMilestonesException $e) {
             return $ms->sendSimpleMessage($chat_id, $e->getMessage(), null, $selective_reply);
         } catch (IncorrectFileException $e) {

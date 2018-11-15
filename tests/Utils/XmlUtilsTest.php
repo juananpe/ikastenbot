@@ -108,7 +108,7 @@ final class XmlUtilsTest extends TestCase
         
         $this->xu->extractStoreMilestones(
             $this->files_dir . 'incorrectFile.txt',
-            $chat
+            12345
         );
     }
 
@@ -120,7 +120,7 @@ final class XmlUtilsTest extends TestCase
 
         $this->xu->extractStoreMilestones(
             $this->xml_dir_gan . 'NoMilestones.gan',
-            $chat
+            12345
         );
     }
 }
