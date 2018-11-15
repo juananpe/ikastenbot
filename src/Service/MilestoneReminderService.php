@@ -103,7 +103,8 @@ class MilestoneReminderService
                 'milestones' => $results
             ]);
 
-            $this->mss->sendSimpleMessage((int)$milestone->getChat_id(), $text, 'HTML');
+            $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
         }
     }
 
@@ -121,7 +122,8 @@ class MilestoneReminderService
                 'days_left'     => $row[1]
             ]);
 
-            $this->mss->sendSimpleMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
         }
     }
 
