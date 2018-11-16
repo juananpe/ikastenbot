@@ -3,7 +3,22 @@
 A take on importing and processing [GanttProject's][1] milestones with the goal
 of creating reminders for users.
 
-# Configuration for development mode
+# Configuration
+All the variables —like the database settings— are stored in environment 
+variables. When using `development` mode, these variables are read from the
+`.env` file, and in `production` mode, these will have to be set in the web
+server's configuration.
+
+Also, `set.php` and `unset.php` files are now under `src/Utils` folder, as it
+doesn't make sense to expose them in the public directory of the web server.
+In order to use them, just execute the `PHP` interpreter like so:
+
+`php src/Utils/set.php` or `php src/Utils/unset.php`
+
+Finally, the `hook.php` file was renamed to `index.php` under the `public/`
+directory. This was done to follow the [front controller pattern][3].
+
+## For development
 1. Substitute the contents of `.env.dist` with your own data.
 2. Rename `.env.dist` to `.env`.
 3. Import Longman's `.sql` file with
@@ -13,23 +28,13 @@ of creating reminders for users.
 5. Import `setUpDatabase.sql` file with
     `mysql -u USER -p DATABASE < setUpDatabase.sql`.
 
-# Configuration for production mode
+## For production
 1. Set [environment variables][2] that match `.env.dist` file.
 2. Point the web server to the `public/` directory of this project.
 3. Repeat steps from `3.` to `5.` from the previous section in the production
     server.
 
-# `set.php` and `unset.php`
-These files are located under `src/Utils`, and will allow you to set or unset
-the webhook for the Telegram API. Execute them with `php` as follows:
-
-`php src/Utils/set.php` or `php src/Utils/unset.php`
-
-# `hook.php`
-The `hook.php` file was renamed to `index.php` under the `public/` directory.
-This was done to follow the [front controller pattern][3].
-
-# Setting up cron jobs to remind users about their milestones
+## Setting up cron jobs to remind users about their milestones
 In order to notify users whenever their planned milestones are close, a cron
 job can be set to achieve this. `LaunchMilestoneReminderService.php` deals with
 obtaining the proper milestones from the database and sending reminders to the
@@ -42,7 +47,7 @@ a cron job would be the one below, in which the check is performed every day at
 Check [CronHowto][4] and [crontab.guru][5] to create proper cron jobs which can
 suit your needs.
 
-# Running tests
+# Tests
 In order to run tests you have to make the following steps:
 
 1. Import Longman's `structure.sql` file, and this project's `setUpDatabase.sql`
