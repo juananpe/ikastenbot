@@ -25,6 +25,10 @@ the webhook for the Telegram API. Execute them with `php` as follows:
 
 `php src/Utils/set.php` or `php src/Utils/unset.php`
 
+# `hook.php`
+The `hook.php` file was renamed to `index.php` under the `public/` directory.
+This was done to follow the [front controller pattern][3].
+
 # Setting up cron jobs to remind users about their milestones
 In order to notify users whenever their planned milestones are close, a cron
 job can be set to achieve this. `LaunchMilestoneReminderService.php` deals with
@@ -35,7 +39,7 @@ a cron job would be the one below, in which the check is performed every day at
 
 * `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/src/LaunchMilestoneReminderService.php`
 
-Check [CronHowto][2] and [crontab.guru][3] to create proper cron jobs which can
+Check [CronHowto][4] and [crontab.guru][5] to create proper cron jobs which can
 suit your needs.
 
 # Running tests
@@ -56,5 +60,6 @@ In order to run tests you have to make the following steps:
 
 [1]: https://www.ganttproject.biz/
 [2]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv
-[3]: https://help.ubuntu.com/community/CronHowto
-[4]: https://crontab.guru/
+[3]: https://en.wikipedia.org/wiki/Front_controller
+[4]: https://help.ubuntu.com/community/CronHowto
+[5]: https://crontab.guru/
