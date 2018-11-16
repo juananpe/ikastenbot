@@ -1,6 +1,8 @@
-Download/
-Upload/
-/vendor/
-var/
+# Files
 .env
 phpunit.xml
+
+# Directories
+files/
+var/
+vendor/
