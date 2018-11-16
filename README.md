@@ -3,8 +3,6 @@
 A take on importing and processing [GanttProject's][1] milestones with the goal
 of creating reminders for users.
 
-[1]: https://www.ganttproject.biz/
-
 # Configuration for development mode
 1. Substitute the contents of `.env.dist` with your own data.
 2. Rename `.env.dist` to `.env`.
@@ -47,6 +45,7 @@ In order to run tests you have to make the following steps:
     php-telegram bot seems not to be able to keep up with the conversation if
     such thing happens.
 
+[1]: https://www.ganttproject.biz/
 [2]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv
 [3]: https://help.ubuntu.com/community/CronHowto
 [4]: https://crontab.guru/
