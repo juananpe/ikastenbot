@@ -48,7 +48,7 @@ class XmlUtils
      * @param   string  $file_path  The path of the XML file
      * @return  array   $milestones Array containing Milestone objects
      */
-    public function deserializeMsdpiFile(string $file_path): array
+    public function deserializeMspdiFile(string $file_path): array
     {
         $data = simplexml_load_file($file_path);
         $data->registerXPathNamespace('project', 'http://schemas.microsoft.com/project');
@@ -88,7 +88,7 @@ class XmlUtils
         if ('gan' === $file_extension) {
             $milestones = $this->deserializeGanFile($file_path);
         } elseif ('xml' === $file_extension) {
-            $milestones = $this->deserializeMsdpiFile($file_path);
+            $milestones = $this->deserializeMspdiFile($file_path);
         } else {
             throw new IncorrectFileException(
                 'The provided file isn\'t a GanttProject file or an MSPDI XML file'

@@ -18,11 +18,11 @@ final class XmlUtilsTest extends TestCase
     private $files_dir;
 
     /**
-     * Directory containing MSDPI XML files to be imported
+     * Directory containing MSPDI XML files to be imported
      *
      * @var string
      */
-    private $xml_dir_msdpi;
+    private $xml_dir_mspdi;
 
     /**
      * Directory containing Gan XML files to be imported
@@ -41,7 +41,7 @@ final class XmlUtilsTest extends TestCase
     public function setUp()
     {
         $this->files_dir        = __DIR__ . '/../_files/xml_milestone_files';
-        $this->xml_dir_msdpi    = $this->files_dir . '/msdpi/';
+        $this->xml_dir_mspdi    = $this->files_dir . '/mspdi/';
         $this->xml_dir_gan      = $this->files_dir . '/gan/';
         $this->xu = new XmlUtils();
     }
@@ -73,28 +73,28 @@ final class XmlUtilsTest extends TestCase
         $this->assertEquals(count($result), 5);
     }
 
-    public function testZeroMsdpiDeserializedMilestones()
+    public function testZeroMspdiDeserializedMilestones()
     {
-        $result = $this->xu->deserializeMsdpiFile(
-            $this->xml_dir_msdpi . 'NoMilestones.xml'
+        $result = $this->xu->deserializeMspdiFile(
+            $this->xml_dir_mspdi . 'NoMilestones.xml'
         );
 
         $this->assertEquals(count($result), 0);
     }
 
-    public function testThreeMsdpiDeserializedMilestones()
+    public function testThreeMspdiDeserializedMilestones()
     {
-        $result = $this->xu->deserializeMsdpiFile(
-            $this->xml_dir_msdpi . 'ThreeMilestones.xml'
+        $result = $this->xu->deserializeMspdiFile(
+            $this->xml_dir_mspdi . 'ThreeMilestones.xml'
         );
         
         $this->assertEquals(count($result), 3);
     }
 
-    public function testFiveMsdpiDeserializedMilestones()
+    public function testFiveMspdiDeserializedMilestones()
     {
-        $result = $this->xu->deserializeMsdpiFile(
-            $this->xml_dir_msdpi . 'FiveMilestones.xml'
+        $result = $this->xu->deserializeMspdiFile(
+            $this->xml_dir_mspdi . 'FiveMilestones.xml'
         );
 
         $this->assertEquals(count($result), 5);
