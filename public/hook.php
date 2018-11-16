@@ -9,14 +9,14 @@
  */
 
 // Load composer
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Symfony\Component\Dotenv\Dotenv;
 
-define('PROJECT_ROOT',  __DIR__);
+define('PROJECT_ROOT',  __DIR__ . '/..');
 
 $dotenv = new Dotenv();
-$dotenv->load(__DIR__.'/.env');
+$dotenv->load(PROJECT_ROOT . '/.env');
 
 // Add you bot's API key and name
 $bot_api_key  = getenv('TELEGRAM_BOT_API_KEY');
@@ -29,7 +29,7 @@ $admin_users = [
 
 // Define all paths for your custom commands in this array (leave as empty array if not used)
 $commands_paths = [
-    __DIR__ . '/src/Commands/',
+    PROJECT_ROOT . '/src/Commands/',
 ];
 
 $mysql_host             = getenv('MYSQL_HOST');
@@ -81,8 +81,8 @@ try {
     $uploadDirectory   = getenv('TELEGRAM_UPLOAD_DIRECTORY');
 
     if (!(empty($downloadDirectory) || empty($uploadDirectory))) {
-        $telegram->setDownloadPath(__DIR__ . getenv('TELEGRAM_DOWNLOAD_DIRECTORY'));
-        $telegram->setUploadPath(__DIR__ . getenv('TELEGRAM_UPLOAD_DIRECTORY'));
+        $telegram->setDownloadPath(PROJECT_ROOT . getenv('TELEGRAM_DOWNLOAD_DIRECTORY'));
+        $telegram->setUploadPath(PROJECT_ROOT . getenv('TELEGRAM_UPLOAD_DIRECTORY'));
     }
 
     unset($downloadDirectory);
