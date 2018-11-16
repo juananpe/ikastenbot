@@ -99,26 +99,31 @@ class SendGpFileCommand extends UserCommand
         $document = $this->getMessage()->getDocument();
         if (null === $document) {
             $this->conversation->update();
-            return $ms->sendSimpleMessage($chat_id, 'Please send your GanttProject\'s XML file.', null, $selective_reply);
+            $ms->prepareMessage($chat_id, 'Please send your GanttProject\'s XML file.', null, $selective_reply);
+            return $ms->sendMessage();
         }
 
         // Download the file
         $response = Request::getFile(['file_id' => $document->getFileId()]);
         if (!Request::downloadFile($response->getResult())) {
-            return $ms->sendSimpleMessage($chat_id, 'There was an error obtaining your file. Please send it again.', null, $selective_reply);
+            $ms->prepareMessage($chat_id, 'There was an error obtaining your file. Please send it again.', null, $selective_reply);
+            return $ms->sendMessage();
         }
 
         // Extract the milestones and store them in the database
         $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
         $xmlManCon = new XmlUtils();
         try {
-            $milestones = $xmlManCon->extractStoreMilestones($file_path, $chat);
+            $milestones = $xmlManCon->extractStoreMilestones($file_path, $chat->getId());
         } catch (NoMilestonesException $e) {
-            return $ms->sendSimpleMessage($chat_id, $e->getMessage(), null, $selective_reply);
+            $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
+            return $ms->sendMessage();
         } catch (IncorrectFileException $e) {
-            return $ms->sendSimpleMessage($chat_id, $e->getMessage(), null, $selective_reply);
+            $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
+            return $ms->sendMessage();
         }
         $this->conversation->stop();
-        return $ms->sendSimpleMessage($chat_id, $this->prepareFormattedMessage($milestones), 'HTML', $selective_reply);
+        $ms->prepareMessage($chat_id, $this->prepareFormattedMessage($milestones), 'HTML', $selective_reply);
+        return $ms->sendMessage();
     }
 }

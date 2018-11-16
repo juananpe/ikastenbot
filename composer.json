@@ -20,11 +20,21 @@
         }
     ],
     "require-dev": {
-        "symfony/dotenv": "^4.1"
+        "symfony/dotenv": "^4.1",
+        "phpunit/phpunit": "^7",
+        "phpunit/dbunit": "^4.0"
     },
     "autoload": {
         "psr-4": {
             "TelegramBotGanttProject\\": "src/"
+        },
+        "classmap":  [
+            "src/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TelegramBotGanttProject\\Tests\\": "tests/"
         }
     }
 }

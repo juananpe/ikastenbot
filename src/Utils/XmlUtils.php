@@ -73,13 +73,13 @@ class XmlUtils
      * Extract milestones from the XML file and store them in the database
      *
      * @param   string  $file_path The path to the XML file
-     * @param   Chat    $chat      The chat to which the milestones will be
-     *                             assigned to
+     * @param   int     $chat_id   The id of the chat to which the milestones
+     *                             will be assigned to
      * @return  array              Array of Milestones
      * @throws  NoMilestonesException When no milestones have been found in the
      *                               XML file.
      */
-    public function extractStoreMilestones(string $file_path, Chat $chat): array
+    public function extractStoreMilestones(string $file_path, int $chat_id): array
     {
         $file_info = new \SplFileInfo($file_path);
         $file_extension = $file_info->getExtension();
@@ -104,7 +104,7 @@ class XmlUtils
         foreach ($milestones as $milestone) {
             $sql = '';
             $parameters = [
-                ':chat_id'          => $chat->getId(),
+                ':chat_id'          => $chat_id,
                 ':milestone_date'   => $milestone->getDate()->format('Y-m-d'),
             ];
             $hasName = !empty($milestone->getName());
@@ -128,7 +128,7 @@ class XmlUtils
                         chat_id,
                         milestone_date
                     ) VALUES (
-                        :chat_id
+                        :chat_id,
                         :milestone_date
                     );
                 ';

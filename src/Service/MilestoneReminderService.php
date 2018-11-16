@@ -60,7 +60,7 @@ class MilestoneReminderService
      *
      * @return Milestone[] Array of Milestones
      */
-    private function findMilestonesToNotifyAbout()
+    public function findMilestonesToNotifyAbout()
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -80,7 +80,7 @@ class MilestoneReminderService
      * @return mixed[Milestone][int] Nested array of Milestones and their
      *                               corresponding days to be reached.
      */
-    private function findMilestonesReachToday()
+    public function findMilestonesReachToday()
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -103,7 +103,8 @@ class MilestoneReminderService
                 'milestones' => $results
             ]);
 
-            $this->mss->sendSimpleMessage((int)$milestone->getChat_id(), $text, 'HTML');
+            $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
         }
     }
 
@@ -121,7 +122,8 @@ class MilestoneReminderService
                 'days_left'     => $row[1]
             ]);
 
-            $this->mss->sendSimpleMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
         }
     }
 
