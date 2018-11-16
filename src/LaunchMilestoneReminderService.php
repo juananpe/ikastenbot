@@ -6,6 +6,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
+use Longman\TelegramBot\Telegram;
 use Symfony\Component\Dotenv\Dotenv;
 use TelegramBotGanttProject\Service\MilestoneReminderService;
 use TelegramBotGanttProject\Service\MessageSenderService;
@@ -37,6 +38,10 @@ $twig = new Environment($loader, array(
 // Setup message sender service
 $mss = new MessageSenderService();
 
+// Setup Telegram object
+$telegram = new Telegram(getenv('TELEGRAM_BOT_API_KEY'), getenv('TELEGRAM_BOT_USERNAME'));
+
 // Notify users
 $mrs = new MilestoneReminderService($em, $mss, $twig);
-$mrs->notifyUsers();
+$mrs->notifyUsersMilestonesToday();
+$mrs->notifyUsersMilestonesClose();

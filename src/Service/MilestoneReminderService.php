@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace TelegramBotGanttProject\Service;
 
 use Doctrine\ORM\EntityManager;
-use Longman\TelegramBot\Request;
-use Longman\TelegramBot\Telegram;
 use TelegramBotGanttProject\Entity\Milestone;
 use TelegramBotGanttProject\Service\MessageSenderService;
 use Twig\Environment as TemplatingEngine;
@@ -95,47 +93,44 @@ class MilestoneReminderService
      * Notify users about the milestones they should reach today according to
      * their planning.
      */
-    private function notifyUsersMilestonesToday()
+    public function notifyUsersMilestonesToday()
     {
-        $results = $this->findMilestonesReachToday();
-        foreach ($results as $milestone) {
-            $text = $this->twig->render('notifications/singleMilestoneNotification.txt.twig', [
-                'milestones' => $results
-            ]);
+        $milestones = $this->findMilestonesReachToday();
 
-            $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML');
-            $this->mss->sendMessage();
+        $text = $this->twig->render('notifications/milestoneTodayText.twig');
+        $text .= PHP_EOL;
+
+        foreach ($milestones as $milestone) {
+            $text .= $this->twig->render('notifications/milestone.twig', [
+                'milestone' => $milestone
+            ]);
+            $text .= PHP_EOL;
         }
+
+        $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML');
+        $this->mss->sendMessage();
     }
 
     /**
      * Notify users about milestones that are close to be reached according
      * to their planning.
      */
-    private function notifyUsersMilestonesClose()
+    public function notifyUsersMilestonesClose()
     {
         $results = $this->findMilestonesToNotifyAbout();
 
+        $text = $this->twig->render('notifications/milestonesCloseText.twig');
+        $text .= PHP_EOL;
+
         foreach ($results as $row) {
-            $text = $this->twig->render('notifications/multipleMilestoneNotification.txt.twig', [
-                'milestones'    => [$row[0]],
-                'days_left'     => $row[1]
+            $text .= $this->twig->render('notifications/milestone.twig', [
+                'milestone' => $row[0],
+                'daysLeft'  => $row[1]
             ]);
-
-            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
-            $this->mss->sendMessage();
+            $text .= PHP_EOL;
         }
-    }
 
-    /**
-     * Notify users about their milestones that are as close as 30, 15, 3, 2 or
-     * 1 days.
-     */
-    public function notifyUsers()
-    {
-        $telegramBot = new Telegram(getenv('TELEGRAM_BOT_API_KEY'), getenv('TELEGRAM_BOT_USERNAME'));
-
-        $this->notifyUsersMilestonesToday();
-        $this->notifyUsersMilestonesClose();
+        $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+        $this->mss->sendMessage();
     }
 }
