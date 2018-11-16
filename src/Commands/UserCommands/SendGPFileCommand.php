@@ -116,6 +116,7 @@ class SendGpFileCommand extends UserCommand
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
             return $ms->sendMessage();
         }
+        unlink($file_path);
         $this->conversation->stop();
         $ms->prepareMessage($chat_id, $this->prepareFormattedMessage($milestones), 'HTML', $selective_reply);
         return $ms->sendMessage();
