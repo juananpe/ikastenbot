@@ -6,15 +6,18 @@ of creating reminders for users.
 # Configuration for development mode
 1. Substitute the contents of `.env.dist` with your own data.
 2. Rename `.env.dist` to `.env`.
-3. Import `ikastenbot.sql` file with
-    `mysql -u USER -p DATABASE < ikastenbot.sql`
-4. Import `setUpDatabase.sql` file with
+3. Import Longman's `.sql` file with
+    `mysql -u USER -p DATABASE < structure.sql`.
+4. Import `ikastenbot.sql` file with
+    `mysql -u USER -p DATABASE < ikastenbot.sql`.
+5. Import `setUpDatabase.sql` file with
     `mysql -u USER -p DATABASE < setUpDatabase.sql`.
 
 # Configuration for production mode
 1. Set [environment variables][2] that match `.env.dist` file.
 2. Point the web server to the `public/` directory of this project.
-3. Repeat steps `3.` and `4.` from the previous section.
+3. Repeat steps from `3.` to `5.` from the previous section in the production
+    server.
 
 # Setting up cron jobs to remind users about their milestones
 In order to notify users whenever their planned milestones are close, a cron
