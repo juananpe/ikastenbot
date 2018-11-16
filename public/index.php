@@ -83,8 +83,16 @@ try {
     $uploadDirectory   = getenv('TELEGRAM_UPLOAD_DIRECTORY');
 
     if (!(empty($downloadDirectory) || empty($uploadDirectory))) {
-        $telegram->setDownloadPath(PROJECT_ROOT . getenv('TELEGRAM_DOWNLOAD_DIRECTORY'));
-        $telegram->setUploadPath(PROJECT_ROOT . getenv('TELEGRAM_UPLOAD_DIRECTORY'));
+        if ($downloadDirectory === 'files/download') {
+            $downloadDirectory  = PROJECT_ROOT . '/' . $downloadDirectory;
+        }
+
+        if ($uploadDirectory   === 'files/upload') {
+            $uploadDirectory    = PROJECT_ROOT . '/' . $uploadDirectory;
+        }
+
+        $telegram->setDownloadPath($downloadDirectory);
+        $telegram->setUploadPath($uploadDirectory);
     }
 
     unset($downloadDirectory);
