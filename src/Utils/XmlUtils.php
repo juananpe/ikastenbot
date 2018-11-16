@@ -91,13 +91,13 @@ class XmlUtils
             $milestones = $this->deserializeMspdiFile($file_path);
         } else {
             throw new IncorrectFileException(
-                'The provided file isn\'t a GanttProject file or an MSPDI XML file'
+                'The provided file isn\'t a GanttProject file or an MSPDI XML file. Please send another file.'
             );
         }
 
         if (empty($milestones)) {
             throw new NoMilestonesException(
-                'The provided file doesn\'t contain any milestones'
+                'The provided file doesn\'t contain any milestones. Please send another file.'
             );
         }
 
