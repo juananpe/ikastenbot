@@ -1,11 +1,11 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 use Symfony\Component\Dotenv\Dotenv;
 
 $dotenv = new Dotenv();
-$dotenv->load(__DIR__.'/.env');
+$dotenv->load(__DIR__.'/../../.env');
 
 $charset    = getenv('MYSQL_CHARSET');
 $host       = getenv('MYSQL_HOST');
