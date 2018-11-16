@@ -18,8 +18,10 @@ use Twig\Loader\FilesystemLoader;
 define('PROJECT_ROOT',  __DIR__ . '/..');
 
 // Load environment variables
-$dotenv = new Dotenv();
-$dotenv->load(PROJECT_ROOT . '/.env');
+if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
+    $dotenv = new Dotenv();
+    $dotenv->load(PROJECT_ROOT . '/.env');
+}
 
 //Setup database
 $config = Setup::createAnnotationMetadataConfiguration(array(PROJECT_ROOT . "/src/Entity/"), false);

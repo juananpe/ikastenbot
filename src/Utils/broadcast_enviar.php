@@ -7,8 +7,10 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use Symfony\Component\Dotenv\Dotenv;
 
-$dotenv = new Dotenv();
-$dotenv->load(__DIR__.'/../../.env');
+if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
+    $dotenv = new Dotenv();
+    $dotenv->load(__DIR__.'/../../.env');
+}
 
 $bot_api_key    = getenv('TELEGRAM_BOT_API_KEY');
 $bot_username   = getenv('TELEGRAM_BOT_USERNAME');

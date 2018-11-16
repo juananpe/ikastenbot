@@ -15,8 +15,10 @@ use Symfony\Component\Dotenv\Dotenv;
 
 define('PROJECT_ROOT',  __DIR__ . '/..');
 
-$dotenv = new Dotenv();
-$dotenv->load(PROJECT_ROOT . '/.env');
+if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
+    $dotenv = new Dotenv();
+    $dotenv->load(PROJECT_ROOT . '/.env');
+}
 
 // Add you bot's API key and name
 $bot_api_key  = getenv('TELEGRAM_BOT_API_KEY');

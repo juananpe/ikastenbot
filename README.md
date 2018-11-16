@@ -5,13 +5,18 @@ of creating reminders for users.
 
 [1]: https://www.ganttproject.biz/
 
-# Configuration
+# Configuration for development mode
 1. Substitute the contents of `.env.dist` with your own data.
 2. Rename `.env.dist` to `.env`.
 3. Import `ikastenbot.sql` file with
     `mysql -u USER -p DATABASE < ikastenbot.sql`
 4. Import `setUpDatabase.sql` file with
     `mysql -u USER -p DATABASE < setUpDatabase.sql`.
+
+# Configuration for production mode
+1. Set [environment variables][2] that match `.env.dist` file.
+2. Point the web server to the `public/` directory of this project.
+3. Repeat steps `3.` and `4.` from the previous section.
 
 # Setting up cron jobs to remind users about their milestones
 In order to notify users whenever their planned milestones are close, a cron
@@ -42,5 +47,6 @@ In order to run tests you have to make the following steps:
     php-telegram bot seems not to be able to keep up with the conversation if
     such thing happens.
 
-[2]: https://help.ubuntu.com/community/CronHowto
-[3]: https://crontab.guru/
+[2]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv
+[3]: https://help.ubuntu.com/community/CronHowto
+[4]: https://crontab.guru/

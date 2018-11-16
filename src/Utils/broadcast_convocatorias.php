@@ -11,8 +11,10 @@ $texto = $text . " " . $dates;
     return $texto;
 }
 
-$dotenv = new Dotenv();
-$dotenv->load(__DIR__.'/../../.env');
+if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
+    $dotenv = new Dotenv();
+    $dotenv->load(__DIR__.'/../../.env');
+}
 
 $charset    = getenv('MYSQL_CHARSET');
 $host       = getenv('MYSQL_HOST');

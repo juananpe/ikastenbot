@@ -10,8 +10,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Symfony\Component\Dotenv\Dotenv;
 
-$dotenv = new Dotenv();
-$dotenv->load(__DIR__.'/.env');
+if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
+    $dotenv = new Dotenv();
+    $dotenv->load(__DIR__.'/.env');
+}
 
 // Add you bot's API key and name
 $bot_api_key  = getenv('TELEGRAM_BOT_API_KEY');
