@@ -33,7 +33,9 @@ In order to run tests you have to make the following steps:
     and `ikastenbot.sql` files to the testing database.
 2. Copy `phpunit.xml.dist` to `phpunit.xml` as follows: `cp phpunit.xml.dist phpunit.xml`.
 3. Set the testing database parameters in the `phpunit.xml` file.
-4. Run `phpunit` with `vendor/bin/phpunit` from the project root.
+4. Set the project root constant in the `phpunit.xml` file without the trailing
+    `/`
+5. Run `phpunit` with `vendor/bin/phpunit` from the project root.
 
 # Notes
 * When using conversations, make sure the names don't contain spaces, as

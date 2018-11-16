@@ -5,8 +5,7 @@ declare(strict_types=1);
 use TelegramBotGanttProject\Service\MilestoneReminderService;
 use TelegramBotGanttProject\Service\MessageSenderService;
 use TelegramBotGanttProject\Tests\DatabaseTestCase;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
+use TelegramBotGanttProject\Utils\MessageFormatterUtils;
 
 class MilestoneReminderServiceTest extends DatabaseTestCase
 {
@@ -103,9 +102,9 @@ class MilestoneReminderServiceTest extends DatabaseTestCase
     public function testFindTodayMilestones()
     {
         $mssMock = $this->createMock(MessageSenderService::class);
-        $twigMock = $this->createMock(Environment::class);
+        $mfuMock = $this->createMock(MessageFormatterUtils::class);
 
-        $mrs = new MilestoneReminderService($this->dem, $mssMock, $twigMock);
+        $mrs = new MilestoneReminderService($this->dem, $mfuMock, $mssMock);
         $milestones = $mrs->findMilestonesReachToday();
 
         // Check that only three milestones have been fetched
@@ -123,9 +122,9 @@ class MilestoneReminderServiceTest extends DatabaseTestCase
     public function testFindMilestonesClose()
     {
         $mssMock = $this->createMock(MessageSenderService::class);
-        $twigMock = $this->createMock(Environment::class);
+        $mfuMock = $this->createMock(MessageFormatterUtils::class);
 
-        $mrs = new MilestoneReminderService($this->dem, $mssMock, $twigMock);
+        $mrs = new MilestoneReminderService($this->dem, $mfuMock, $mssMock);
         $results = $mrs->findMilestonesToNotifyAbout();
 
         // Check that only the correct amount of milestones have been fetched

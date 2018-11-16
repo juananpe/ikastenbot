@@ -13,9 +13,8 @@ use Longman\TelegramBot\Entities\Update;
 use TelegramBotGanttProject\Exception\IncorrectFileException;
 use TelegramBotGanttProject\Exception\NoMilestonesException;
 use TelegramBotGanttProject\Service\MessageSenderService;
+use TelegramBotGanttProject\Utils\MessageFormatterUtils;
 use TelegramBotGanttProject\Utils\XmlUtils;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 
 class SendGpFileCommand extends UserCommand
 {
@@ -62,19 +61,13 @@ class SendGpFileCommand extends UserCommand
      */
     private function prepareFormattedMessage(array $milestones): string
     {
-        $loader = new FilesystemLoader(PROJECT_ROOT . '/templates/');
-        $twig = new Environment($loader, array(
-            'cache' => PROJECT_ROOT . '/var/cache/',
-        ));
+        $mf = new MessageFormatterUtils();
 
         $text = 'You will be reminded of the following milestones:';
         $text .= PHP_EOL . PHP_EOL;
 
         foreach ($milestones as $milestone) {
-            $text .= $twig->render('notifications/milestone.twig', [
-                'milestone' => $milestone
-            ]);
-            $text .= PHP_EOL . PHP_EOL;
+            $mf->appendMilestone($text, $milestone);
         }
 
         return $text;

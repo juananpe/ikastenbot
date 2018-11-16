@@ -10,15 +10,19 @@ use Longman\TelegramBot\Telegram;
 use Symfony\Component\Dotenv\Dotenv;
 use TelegramBotGanttProject\Service\MilestoneReminderService;
 use TelegramBotGanttProject\Service\MessageSenderService;
+use TelegramBotGanttProject\Utils\MessageFormatterUtils;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
+// Define project root
+define('PROJECT_ROOT',  __DIR__ . '/..');
+
 // Load environment variables
 $dotenv = new Dotenv();
-$dotenv->load(__DIR__.'/../.env');
+$dotenv->load(PROJECT_ROOT . '/.env');
 
 //Setup database
-$config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/../Entity/"), false);
+$config = Setup::createAnnotationMetadataConfiguration(array(PROJECT_ROOT . "/src/Entity/"), false);
 
 $connectionParams = array(
     'driver'   => 'pdo_mysql',
@@ -30,10 +34,13 @@ $connectionParams = array(
 $em = EntityManager::create($connectionParams, $config);
 
 // Setup Twig
-$loader = new FilesystemLoader(__DIR__ . '/../templates/');
+$loader = new FilesystemLoader(PROJECT_ROOT . '/templates/');
 $twig = new Environment($loader, array(
-    'cache' => __DIR__ . '/../var/cache/',
+    'cache' => PROJECT_ROOT . '/var/cache/',
 ));
+
+// Setup message formatter utils
+$mf = new MessageFormatterUtils($twig);
 
 // Setup message sender service
 $mss = new MessageSenderService();
@@ -42,6 +49,6 @@ $mss = new MessageSenderService();
 $telegram = new Telegram(getenv('TELEGRAM_BOT_API_KEY'), getenv('TELEGRAM_BOT_USERNAME'));
 
 // Notify users
-$mrs = new MilestoneReminderService($em, $mss, $twig);
+$mrs = new MilestoneReminderService($em, $mf, $mss);
 $mrs->notifyUsersMilestonesToday();
 $mrs->notifyUsersMilestonesClose();

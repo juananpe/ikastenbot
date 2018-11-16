@@ -7,8 +7,7 @@ namespace TelegramBotGanttProject\Service;
 use Doctrine\ORM\EntityManager;
 use TelegramBotGanttProject\Entity\Milestone;
 use TelegramBotGanttProject\Service\MessageSenderService;
-use Twig\Environment as TemplatingEngine;
-use Twig\Loader\FilesystemLoader;
+use TelegramBotGanttProject\Utils\MessageFormatterUtils;
 
 class MilestoneReminderService
 {
@@ -26,13 +25,6 @@ class MilestoneReminderService
     protected $em;
 
     /**
-     * Twig templating engine
-     *
-     * @var TemplatingEngine
-     */
-    protected $twig;
-
-    /**
      * Message sender service
      *
      * @var MessageSenderService
@@ -43,14 +35,14 @@ class MilestoneReminderService
      * Construct MilestoneReminderService object
      *
      * @param EntityManager         $em     Doctrine entity manager
+     * @param MessageFormatterUtils $mfu    Message formatter utils
      * @param MessageSenderService  $mss    Message sender service
-     * @param Twig                  $twig   Templating engine
      */
-    public function __construct(EntityManager $em, MessageSenderService $mss, TemplatingEngine $twig)
+    public function __construct(EntityManager $em, MessageFormatterUtils $mfu, MessageSenderService $mss)
     {
         $this->em = $em;
+        $this->mf = $mfu;
         $this->mss = $mss;
-        $this->twig = $twig;
     }
 
     /**
@@ -97,18 +89,14 @@ class MilestoneReminderService
     {
         $milestones = $this->findMilestonesReachToday();
 
-        $text = $this->twig->render('notifications/milestoneTodayText.twig');
-        $text .= PHP_EOL;
-
         foreach ($milestones as $milestone) {
-            $text .= $this->twig->render('notifications/milestone.twig', [
-                'milestone' => $milestone
-            ]);
-            $text .= PHP_EOL;
-        }
+            $text = '';
+            $this->mf->appendTwigFile($text, 'notifications/milestoneTodayText.twig');
+            $this->mf->appendMilestone($text, $milestone);
 
-        $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML');
-        $this->mss->sendMessage();
+            $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
+        }
     }
 
     /**
@@ -119,18 +107,13 @@ class MilestoneReminderService
     {
         $results = $this->findMilestonesToNotifyAbout();
 
-        $text = $this->twig->render('notifications/milestonesCloseText.twig');
-        $text .= PHP_EOL;
-
         foreach ($results as $row) {
-            $text .= $this->twig->render('notifications/milestone.twig', [
-                'milestone' => $row[0],
-                'daysLeft'  => $row[1]
-            ]);
-            $text .= PHP_EOL;
-        }
+            $text = '';
+            $this->mf->appendTwigFile($text, 'notifications/milestonesCloseText.twig');
+            $this->mf->appendMilestone($text, $row[0], $row[1]);
 
-        $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
-        $this->mss->sendMessage();
+            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
+        }
     }
 }
