@@ -8,11 +8,10 @@ use Longman\TelegramBot\Telegram;
 use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
 use TelegramBotGanttProject\Utils\XmlUtils;
+use TelegramBotGanttProject\Tests\DatabaseTestCase;
 
-final class XmlUtilsDbTest extends TestCase
+final class XmlUtilsDbTest extends DatabaseTestCase
 {
-    use TestCaseTrait;
-
     /**
      * Directory path containing test files
      *
@@ -68,23 +67,9 @@ final class XmlUtilsDbTest extends TestCase
         $statement->execute();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->pdo->rollBack();
-    }
-
-    /**
-     * @return PHPUnit\DbUnit\Database\Connection
-     */
-    public function getConnection()
-    {
-        $pdo = new \PDO(
-            'mysql:dbname=' . $GLOBALS['MYSQL_TEST_DATABASE_NAME'] . ';host=' . $GLOBALS['MYSQL_TEST_HOST'],
-            $GLOBALS['MYSQL_TEST_USER'],
-            $GLOBALS['MYSQL_TEST_PASSWORD']
-        );
-
-        return $this->createDefaultDBConnection($pdo, ':memory:');
     }
 
     /**

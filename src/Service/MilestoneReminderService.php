@@ -60,7 +60,7 @@ class MilestoneReminderService
      *
      * @return Milestone[] Array of Milestones
      */
-    private function findMilestonesToNotifyAbout()
+    public function findMilestonesToNotifyAbout()
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -80,7 +80,7 @@ class MilestoneReminderService
      * @return mixed[Milestone][int] Nested array of Milestones and their
      *                               corresponding days to be reached.
      */
-    private function findMilestonesReachToday()
+    public function findMilestonesReachToday()
     {
         $qb = $this->em->createQueryBuilder();
 
