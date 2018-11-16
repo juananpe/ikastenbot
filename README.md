@@ -19,6 +19,12 @@ of creating reminders for users.
 3. Repeat steps from `3.` to `5.` from the previous section in the production
     server.
 
+# `set.php` and `unset.php`
+These files are located under `src/Utils`, and will allow you to set or unset
+the webhook for the Telegram API. Execute them with `php` as follows:
+
+`php src/Utils/set.php` or `php src/Utils/unset.php`
+
 # Setting up cron jobs to remind users about their milestones
 In order to notify users whenever their planned milestones are close, a cron
 job can be set to achieve this. `LaunchMilestoneReminderService.php` deals with

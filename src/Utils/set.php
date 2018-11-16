@@ -6,13 +6,13 @@
  */
 
 // Load composer
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Symfony\Component\Dotenv\Dotenv;
 
 if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
     $dotenv = new Dotenv();
-    $dotenv->load(__DIR__.'/.env');
+    $dotenv->load(__DIR__.'/../../.env');
 }
 
 // Add you bot's API key and name
