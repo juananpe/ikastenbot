@@ -55,13 +55,6 @@ class SendGpFileCommand extends UserCommand
     protected $private_only = true;
 
     /**
-     * Twig templating engine
-     *
-     * @var Environment
-     */
-    protected $twig;
-
-    /**
      * Prepare a formatted message with the milestones to be reminded of
      *
      * @param   array   $milestones Array of Milestone objects
@@ -69,9 +62,22 @@ class SendGpFileCommand extends UserCommand
      */
     private function prepareFormattedMessage(array $milestones): string
     {
-        return $this->twig->render('notifications/remindedOfNotification.txt.twig', [
-            'milestones' => $milestones
-        ]);
+        $loader = new FilesystemLoader(PROJECT_ROOT . '/templates/');
+        $twig = new Environment($loader, array(
+            'cache' => PROJECT_ROOT . '/var/cache/',
+        ));
+
+        $text = 'You will be reminded of the following milestones:';
+        $text .= PHP_EOL . PHP_EOL;
+
+        foreach ($milestones as $milestone) {
+            $text .= $twig->render('notifications/milestone.twig', [
+                'milestone' => $milestone
+            ]);
+            $text .= PHP_EOL . PHP_EOL;
+        }
+
+        return $text;
     }
 
     public function execute()
@@ -87,11 +93,6 @@ class SendGpFileCommand extends UserCommand
         $user_id    = $user->getId();
 
         $this->conversation = new Conversation($user_id, $chat_id, $this->getName());
-
-        $loader = new FilesystemLoader(PROJECT_ROOT . '/templates/');
-        $this->twig = new Environment($loader, array(
-            'cache' => PROJECT_ROOT . '/var/cache/',
-        ));
 
         $ms = new MessageSenderService();
 
