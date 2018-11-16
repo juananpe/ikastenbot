@@ -21,7 +21,7 @@ class SendGpFileCommand extends UserCommand
     /**
      * @inheritDoc
      */
-    protected $name         = 'SendGpFile';
+    protected $name         = 'sendgpfile';
 
     /**
      * @inheritDoc
