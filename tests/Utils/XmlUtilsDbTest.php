@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TelegramBotGanttProject\Tests\Utils;
 
 use Longman\TelegramBot\Telegram;
-use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
 use TelegramBotGanttProject\Utils\XmlUtils;
 use TelegramBotGanttProject\Tests\DatabaseTestCase;

@@ -7,9 +7,7 @@ namespace Longman\TelegramBot\Commands\UserCommands;
 
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Request;
-use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Commands\UserCommand;
-use Longman\TelegramBot\Entities\Update;
 use TelegramBotGanttProject\Exception\IncorrectFileException;
 use TelegramBotGanttProject\Exception\NoMilestonesException;
 use TelegramBotGanttProject\Service\MessageSenderService;

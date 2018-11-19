@@ -8,6 +8,8 @@
 // Load composer
 require_once __DIR__ . '/../../vendor/autoload.php';
 
+use Longman\TelegramBot\Exception\TelegramException;
+use Longman\TelegramBot\Telegram;
 use Symfony\Component\Dotenv\Dotenv;
 
 if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
@@ -21,7 +23,7 @@ $bot_username = getenv('TELEGRAM_BOT_USERNAME');
 
 try {
     // Create Telegram API object
-    $telegram = new Longman\TelegramBot\Telegram($bot_api_key, $bot_username);
+    $telegram = new Telegram($bot_api_key, $bot_username);
 
     // Delete webhook
     $result = $telegram->deleteWebhook();
@@ -29,6 +31,6 @@ try {
     if ($result->isOk()) {
         echo $result->getDescription();
     }
-} catch (Longman\TelegramBot\Exception\TelegramException $e) {
+} catch (TelegramException $e) {
     echo $e->getMessage();
 }

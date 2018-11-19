@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Longman\TelegramBot\Entities\Chat;
 use PHPUnit\Framework\TestCase;
 use TelegramBotGanttProject\Exception\IncorrectFileException;
 use TelegramBotGanttProject\Exception\NoMilestonesException;
@@ -102,8 +101,6 @@ final class XmlUtilsTest extends TestCase
 
     public function testIncorrectFileException()
     {
-        $chat = $this->createMock(Chat::class);
-
         $this->expectException(IncorrectFileException::class);
 
         $this->xu->extractStoreMilestones(
@@ -114,8 +111,6 @@ final class XmlUtilsTest extends TestCase
 
     public function testNoMilestonesException()
     {
-        $chat = $this->createMock(Chat::class);
-
         $this->expectException(NoMilestonesException::class);
 
         $this->xu->extractStoreMilestones(

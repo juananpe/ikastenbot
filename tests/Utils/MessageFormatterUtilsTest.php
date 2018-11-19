@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-use Longman\TelegramBot\Entities\Chat;
 use PHPUnit\Framework\TestCase;
 use TelegramBotGanttProject\Entity\Milestone;
-use TelegramBotGanttProject\Exception\IncorrectFileException;
-use TelegramBotGanttProject\Exception\NoMilestonesException;
 use TelegramBotGanttProject\Utils\MessageFormatterUtils;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;

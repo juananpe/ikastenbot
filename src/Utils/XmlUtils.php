@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TelegramBotGanttProject\Utils;
 
 use Longman\TelegramBot\DB;
-use Longman\TelegramBot\Entities\Chat;
 use TelegramBotGanttProject\Entity\Milestone;
 use TelegramBotGanttProject\Exception\IncorrectFileException;
 use TelegramBotGanttProject\Exception\NoMilestonesException;
