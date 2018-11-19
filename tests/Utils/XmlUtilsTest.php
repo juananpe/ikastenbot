@@ -60,7 +60,7 @@ final class XmlUtilsTest extends TestCase
         $result = $this->xu->deserializeGanFile(
             $this->xml_dir_gan . 'ThreeMilestones.gan'
         );
-        
+
         $this->assertEquals(count($result), 3);
     }
 
@@ -69,7 +69,7 @@ final class XmlUtilsTest extends TestCase
         $result = $this->xu->deserializeGanFile(
             $this->xml_dir_gan . 'FiveMilestones.gan'
         );
-        
+
         $this->assertEquals(count($result), 5);
     }
 
@@ -87,7 +87,7 @@ final class XmlUtilsTest extends TestCase
         $result = $this->xu->deserializeMspdiFile(
             $this->xml_dir_mspdi . 'ThreeMilestones.xml'
         );
-        
+
         $this->assertEquals(count($result), 3);
     }
 
@@ -105,7 +105,7 @@ final class XmlUtilsTest extends TestCase
         $chat = $this->createMock(Chat::class);
 
         $this->expectException(IncorrectFileException::class);
-        
+
         $this->xu->extractStoreMilestones(
             $this->files_dir . 'incorrectFile.txt',
             12345
@@ -120,6 +120,26 @@ final class XmlUtilsTest extends TestCase
 
         $this->xu->extractStoreMilestones(
             $this->xml_dir_gan . 'NoMilestones.gan',
+            12345
+        );
+    }
+
+    public function testInvalidXmlFile()
+    {
+        $this->expectException(IncorrectFileException::class);
+
+        $this->xu->extractStoreMilestones(
+            $this->files_dir . '/incorrectXml.xml',
+            12345
+        );
+    }
+
+    public function testInvalidGanFile()
+    {
+        $this->expectException(IncorrectFileException::class);
+
+        $this->xu->extractStoreMilestones(
+            $this->files_dir . '/incorrectGan.gan',
             12345
         );
     }

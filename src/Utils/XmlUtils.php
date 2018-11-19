@@ -21,10 +21,20 @@ class XmlUtils
      *
      * @param   string $file_path   The path of the Gan file
      * @return  array               Array containing Milestone objects
+     *
+     * @throws IncorrectFileException if the parsing generated any error
      */
     public function deserializeGanFile(string $file_path): array
     {
+        \libxml_use_internal_errors(true);
+
         $data = simplexml_load_file($file_path);
+
+        if (count(\libxml_get_errors())) {
+            libxml_clear_errors();
+            \libxml_use_internal_errors(false);
+            throw new IncorrectFileException('Please send a valid GanttProject Gan file.');
+        }
 
         $xmlMilestones = $data->xpath('//task[@meeting=\'true\']');
 
@@ -47,10 +57,21 @@ class XmlUtils
      *
      * @param   string  $file_path  The path of the XML file
      * @return  array   $milestones Array containing Milestone objects
+     *
+     * @throws IncorrectFileException if the parsing generated any error
      */
     public function deserializeMspdiFile(string $file_path): array
     {
+        \libxml_use_internal_errors(true);
+
         $data = simplexml_load_file($file_path);
+
+        if (count(\libxml_get_errors())) {
+            libxml_clear_errors();
+            \libxml_use_internal_errors(false);
+            throw new IncorrectFileException('Please send a valid GanttProject XML file.');
+        }
+
         $data->registerXPathNamespace('project', 'http://schemas.microsoft.com/project');
 
         $xmlMilestones = $data->xpath('//project:Task[./project:Milestone=\'1\']');
@@ -90,9 +111,7 @@ class XmlUtils
         } elseif ('xml' === $file_extension) {
             $milestones = $this->deserializeMspdiFile($file_path);
         } else {
-            throw new IncorrectFileException(
-                'The provided file isn\'t a GanttProject file or an MSPDI XML file. Please send another file.'
-            );
+            throw new IncorrectFileException('Please send a valid GanttProject or XML MSPDI file.');
         }
 
         if (empty($milestones)) {
