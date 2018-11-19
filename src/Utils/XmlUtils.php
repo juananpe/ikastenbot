@@ -18,10 +18,11 @@ class XmlUtils
     /**
      * Deserialize a Gan format exported XML file
      *
-     * @param   string $file_path   The path of the Gan file
-     * @return  array               Array containing Milestone objects
+     * @param   string                  $file_path   The path of the Gan file
      *
-     * @throws IncorrectFileException if the parsing generated any error
+     * @return  Milestone[]             Array containing Milestone objects
+     *
+     * @throws  IncorrectFileException  if the parsing generated any error
      */
     public function deserializeGanFile(string $file_path): array
     {
@@ -54,10 +55,11 @@ class XmlUtils
     /**
      * Deserialize MSPDI format exported XML file
      *
-     * @param   string  $file_path  The path of the XML file
-     * @return  array   $milestones Array containing Milestone objects
+     * @param   string                  $file_path  The path of the XML file
      *
-     * @throws IncorrectFileException if the parsing generated any error
+     * @return  Milestone[]             $milestones Array containing Milestone objects
+     *
+     * @throws  IncorrectFileException  if the parsing generated any error
      */
     public function deserializeMspdiFile(string $file_path): array
     {
@@ -92,12 +94,14 @@ class XmlUtils
     /**
      * Extract milestones from the XML file and store them in the database
      *
-     * @param   string  $file_path The path to the XML file
-     * @param   int     $chat_id   The id of the chat to which the milestones
-     *                             will be assigned to
-     * @return  array              Array of Milestones
-     * @throws  NoMilestonesException When no milestones have been found in the
-     *                               XML file.
+     * @param   string  $file_path      The path to the XML file
+     * @param   int     $chat_id        The id of the chat to which the milestones
+     *                                  will be assigned to
+     *
+     * @return  Milestone[]             Array of Milestones
+     *
+     * @throws  NoMilestonesException   When no milestones have been found in the
+     *                                  XML file.
      */
     public function extractStoreMilestones(string $file_path, int $chat_id): array
     {

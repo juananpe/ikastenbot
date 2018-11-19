@@ -54,8 +54,8 @@ class SendGpFileCommand extends UserCommand
     /**
      * Prepare a formatted message with the milestones to be reminded of
      *
-     * @param   array   $milestones Array of Milestone objects
-     * @return  string              Formatted message in HTML
+     * @param   TelegramBotGanttProject\Entity\Milestone[]  $milestones Array of Milestone objects
+     * @return  string                                      Formatted message in HTML
      */
     private function prepareFormattedMessage(array $milestones): string
     {

@@ -32,12 +32,13 @@ class MessageFormatterUtils
     /**
      * Append twig file to the given text. It appends a new line as well.
      *
-     * @param string &$text          Text to which the file contents will
+     * @param string &$text         Text to which the file contents will
      *                              be appended
      * @param string $twigFilePath  Path of the twig file
+     *
      * @return void
      */
-    public function appendTwigFile(string &$text, string $twigFilePath)
+    public function appendTwigFile(string &$text, string $twigFilePath): void
     {
         $text .= $this->twig->render($twigFilePath);
         $text .= PHP_EOL;
@@ -47,12 +48,13 @@ class MessageFormatterUtils
      * Append a milestone to the given text. It appends a new line after each
      * milestone as well.
      *
-     * @param string    &$text       Text to which the milestone will be appended
+     * @param string    &$text      Text to which the milestone will be appended
      * @param Milestone $milestone  The milestone
      * @param string    $daysLeft   Days left to reach the milestone
-     * @return string
+     *
+     * @return void
      */
-    public function appendMilestone(string &$text, Milestone $milestone, string $daysLeft = null)
+    public function appendMilestone(string &$text, Milestone $milestone, string $daysLeft = null): void
     {
         $parameters = [
             'milestone' => $milestone

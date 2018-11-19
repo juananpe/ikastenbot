@@ -31,6 +31,7 @@ class MessageSenderService
      *                                              Telegram's API supports 'HTML' or
      *                                              'Markdown' options
      * @param   boolean   $selectiveReply           Enable or disable selective reply
+     *
      * @return  void
      */
     public function prepareMessage(int $chat_id, string $text, string $parseMode = null, bool $selectiveReply = null): void
