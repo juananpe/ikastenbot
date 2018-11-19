@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<dataset>
+    <table name="milestone">
+        <column>chat_id</column>
+        <column>milestone_name</column>
+        <column>milestone_date</column>
+        <row>
+            <value>12345</value>
+            <null />
+            <value>2021-05-18 00:00:00</value>
+        </row>
+        <row>
+            <value>12345</value>
+            <null />
+            <value>2021-05-19 00:00:00</value>
+        </row>
+        <row>
+            <value>12345</value>
+            <null />
+            <value>2021-05-21 00:00:00</value>
+        </row>
+        <row>
+            <value>12345</value>
+            <null />
+            <value>2021-05-24 00:00:00</value>
+        </row>
+        <row>
+            <value>12345</value>
+            <null />
+            <value>2021-05-28 00:00:00</value>
+        </row>
+    </table>
+</dataset>

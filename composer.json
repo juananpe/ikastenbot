@@ -1,0 +1,40 @@
+{
+    "name": "mikelalejobr/php-telegram-bot-ganttproject",
+    "description": "A take on importing GanttProject's milestones to remind the users when the deadlines are close",
+    "type": "project",
+    "require": {
+        "longman/telegram-bot": "*",
+        "doctrine/orm": "^2.6",
+        "symfony/yaml": "^4.1",
+        "twig/twig": "^2.0",
+        "spatie/pdf-to-text": "^1.1"
+    },
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "MikelAlejoBR",
+            "email": "mikelalejobr@outlook.com"
+        },
+        {
+            "name": "Amaia De Pablo Ruiz"
+        }
+    ],
+    "require-dev": {
+        "symfony/dotenv": "^4.1",
+        "phpunit/phpunit": "^7",
+        "phpunit/dbunit": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "TelegramBotGanttProject\\": "src/"
+        },
+        "classmap":  [
+            "src/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TelegramBotGanttProject\\Tests\\": "tests/"
+        }
+    }
+}

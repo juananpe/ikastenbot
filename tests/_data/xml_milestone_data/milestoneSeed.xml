@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<dataset>
+    <table name="milestone">
+        <column>id</column>
+        <column>chat_id</column>
+        <column>milestone_name</column>
+        <column>milestone_date</column>
+    </table>
+</dataset>

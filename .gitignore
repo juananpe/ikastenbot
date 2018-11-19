@@ -1,0 +1,8 @@
+# Files
+.env
+phpunit.xml
+
+# Directories
+files/
+var/
+vendor/
