@@ -15,7 +15,7 @@ final class XmlUtilsTest extends TestCase
      *
      * @var string
      */
-    private $files_dir;
+    private $data_dir;
 
     /**
      * Directory containing MSPDI XML files to be imported
@@ -40,9 +40,9 @@ final class XmlUtilsTest extends TestCase
 
     public function setUp()
     {
-        $this->files_dir        = __DIR__ . '/../_files/xml_milestone_files';
-        $this->xml_dir_mspdi    = $this->files_dir . '/mspdi/';
-        $this->xml_dir_gan      = $this->files_dir . '/gan/';
+        $this->data_dir        = __DIR__ . '/../_data/xml_milestone_data';
+        $this->xml_dir_mspdi    = $this->data_dir . '/mspdi/';
+        $this->xml_dir_gan      = $this->data_dir . '/gan/';
         $this->xu = new XmlUtils();
     }
 
@@ -107,7 +107,7 @@ final class XmlUtilsTest extends TestCase
         $this->expectException(IncorrectFileException::class);
 
         $this->xu->extractStoreMilestones(
-            $this->files_dir . 'incorrectFile.txt',
+            $this->data_dir . 'incorrectFile.txt',
             12345
         );
     }
@@ -129,7 +129,7 @@ final class XmlUtilsTest extends TestCase
         $this->expectException(IncorrectFileException::class);
 
         $this->xu->extractStoreMilestones(
-            $this->files_dir . '/incorrectXml.xml',
+            $this->data_dir . '/incorrectXml.xml',
             12345
         );
     }
@@ -139,7 +139,7 @@ final class XmlUtilsTest extends TestCase
         $this->expectException(IncorrectFileException::class);
 
         $this->xu->extractStoreMilestones(
-            $this->files_dir . '/incorrectGan.gan',
+            $this->data_dir . '/incorrectGan.gan',
             12345
         );
     }

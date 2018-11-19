@@ -17,7 +17,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
      *
      * @var string
      */
-    private $files_dir;
+    private $data_dir;
 
     /**
      * Directory containing Gan XML files to be imported
@@ -54,8 +54,8 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
     public function setUp(): void
     {
-        $this->files_dir    = __DIR__ . '/../_files/xml_milestone_files';
-        $this->xml_dir_gan  = $this->files_dir . '/gan/';
+        $this->data_dir    = __DIR__ . '/../_data/xml_milestone_data';
+        $this->xml_dir_gan  = $this->data_dir . '/gan/';
         $this->xu = new XmlUtils();
 
         $this->connection = $this->getConnection();
@@ -94,7 +94,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
             'milestone', 'SELECT chat_id, milestone_name, milestone_date FROM milestone'
         );
 
-        $expectedTable = $this->createFlatXmlDataSet(dirname(__FILE__).'/../_files/xml_milestone_files/expectedMilestones.xml')
+        $expectedTable = $this->createFlatXmlDataSet(dirname(__FILE__).'/../_data/xml_milestone_data/expectedMilestones.xml')
                                 ->getTable('milestone');
 
         $this->assertTablesEqual($expectedTable, $queryTable);
@@ -115,7 +115,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
             'milestone', 'SELECT chat_id, milestone_name, milestone_date FROM milestone'
         );
 
-        $expectedTable = $this->createXmlDataSet(dirname(__FILE__).'/../_files/xml_milestone_files/expectedMilestonesWithNoName.xml')
+        $expectedTable = $this->createXmlDataSet(dirname(__FILE__).'/../_data/xml_milestone_data/expectedMilestonesWithNoName.xml')
                                 ->getTable('milestone');
 
         $this->assertTablesEqual($expectedTable, $queryTable);
