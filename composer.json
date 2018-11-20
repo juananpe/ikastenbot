@@ -1,6 +1,6 @@
 {
-    "name": "mikelalejobr/php-telegram-bot-ganttproject",
-    "description": "A take on importing GanttProject's milestones to remind the users when the deadlines are close",
+    "name": "ikastenbot/bot",
+    "description": "A bot for helping students and teachers with the management of final bachelor or final master's degree projects",
     "type": "project",
     "require": {
         "longman/telegram-bot": "*",
