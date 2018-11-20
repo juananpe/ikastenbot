@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TelegramBotGanttProject\Utils;
+namespace IkastenBot\Utils;
 
-use TelegramBotGanttProject\Entity\Milestone;
+use IkastenBot\Entity\Milestone;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

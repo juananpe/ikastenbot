@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TelegramBotGanttProject\Tests\Utils;
+namespace IkastenBot\Tests\Utils;
 
+use IkastenBot\Utils\XmlUtils;
+use IkastenBot\Tests\DatabaseTestCase;
 use Longman\TelegramBot\Telegram;
 use PHPUnit\Framework\TestCase;
-use TelegramBotGanttProject\Utils\XmlUtils;
-use TelegramBotGanttProject\Tests\DatabaseTestCase;
 
 final class XmlUtilsDbTest extends DatabaseTestCase
 {

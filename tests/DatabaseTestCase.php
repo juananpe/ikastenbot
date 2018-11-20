@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TelegramBotGanttProject\Tests;
+namespace IkastenBot\Tests;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;

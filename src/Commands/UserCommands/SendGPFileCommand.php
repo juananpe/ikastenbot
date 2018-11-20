@@ -5,14 +5,14 @@ declare(strict_types=1);
 // Longman's namespace must be used as otherwise the command is not recognized
 namespace Longman\TelegramBot\Commands\UserCommands;
 
+use IkastenBot\Exception\IncorrectFileException;
+use IkastenBot\Exception\NoMilestonesException;
+use IkastenBot\Service\MessageSenderService;
+use IkastenBot\Utils\MessageFormatterUtils;
+use IkastenBot\Utils\XmlUtils;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Commands\UserCommand;
-use TelegramBotGanttProject\Exception\IncorrectFileException;
-use TelegramBotGanttProject\Exception\NoMilestonesException;
-use TelegramBotGanttProject\Service\MessageSenderService;
-use TelegramBotGanttProject\Utils\MessageFormatterUtils;
-use TelegramBotGanttProject\Utils\XmlUtils;
 
 class SendGpFileCommand extends UserCommand
 {
@@ -54,7 +54,7 @@ class SendGpFileCommand extends UserCommand
     /**
      * Prepare a formatted message with the milestones to be reminded of
      *
-     * @param   TelegramBotGanttProject\Entity\Milestone[]  $milestones Array of Milestone objects
+     * @param   IkastenBot\Entity\Milestone[] $milestones   Array of Milestone objects
      * @return  string                                      Formatted message in HTML
      */
     private function prepareFormattedMessage(array $milestones): string

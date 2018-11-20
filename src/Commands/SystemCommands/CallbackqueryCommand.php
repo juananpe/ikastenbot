@@ -10,10 +10,10 @@
 
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
+use IkastenBot\Utils\DBikastenbot;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Conversation;
-use TelegramBotGanttProject\Utils\DBikastenbot;
 
 
 /**

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use IkastenBot\Entity\Milestone;
+use IkastenBot\Utils\MessageFormatterUtils;
 use PHPUnit\Framework\TestCase;
-use TelegramBotGanttProject\Entity\Milestone;
-use TelegramBotGanttProject\Utils\MessageFormatterUtils;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

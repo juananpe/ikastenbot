@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use IkastenBot\Service\MessageSenderService;
 use Longman\TelegramBot\Entities\Keyboard;
 use PHPUnit\Framework\TestCase;
-use TelegramBotGanttProject\Service\MessageSenderService;
 
 class MessageSenderServiceTest extends TestCase
 {
