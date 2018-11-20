@@ -22,7 +22,7 @@ directory. This was done to follow the [front controller pattern][3].
 1. Substitute the contents of `.env.dist` with your own data.
 2. Rename `.env.dist` to `.env`.
 3. Import Longman's `.sql` file with
-    `mysql -u USER -p DATABASE < structure.sql`.
+    `mysql -u USER -p DATABASE < vendor/longman/telegram-bot/structure.sql`.
 4. Import `structure.sql` file with
     `mysql -u USER -p DATABASE < structure.sql`.
 
