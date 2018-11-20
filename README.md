@@ -23,15 +23,13 @@ directory. This was done to follow the [front controller pattern][3].
 2. Rename `.env.dist` to `.env`.
 3. Import Longman's `.sql` file with
     `mysql -u USER -p DATABASE < structure.sql`.
-4. Import `ikastenbot.sql` file with
-    `mysql -u USER -p DATABASE < ikastenbot.sql`.
-5. Import `setUpDatabase.sql` file with
-    `mysql -u USER -p DATABASE < setUpDatabase.sql`.
+4. Import `structure.sql` file with
+    `mysql -u USER -p DATABASE < structure.sql`.
 
 ## For production
 1. Set [environment variables][2] that match `.env.dist` file.
 2. Point the web server to the `public/` directory of this project.
-3. Repeat steps from `3.` to `5.` from the previous section in the production
+3. Repeat steps from `3.` and `4.` from the previous section in the production
     server.
 
 ## Setting up cron jobs to remind users about their milestones
