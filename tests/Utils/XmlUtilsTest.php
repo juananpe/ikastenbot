@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use IkastenBot\Exception\IncorrectFileException;
+use IkastenBot\Exception\NoMilestonesException;
+use IkastenBot\Utils\XmlUtils;
 use PHPUnit\Framework\TestCase;
-use TelegramBotGanttProject\Exception\IncorrectFileException;
-use TelegramBotGanttProject\Exception\NoMilestonesException;
-use TelegramBotGanttProject\Utils\XmlUtils;
 
 final class XmlUtilsTest extends TestCase
 {

@@ -9,7 +9,7 @@
 namespace Longman\TelegramBot\Commands\UserCommands;
 
 
-
+use IkastenBot\Utils\DBikastenbot;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\InlineKeyboard;
@@ -17,7 +17,6 @@ use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
-use TelegramBotGanttProject\Utils\DBikastenbot;
 
 
 class registerTFGCommand extends UserCommand

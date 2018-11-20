@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use TelegramBotGanttProject\Service\MilestoneReminderService;
-use TelegramBotGanttProject\Service\MessageSenderService;
-use TelegramBotGanttProject\Tests\DatabaseTestCase;
-use TelegramBotGanttProject\Utils\MessageFormatterUtils;
+use IkastenBot\Service\MilestoneReminderService;
+use IkastenBot\Service\MessageSenderService;
+use IkastenBot\Tests\DatabaseTestCase;
+use IkastenBot\Utils\MessageFormatterUtils;
 
 class MilestoneReminderServiceTest extends DatabaseTestCase
 {

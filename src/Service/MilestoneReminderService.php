@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TelegramBotGanttProject\Service;
+namespace IkastenBot\Service;
 
+use IkastenBot\Entity\Milestone;
+use IkastenBot\Service\MessageSenderService;
+use IkastenBot\Utils\MessageFormatterUtils;
 use Doctrine\ORM\EntityManager;
-use TelegramBotGanttProject\Entity\Milestone;
-use TelegramBotGanttProject\Service\MessageSenderService;
-use TelegramBotGanttProject\Utils\MessageFormatterUtils;
 
 class MilestoneReminderService
 {

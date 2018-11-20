@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TelegramBotGanttProject\Utils;
+namespace IkastenBot\Utils;
 
+use IkastenBot\Entity\Milestone;
+use IkastenBot\Exception\IncorrectFileException;
+use IkastenBot\Exception\NoMilestonesException;
 use Longman\TelegramBot\DB;
-use TelegramBotGanttProject\Entity\Milestone;
-use TelegramBotGanttProject\Exception\IncorrectFileException;
-use TelegramBotGanttProject\Exception\NoMilestonesException;
 
 class XmlUtils
 {

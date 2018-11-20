@@ -26,7 +26,7 @@
     },
     "autoload": {
         "psr-4": {
-            "TelegramBotGanttProject\\": "src/"
+            "IkastenBot\\": "src/"
         },
         "classmap":  [
             "src/"
@@ -34,7 +34,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "TelegramBotGanttProject\\Tests\\": "tests/"
+            "IkastenBot\\Tests\\": "tests/"
         }
     }
 }

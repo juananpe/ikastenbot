@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TelegramBotGanttProject\Exception;
+namespace IkastenBot\Exception;
 
 class NoMilestonesException extends \Exception
 {
