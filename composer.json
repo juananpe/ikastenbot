@@ -12,11 +12,11 @@
     "license": "GPLv3",
     "authors": [
         {
-            "name": "MikelAlejoBR",
-            "email": "mikelalejobr@outlook.com"
+            "name": "Amaia De Pablo Ruiz"
         },
         {
-            "name": "Amaia De Pablo Ruiz"
+            "name": "MikelAlejoBR",
+            "email": "mikelalejobr@outlook.com"
         }
     ],
     "require-dev": {
