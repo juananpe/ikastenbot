@@ -47,7 +47,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testZeroGanDeserializedMilestones()
     {
-        $result = $this->xu->deserializeGanFile(
+        $result = $this->xu->extractMilestonesFromGanFile(
             $this->xml_dir_gan . 'NoMilestones.gan'
         );
 
@@ -56,7 +56,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testThreeGanDeserializedMilestones()
     {
-        $result = $this->xu->deserializeGanFile(
+        $result = $this->xu->extractMilestonesFromGanFile(
             $this->xml_dir_gan . 'ThreeMilestones.gan'
         );
 
@@ -65,7 +65,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testFiveGanDeserializedMilestones()
     {
-        $result = $this->xu->deserializeGanFile(
+        $result = $this->xu->extractMilestonesFromGanFile(
             $this->xml_dir_gan . 'FiveMilestones.gan'
         );
 
@@ -74,7 +74,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testZeroMspdiDeserializedMilestones()
     {
-        $result = $this->xu->deserializeMspdiFile(
+        $result = $this->xu->extractMilestonesFromMspdiFile(
             $this->xml_dir_mspdi . 'NoMilestones.xml'
         );
 
@@ -83,7 +83,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testThreeMspdiDeserializedMilestones()
     {
-        $result = $this->xu->deserializeMspdiFile(
+        $result = $this->xu->extractMilestonesFromMspdiFile(
             $this->xml_dir_mspdi . 'ThreeMilestones.xml'
         );
 
@@ -92,7 +92,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testFiveMspdiDeserializedMilestones()
     {
-        $result = $this->xu->deserializeMspdiFile(
+        $result = $this->xu->extractMilestonesFromMspdiFile(
             $this->xml_dir_mspdi . 'FiveMilestones.xml'
         );
 

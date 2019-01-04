@@ -24,7 +24,7 @@ class XmlUtils
      *
      * @throws  IncorrectFileException  if the parsing generated any error
      */
-    public function deserializeGanFile(string $file_path): array
+    public function extractMilestonesFromGanFile(string $file_path): array
     {
         \libxml_use_internal_errors(true);
 
@@ -61,7 +61,7 @@ class XmlUtils
      *
      * @throws  IncorrectFileException  if the parsing generated any error
      */
-    public function deserializeMspdiFile(string $file_path): array
+    public function extractMilestonesFromMspdiFile(string $file_path): array
     {
         \libxml_use_internal_errors(true);
 
@@ -110,9 +110,9 @@ class XmlUtils
 
         $milestones = [];
         if ('gan' === $file_extension) {
-            $milestones = $this->deserializeGanFile($file_path);
+            $milestones = $this->extractMilestonesFromGanFile($file_path);
         } elseif ('xml' === $file_extension) {
-            $milestones = $this->deserializeMspdiFile($file_path);
+            $milestones = $this->extractMilestonesFromMspdiFile($file_path);
         } else {
             throw new IncorrectFileException('Please send a valid GanttProject or XML MSPDI file.');
         }
