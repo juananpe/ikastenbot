@@ -138,4 +138,44 @@ final class XmlUtilsTest extends TestCase
             12345
         );
     }
+
+    public function testExtractNoTasksGanFile()
+    {
+        $result = $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'NoTasks.gan',
+            12345
+        );
+
+        $this->assertEquals(count($result), 0);
+    }
+
+    public function testExtractSevenTasksGanFile()
+    {
+        $result = $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'SevenTasks.gan',
+            12345
+        );
+
+        $this->assertEquals(count($result), 7);
+    }
+
+    public function testExtractTenTasksGanFile()
+    {
+        $result = $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'TenTasks.gan',
+            12345
+        );
+
+        $this->assertEquals(count($result), 10);
+    }
+
+    public function testExtractTwelveTasksGanFile()
+    {
+        $result = $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'TwelveTasks.gan',
+            12345
+        );
+
+        $this->assertEquals(count($result), 12);
+    }
 }
