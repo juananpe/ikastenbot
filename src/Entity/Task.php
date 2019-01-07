@@ -54,7 +54,7 @@ class Task
     /**
      * Duration of the task
      *
-     * @Column(type="int", name="task_duration")
+     * @Column(type="integer", name="task_duration")
      * @var int
      */
     protected $duration;
