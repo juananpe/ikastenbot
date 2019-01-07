@@ -48,7 +48,8 @@ class MilestoneReminderService
     /**
      * Finds milestones that are to be reached in 30, 15, 3 or 2 days.
      *
-     * @return Milestone[] Array of Milestones
+     * @return Milestone[][]    Nested array of Milestones and their
+     *                          corresponding days to be reached.
      */
     public function findMilestonesToNotifyAbout(): array
     {
@@ -67,8 +68,7 @@ class MilestoneReminderService
     /**
      * Finds milestones that are to be reached today.
      *
-     * @return mixed[][]    Nested array of Milestones and their
-     *                      corresponding days to be reached.
+     * @return Milestone[]
      */
     public function findMilestonesReachToday(): array
     {
