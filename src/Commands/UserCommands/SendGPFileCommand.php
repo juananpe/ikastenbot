@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace Longman\TelegramBot\Commands\UserCommands;
 
 use IkastenBot\Exception\IncorrectFileException;
-use IkastenBot\Exception\NoMilestonesException;
+use IkastenBot\Exception\NoTasksException;
 use IkastenBot\Service\MessageSenderService;
 use IkastenBot\Utils\MessageFormatterUtils;
 use IkastenBot\Utils\XmlUtils;
@@ -107,7 +107,7 @@ class SendGpFileCommand extends UserCommand
         $xmlManCon = new XmlUtils();
         try {
             $tasks = $xmlManCon->extractStoreTasks($file_path, $chat->getId());
-        } catch (NoMilestonesException $e) {
+        } catch (NoTasksException $e) {
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
             return $ms->sendMessage();
         } catch (IncorrectFileException $e) {
