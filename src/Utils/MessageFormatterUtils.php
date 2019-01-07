@@ -82,15 +82,15 @@ class MessageFormatterUtils
      */
     public function appendTask(string &$text, Task $task, string $daysLeft = null, bool $isMilestone = false): void
     {
+        $parameters['task'] = $task;
+
         if (!\is_null($daysLeft)) {
             $parameters['daysLeft'] = $daysLeft;
         }
 
         if ($isMilestone) {
-            $parameters['milestone'] = $task;
             $text .= $this->twig->render('notifications/milestone/milestone.twig', $parameters);
         } else {
-            $parameters['task'] = $task;
             $text .= $this->twig->render('notifications/task/task.twig', $parameters);
         }
 

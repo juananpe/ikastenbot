@@ -151,7 +151,7 @@ final class MessageFormattrUtilsTest extends TestCase
         $expectedText = '';
         $expectedText .= $this->twig->render(
             'notifications/milestone/milestone.twig',
-            ['milestone' => $milestone]
+            ['task' => $milestone]
         );
         $expectedText .= PHP_EOL;
 
@@ -174,7 +174,7 @@ final class MessageFormattrUtilsTest extends TestCase
         $expectedText .= $this->twig->render(
             'notifications/milestone/milestone.twig',
             [
-                'milestone' => $milestone,
+                'task' => $milestone,
                 'daysLeft'  => $daysLeft
             ]
         );
@@ -198,13 +198,13 @@ final class MessageFormattrUtilsTest extends TestCase
         $expectedText = 'Lorem ipsum dolor sit amet';
         $expectedText .= $this->twig->render(
             'notifications/milestone/milestone.twig',
-            ['milestone' => $milestone]
+            ['task' => $milestone]
         );
         $expectedText .= PHP_EOL;
         $expectedText .= $this->twig->render(
             'notifications/milestone/milestone.twig',
             [
-                'milestone' => $milestone,
+                'task' => $milestone,
                 'daysLeft'  => $daysLeft
             ]
         );
