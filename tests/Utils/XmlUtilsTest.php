@@ -47,7 +47,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testZeroGanDeserializedMilestones()
     {
-        $result = $this->xu->deserializeGanFile(
+        $result = $this->xu->extractMilestonesFromGanFile(
             $this->xml_dir_gan . 'NoMilestones.gan'
         );
 
@@ -56,7 +56,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testThreeGanDeserializedMilestones()
     {
-        $result = $this->xu->deserializeGanFile(
+        $result = $this->xu->extractMilestonesFromGanFile(
             $this->xml_dir_gan . 'ThreeMilestones.gan'
         );
 
@@ -65,7 +65,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testFiveGanDeserializedMilestones()
     {
-        $result = $this->xu->deserializeGanFile(
+        $result = $this->xu->extractMilestonesFromGanFile(
             $this->xml_dir_gan . 'FiveMilestones.gan'
         );
 
@@ -74,7 +74,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testZeroMspdiDeserializedMilestones()
     {
-        $result = $this->xu->deserializeMspdiFile(
+        $result = $this->xu->extractMilestonesFromMspdiFile(
             $this->xml_dir_mspdi . 'NoMilestones.xml'
         );
 
@@ -83,7 +83,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testThreeMspdiDeserializedMilestones()
     {
-        $result = $this->xu->deserializeMspdiFile(
+        $result = $this->xu->extractMilestonesFromMspdiFile(
             $this->xml_dir_mspdi . 'ThreeMilestones.xml'
         );
 
@@ -92,7 +92,7 @@ final class XmlUtilsTest extends TestCase
 
     public function testFiveMspdiDeserializedMilestones()
     {
-        $result = $this->xu->deserializeMspdiFile(
+        $result = $this->xu->extractMilestonesFromMspdiFile(
             $this->xml_dir_mspdi . 'FiveMilestones.xml'
         );
 
@@ -135,6 +135,56 @@ final class XmlUtilsTest extends TestCase
 
         $this->xu->extractStoreMilestones(
             $this->data_dir . '/incorrectGan.gan',
+            12345
+        );
+    }
+
+    public function testExtractNoTasksGanFile()
+    {
+        $result = $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'NoTasks.gan',
+            12345
+        );
+
+        $this->assertEquals(count($result), 0);
+    }
+
+    public function testExtractSevenTasksGanFile()
+    {
+        $result = $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'SevenTasks.gan',
+            12345
+        );
+
+        $this->assertEquals(count($result), 7);
+    }
+
+    public function testExtractTenTasksGanFile()
+    {
+        $result = $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'TenTasks.gan',
+            12345
+        );
+
+        $this->assertEquals(count($result), 10);
+    }
+
+    public function testExtractTwelveTasksGanFile()
+    {
+        $result = $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'TwelveTasks.gan',
+            12345
+        );
+
+        $this->assertEquals(count($result), 12);
+    }
+
+    public function testExtractTasksIncorrectFileException()
+    {
+        $this->expectException(IncorrectFileException::class);
+
+        $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'incorrectGan.gan',
             12345
         );
     }
