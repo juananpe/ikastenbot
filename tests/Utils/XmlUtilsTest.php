@@ -178,4 +178,14 @@ final class XmlUtilsTest extends TestCase
 
         $this->assertEquals(count($result), 12);
     }
+
+    public function testExtractTasksIncorrectFileException()
+    {
+        $this->expectException(IncorrectFileException::class);
+
+        $this->xu->extractTasksFromGanFile(
+            $this->xml_dir_gan . 'incorrectGan.gan',
+            12345
+        );
+    }
 }

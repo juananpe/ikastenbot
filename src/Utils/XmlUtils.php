@@ -8,6 +8,7 @@ use IkastenBot\Entity\Milestone;
 use IkastenBot\Entity\Task;
 use IkastenBot\Exception\IncorrectFileException;
 use IkastenBot\Exception\NoMilestonesException;
+use IkastenBot\Exception\NoTasksException;
 use Longman\TelegramBot\DB;
 
 class XmlUtils
@@ -198,5 +199,85 @@ class XmlUtils
         }
 
         return $milestones;
+    }
+
+    /**
+     * Extract tasks from the XML Gan file and store them in the database
+     *
+     * @param   string  $file_path      The path to the XML Gan file
+     * @param   int     $chat_id        The id of the chat to which the tasks
+     *                                  will be assigned to
+     *
+     * @return  Task[]                  Array of Tasks
+     *
+     * @throws  NoTasksException        When no tasks have been found in the
+     *                                  XML file.
+     */
+    public function extractStoreTasks(string $file_path, int $chat_id): array
+    {
+        $file_info = new \SplFileInfo($file_path);
+        $file_extension = $file_info->getExtension();
+
+        $tasks = [];
+        if ('gan' === $file_extension) {
+            $tasks = $this->extractTasksFromGanFile($file_path);
+        } else {
+            throw new IncorrectFileException('Please send a valid GanttProject file.');
+        }
+
+        if (empty($tasks)) {
+            throw new NoTasksException(
+                'The provided file doesn\'t contain any tasks. Please send another file.'
+            );
+        }
+
+        foreach ($tasks as $task) {
+            $sql = '';
+            $parameters = [
+                ':chat_id'          => $chat_id,
+                ':task_date'   => $task->getDate()->format('Y-m-d'),
+                ':task_isMilestone' => $task->getIsMilestone(),
+                ':task_duration' => $task->getDuration(),
+            ];
+            $hasName = !empty($task->getName());
+
+            if ($hasName) {
+                $sql = '
+                    INSERT INTO task(
+                        chat_id,
+                        task_name,
+                        task_date,
+                        task_isMilestone,
+                        task_duration
+                    ) VALUES (
+                        :chat_id,
+                        :task_name,
+                        :task_date,
+                        :task_isMilestone,
+                        :task_duration
+                    );
+                ';
+                $parameters[':task_name'] = $task->getName();
+            } else {
+                $sql = '
+                    INSERT INTO task(
+                        chat_id,
+                        task_date,
+                        task_isMilestone,
+                        task_duration
+                    ) VALUES (
+                        :chat_id,
+                        :task_date,
+                        :task_isMilestone,
+                        :task_duration
+                    );
+                ';
+            }
+
+            $statement = DB::getPdo()->prepare($sql, array(\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY));
+            $statement->execute($parameters);
+        }
+
+        return $tasks;
     }
 }
