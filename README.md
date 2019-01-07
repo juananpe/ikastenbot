@@ -32,15 +32,18 @@ directory. This was done to follow the [front controller pattern][3].
 3. Repeat steps from `3.` and `4.` from the previous section in the production
     server.
 
-## Setting up cron jobs to remind users about their milestones
-In order to notify users whenever their planned milestones are close, a cron
-job can be set to achieve this. `LaunchMilestoneReminderService.php` deals with
-obtaining the proper milestones from the database and sending reminders to the
-users, and therefore it just needs to be launched. An example of doing so with
-a cron job would be the one below, in which the check is performed every day at
-2AM:
+## Setting up cron jobs to remind users about their milestones and tasks
+In order to notify users whenever their planned milestones and tasks are close,
+a cron job can be set to achieve this. `LaunchMilestoneReminderService.php`
+deals with obtaining the proper milestones from the database and sending
+reminders to the users, and therefore it just needs to be launched.
+`LaunchTaskReminderService.php` does the same things but with tasks instead.
+
+The example lines to put in a cron job would be the ones below, which trigger
+the checks at 2AM.
 
 * `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/src/LaunchMilestoneReminderService.php`
+* `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/src/LaunchTaskReminderService.php`
 
 Check [CronHowto][4] and [crontab.guru][5] to create proper cron jobs which can
 suit your needs.
