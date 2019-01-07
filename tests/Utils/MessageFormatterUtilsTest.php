@@ -141,6 +141,89 @@ final class MessageFormattrUtilsTest extends TestCase
         $this->assertSame($expectedText, $result);
     }
 
+    public function testAppendTaskMilestone()
+    {
+        $milestone = new Task();
+        $milestone->setName('Milestone');
+        $milestone->setDate(new \DateTime());
+        $milestone->setIsMilestone(true);
+
+        $expectedText = '';
+        $expectedText .= $this->twig->render(
+            'notifications/milestone/milestone.twig',
+            ['milestone' => $milestone]
+        );
+        $expectedText .= PHP_EOL;
+
+        $result = '';
+        $this->mfu->appendTask($result, $milestone, null, $milestone->getIsMilestone());
+
+        $this->assertSame($expectedText, $result);
+    }
+
+    public function testAppendTaskWithDaysLeftMilestone()
+    {
+        $milestone = new Task();
+        $milestone->setName('Milestone');
+        $milestone->setDate(new \DateTime());
+        $milestone->setIsMilestone(true);
+
+        $daysLeft = '5';
+
+        $expectedText = '';
+        $expectedText .= $this->twig->render(
+            'notifications/milestone/milestone.twig',
+            [
+                'milestone' => $milestone,
+                'daysLeft'  => $daysLeft
+            ]
+        );
+        $expectedText .= PHP_EOL;
+
+        $result = '';
+        $this->mfu->appendTask($result, $milestone, $daysLeft, $milestone->getIsMilestone());
+
+        $this->assertSame($expectedText, $result);
+    }
+
+    public function testAppendTaskMultipleThingsMilestone()
+    {
+        $milestone = new Task();
+        $milestone->setName('Milestone');
+        $milestone->setDate(new \DateTime());
+        $milestone->setIsMilestone(true);
+
+        $daysLeft = '5';
+
+        $expectedText = 'Lorem ipsum dolor sit amet';
+        $expectedText .= $this->twig->render(
+            'notifications/milestone/milestone.twig',
+            ['milestone' => $milestone]
+        );
+        $expectedText .= PHP_EOL;
+        $expectedText .= $this->twig->render(
+            'notifications/milestone/milestone.twig',
+            [
+                'milestone' => $milestone,
+                'daysLeft'  => $daysLeft
+            ]
+        );
+        $expectedText .= PHP_EOL;
+        $expectedText .= 'Lorem ipsum dolor sit amet';
+        $expectedText .= $this->twig->render('notifications/milestone/milestoneTodayText.twig');
+        $expectedText .= PHP_EOL;
+        $expectedText .= 'Lorem ipsum dolor sit amet';
+
+        $result = 'Lorem ipsum dolor sit amet';
+        $this->mfu->appendTask($result, $milestone, null, $milestone->getIsMilestone());
+        $this->mfu->appendTask($result, $milestone, $daysLeft, $milestone->getIsMilestone());
+        $result .= 'Lorem ipsum dolor sit amet';
+        $this->mfu->appendTwigFile($result, 'notifications/milestone/milestoneTodayText.twig');
+        $result .= 'Lorem ipsum dolor sit amet';
+
+        $this->assertSame($expectedText, $result);
+    }
+
     public function testAppendTask()
     {
         $task = new Task();

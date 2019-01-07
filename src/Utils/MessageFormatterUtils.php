@@ -73,23 +73,27 @@ class MessageFormatterUtils
      * Append a task to the given text. It appends a new line after each
      * task as well.
      *
-     * @param string    &$text      Text to which the milestone will be appended
-     * @param Task      $task       The milestone
-     * @param string    $daysLeft   Days left to reach the milestone
+     * @param string    &$text          Text to which the milestone will be appended
+     * @param Task      $task           The task
+     * @param string    $daysLeft       Days left to reach the milestone
+     * @param boolean   $isMilestone    The task is a milestone
      *
      * @return void
      */
-    public function appendTask(string &$text, Task $task, string $daysLeft = null): void
+    public function appendTask(string &$text, Task $task, string $daysLeft = null, bool $isMilestone = false): void
     {
-        $parameters = [
-            'task' => $task
-        ];
-
         if (!\is_null($daysLeft)) {
             $parameters['daysLeft'] = $daysLeft;
         }
 
-        $text .= $this->twig->render('notifications/task/task.twig', $parameters);
+        if ($isMilestone) {
+            $parameters['milestone'] = $task;
+            $text .= $this->twig->render('notifications/milestone/milestone.twig', $parameters);
+        } else {
+            $parameters['task'] = $task;
+            $text .= $this->twig->render('notifications/task/task.twig', $parameters);
+        }
+
         $text .= PHP_EOL;
     }
 }

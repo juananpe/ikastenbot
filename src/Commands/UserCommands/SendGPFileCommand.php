@@ -65,7 +65,7 @@ class SendGpFileCommand extends UserCommand
         $text .= PHP_EOL . PHP_EOL;
 
         foreach ($tasks as $task) {
-            $mf->appendTask($text, $task);
+            $mf->appendTask($text, $task, null, $task->getIsMilestone());
         }
 
         return $text;
