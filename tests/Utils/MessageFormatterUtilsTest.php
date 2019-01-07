@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use IkastenBot\Entity\Milestone;
+use IkastenBot\Entity\Task;
 use IkastenBot\Utils\MessageFormatterUtils;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
@@ -135,6 +136,86 @@ final class MessageFormattrUtilsTest extends TestCase
         $this->mfu->appendMilestone($result, $milestone, $daysLeft);
         $result .= 'Lorem ipsum dolor sit amet';
         $this->mfu->appendTwigFile($result, 'notifications/milestoneTodayText.twig');
+        $result .= 'Lorem ipsum dolor sit amet';
+
+        $this->assertSame($expectedText, $result);
+    }
+
+    public function testAppendTask()
+    {
+        $task = new Task();
+        $task->setName('Task');
+        $task->setDate(new \DateTime());
+
+        $expectedText = '';
+        $expectedText .= $this->twig->render(
+            'notifications/task/task.twig',
+            ['task' => $task]
+        );
+        $expectedText .= PHP_EOL;
+
+        $result = '';
+        $this->mfu->appendTask($result, $task);
+
+        $this->assertSame($expectedText, $result);
+    }
+
+    public function testAppendTaskWithDaysLeft()
+    {
+        $task = new Task();
+        $task->setName('Task');
+        $task->setDate(new \DateTime());
+
+        $daysLeft = '5';
+
+        $expectedText = '';
+        $expectedText .= $this->twig->render(
+            'notifications/task/task.twig',
+            [
+                'task' => $task,
+                'daysLeft'  => $daysLeft
+            ]
+        );
+        $expectedText .= PHP_EOL;
+
+        $result = '';
+        $this->mfu->appendTask($result, $task, $daysLeft);
+
+        $this->assertSame($expectedText, $result);
+    }
+
+    public function testAppendMultipleThingsWithTasks()
+    {
+        $task = new Task();
+        $task->setName('Task');
+        $task->setDate(new \DateTime());
+
+        $daysLeft = '5';
+
+        $expectedText = 'Lorem ipsum dolor sit amet';
+        $expectedText .= $this->twig->render(
+            'notifications/task/task.twig',
+            ['task' => $task]
+        );
+        $expectedText .= PHP_EOL;
+        $expectedText .= $this->twig->render(
+            'notifications/task/task.twig',
+            [
+                'task' => $task,
+                'daysLeft'  => $daysLeft
+            ]
+        );
+        $expectedText .= PHP_EOL;
+        $expectedText .= 'Lorem ipsum dolor sit amet';
+        $expectedText .= $this->twig->render('notifications/task/taskTodayText.twig');
+        $expectedText .= PHP_EOL;
+        $expectedText .= 'Lorem ipsum dolor sit amet';
+
+        $result = 'Lorem ipsum dolor sit amet';
+        $this->mfu->appendTask($result, $task);
+        $this->mfu->appendTask($result, $task, $daysLeft);
+        $result .= 'Lorem ipsum dolor sit amet';
+        $this->mfu->appendTwigFile($result, 'notifications/task/taskTodayText.twig');
         $result .= 'Lorem ipsum dolor sit amet';
 
         $this->assertSame($expectedText, $result);
