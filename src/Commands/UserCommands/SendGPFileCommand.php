@@ -52,20 +52,20 @@ class SendGpFileCommand extends UserCommand
     protected $private_only = true;
 
     /**
-     * Prepare a formatted message with the milestones to be reminded of
+     * Prepare a formatted message with the tasks to be reminded of
      *
-     * @param   IkastenBot\Entity\Milestone[] $milestones   Array of Milestone objects
-     * @return  string                                      Formatted message in HTML
+     * @param   IkastenBot\Entity\Task[] $tasks   Array of Task objects
+     * @return  string                            Formatted message in HTML
      */
-    private function prepareFormattedMessage(array $milestones): string
+    private function prepareFormattedMessage(array $tasks): string
     {
         $mf = new MessageFormatterUtils();
 
-        $text = 'You will be reminded of the following milestones:';
+        $text = 'You will be reminded of the following tasks:';
         $text .= PHP_EOL . PHP_EOL;
 
-        foreach ($milestones as $milestone) {
-            $mf->appendMilestone($text, $milestone);
+        foreach ($tasks as $task) {
+            $mf->appendTask($text, $task);
         }
 
         return $text;
@@ -102,11 +102,11 @@ class SendGpFileCommand extends UserCommand
             return $ms->sendMessage();
         }
 
-        // Extract the milestones and store them in the database
+        // Extract the tasks and store them in the database
         $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
         $xmlManCon = new XmlUtils();
         try {
-            $milestones = $xmlManCon->extractStoreMilestones($file_path, $chat->getId());
+            $tasks = $xmlManCon->extractStoreTasks($file_path, $chat->getId());
         } catch (NoMilestonesException $e) {
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
             return $ms->sendMessage();
@@ -116,7 +116,7 @@ class SendGpFileCommand extends UserCommand
         }
         unlink($file_path);
         $this->conversation->stop();
-        $ms->prepareMessage($chat_id, $this->prepareFormattedMessage($milestones), 'HTML', $selective_reply);
+        $ms->prepareMessage($chat_id, $this->prepareFormattedMessage($tasks), 'HTML', $selective_reply);
         return $ms->sendMessage();
     }
 }
