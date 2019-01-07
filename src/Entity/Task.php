@@ -7,7 +7,8 @@ namespace IkastenBot\Entity;
 /**
  * Class that represents the tasks of a GanttProject project
  *
- * @Entity @Table(name="task")
+ * @Entity(repositoryClass="IkastenBot\Repository\TaskRepository")
+ * @Table(name="task")
  */
 class Task
 {
@@ -54,7 +55,7 @@ class Task
     /**
      * Duration of the task
      *
-     * @Column(type="int", name="task_duration")
+     * @Column(type="integer", name="task_duration")
      * @var int
      */
     protected $duration;
