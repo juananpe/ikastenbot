@@ -58,8 +58,8 @@ class TaskRepositoryTest extends DatabaseTestCase
                 12345,
                 :task_name,
                 :task_date,
-                0,
-                3
+                :task_isMilestone,
+                :task_duration
             )
         ';
 
@@ -70,13 +70,25 @@ class TaskRepositoryTest extends DatabaseTestCase
 
             $today = new \DateTime();
             $parameters = [
-                ':task_name' => 'Task T',
-                ':task_date' => $today->format('Y-m-d'),
+                ':task_name'        => 'Task T',
+                ':task_date'        => $today->format('Y-m-d'),
+                ':task_isMilestone' => false,
+                ':task_duration'    => 3
             ];
 
             $statement = $this->pdo->prepare($sql);
             $statement->execute($parameters);
         }
+
+        // Insert one milestone to be reached today
+        $parameters = [
+            ':task_name' => 'Milestone T',
+            ':task_date' => $today->format('Y-m-d'),
+            ':task_isMilestone' => true,
+            ':task_duration'    => 0
+        ];
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($parameters);
 
         // Insert tasks to be reminded of, and three tasks that should
         // not be fetched in the queries
@@ -95,12 +107,24 @@ class TaskRepositoryTest extends DatabaseTestCase
 
             $parameters = [
                 ':task_name' => $this->plusDays[$j],
-                ':task_date' => $todayPlusDays->format('Y-m-d')
+                ':task_date' => $todayPlusDays->format('Y-m-d'),
+                ':task_isMilestone' => false,
+                ':task_duration'    => 3
             ];
             $statement = $this->pdo->prepare($sql);
             $statement->execute($parameters);
 
             if ($i % 3 === 0) {
+                $parameters = [
+                    ':task_name' => $this->plusDays[$j],
+                    ':task_date' => $todayPlusDays->format('Y-m-d'),
+                    ':task_isMilestone' => true,
+                    ':task_duration'    => 0
+                ];
+
+                $statement = $this->pdo->prepare($sql);
+                $statement->execute($parameters);
+
                 $j++;
             }
         }
@@ -118,13 +142,18 @@ class TaskRepositoryTest extends DatabaseTestCase
         $tasks = $this->dem->getRepository(Task::class)->findTasksReachToday();
 
         // Check that only three tasks have been fetched
-        $this->assertSame(3, \count($tasks));
+        $this->assertSame(4, \count($tasks));
 
         // Check the name and the date of the tasks
         $today = new \DateTime();
         $dateFormat = 'Y-m-d';
-        foreach ($tasks as $task) {
-            $this->assertSame('Task T', $task->getName());
+
+        foreach ($tasks as $i=>$task) {
+            if (3 === $i) {
+                $this->assertSame('Milestone T', $task->getName());
+            } else {
+                $this->assertSame('Task T', $task->getName());
+            }
             $this->assertSame($today->format($dateFormat), $task->getDate()->format($dateFormat));
         }
     }
@@ -134,7 +163,7 @@ class TaskRepositoryTest extends DatabaseTestCase
         $results = $this->dem->getRepository(Task::class)->findTasksToNotifyAbout();
 
         // Check that only the correct amount of tasks have been fetched
-        $this->assertSame(12, \count($results));
+        $this->assertSame(16, \count($results));
 
         // Get the time intervals which correspond to the tasks that
         // should have been fetched
@@ -152,6 +181,54 @@ class TaskRepositoryTest extends DatabaseTestCase
         foreach ($results as $row) {
             $this->assertTrue(\in_array($row[0]->getName(), $this->plusDays));
             $this->assertTrue(\in_array($row[0]->getDate()->format('Y-m-d'), $expectedDates));
+        }
+    }
+
+    public function testFindTodayTasksRestrictToMilestones()
+    {
+        $tasks = $this->dem->getRepository(Task::class)->findTasksReachToday(true);
+
+        // Check that only one milestone has been fetched
+        $this->assertSame(1, \count($tasks));
+
+        // Check the name, date and milestone status of the task
+        $today = new \DateTime();
+        $dateFormat = 'Y-m-d';
+
+        $taskName           = $tasks[0]->getName();
+        $taskDate           = $tasks[0]->getDate();
+        $taskIsMilestone    = $tasks[0]->getIsMilestone();
+
+        $this->assertSame('Milestone T', $taskName);
+        $this->assertSame($today->format($dateFormat), $taskDate->format($dateFormat));
+        $this->assertSame(true, $taskIsMilestone);
+    }
+
+    public function testFindTasksNotifyAboutRestrictToMilestones()
+    {
+        $results = $this->dem->getRepository(Task::class)->findTasksToNotifyAbout(true);
+
+        // Check that only four milestones have been fetched
+        $this->assertSame(4, \count($results));
+
+        // Get the time intervals which correspond to the tasks that
+        // should have been fetched
+        $plusDaysWithoutLast = \array_slice($this->plusDays, 0, \count($this->plusDays) - 1);
+
+        // Prepare future dates to check against
+        $expectedDates = [];
+        foreach ($plusDaysWithoutLast as $futureDate) {
+            $today = new \DateTime();
+            $today->add(new \DateInterval($futureDate));
+            $expectedDates[] = $today->format('Y-m-d');
+        };
+
+        // Check the name, date and milestone status of each of the milestone
+        // fetched
+        foreach ($results as $row) {
+            $this->assertTrue(\in_array($row[0]->getName(), $this->plusDays));
+            $this->assertTrue(\in_array($row[0]->getDate()->format('Y-m-d'), $expectedDates));
+            $this->assertSame($row[0]->getIsMilestone(), true);
         }
     }
 }

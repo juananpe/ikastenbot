@@ -6,8 +6,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
-use IkastenBot\Service\MilestoneReminderService;
 use IkastenBot\Service\MessageSenderService;
+use IkastenBot\Service\TaskReminderService;
 use IkastenBot\Utils\MessageFormatterUtils;
 use Longman\TelegramBot\Telegram;
 use Symfony\Component\Dotenv\Dotenv;
@@ -51,6 +51,6 @@ $mss = new MessageSenderService();
 $telegram = new Telegram(getenv('TELEGRAM_BOT_API_KEY'), getenv('TELEGRAM_BOT_USERNAME'));
 
 // Notify users
-$mrs = new MilestoneReminderService($em, $mf, $mss);
-$mrs->notifyUsersMilestonesToday();
-$mrs->notifyUsersMilestonesClose();
+$trs = new TaskReminderService($em, $mf, $mss);
+$trs->notifyUsersMilestonesToday();
+$trs->notifyUsersMilestonesClose();

@@ -18,9 +18,11 @@ class TaskRepository extends EntityRepository
     /**
      * Finds Tasks that are to be reached today
      *
-     * @return Task[] Array of tasks
+     * @param   bool    $restrictToMilestones   Restrict search to milestones
+     *                                          only
+     * @return  Task[]  Array of tasks
      */
-    public function findTasksReachToday(): array
+    public function findTasksReachToday(bool $restrictToMilestones = false): array
     {
         $qb = $this->_em->createQueryBuilder();
 
@@ -28,16 +30,23 @@ class TaskRepository extends EntityRepository
             ->from(Task::class, 't')
             ->where(self::DATEDIFFFUNCTION . ' = 0');
 
+        if ($restrictToMilestones) {
+            $qb->andWhere('t.isMilestone = 1');
+        }
+
         return $qb->getQuery()->getResult();
     }
 
     /**
      * Finds Tasks that are to be reached in 30, 15, 3, 2 or 1 days.
      *
+     * @param  bool     $restrictToMilestones   Restrict search to milestones
+     *                                          only
+     *
      * @return Task[][] Nested array of Tasks and their corresponding days
      *                  to be reached.
      */
-    public function findTasksToNotifyAbout()
+    public function findTasksToNotifyAbout(bool $restrictToMilestones = false)
     {
         $qb = $this->_em->createQueryBuilder();
 
@@ -47,6 +56,10 @@ class TaskRepository extends EntityRepository
             ->orWhere(self::DATEDIFFFUNCTION . ' = 15')
             ->orWhere(self::DATEDIFFFUNCTION . ' BETWEEN 1 AND 3')
             ->orderBy(self::DATEDIFFFUNCTION);
+
+        if ($restrictToMilestones) {
+            $qb->andWhere('t.isMilestone = 1');
+        }
 
         return $qb->getQuery()->getResult();
     }

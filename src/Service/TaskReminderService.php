@@ -84,4 +84,44 @@ class TaskReminderService
             $this->mss->sendMessage();
         }
     }
+
+     /**
+     * Notify users about the milestones they should reach today according to
+     * their planning.
+     *
+     * @return void
+     */
+    public function notifyUsersMilestonesToday(): void
+    {
+        $milestones = $this->em->getRepository(Task::class)->findTasksReachToday(true);
+
+        foreach ($milestones as $milestone) {
+            $text = '';
+            $this->mf->appendTwigFile($text, 'notifications/milestone/milestoneTodayText.twig');
+            $this->mf->appendTask($text, $milestone, null, $milestone->getIsMilestone());
+
+            $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
+        }
+    }
+
+    /**
+     * Notify users about milestones that are close to be reached according
+     * to their planning.
+     *
+     * @return void
+     */
+    public function notifyUsersMilestonesClose(): void
+    {
+        $results = $this->em->getRepository(Task::class)->findTasksToNotifyAbout(true);
+
+        foreach ($results as $row) {
+            $text = '';
+            $this->mf->appendTwigFile($text, 'notifications/milestone/milestonesCloseText.twig');
+            $this->mf->appendTask($text, $row[0], $row[1], $row[0]->getIsMilestone());
+
+            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
+        }
+    }
 }
