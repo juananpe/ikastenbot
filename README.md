@@ -31,6 +31,7 @@ directory. This was done to follow the [front controller pattern][3].
 2. Point the web server to the `public/` directory of this project.
 3. Repeat steps from `3.` and `4.` from the previous section in the production
     server.
+4. Generate Doctrine's proxy entities with `vendor/bin/doctriene orm:generate-proxies`.
 
 ## Setting up cron jobs to remind users about their milestones and tasks
 In order to notify users whenever their planned milestones and tasks are close,

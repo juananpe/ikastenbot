@@ -2,6 +2,9 @@
 
 namespace IkastenBot\Entity;
 
+use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Longman\TelegramBot\DB;
@@ -20,13 +23,29 @@ class DoctrineBootstrap
 
     /**
      * Create an entity manager. If there is an active PDO connection then it
-     * creates it from there.
+     * creates it from there. Check the link for the configuration reference.
      *
+     * @link https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/reference/advanced-configuration.html#advanced-configuration
      * @return void
      */
     private function createEntityManager(): void
     {
-        $config = Setup::createAnnotationMetadataConfiguration(array("."), false);
+        $devMode = !\array_key_exists('TBGP_ENV', $_SERVER);
+
+        if ($devMode) {
+            $cache = new ArrayCache();
+        } else {
+            $cache = new ApcCache();
+        }
+
+        $config = new Configuration();
+        $config->setMetadataCacheImpl($cache);
+        $driverImpl = $config->newDefaultAnnotationDriver(PROJECT_ROOT . '/src/Entity');
+        $config->setMetadataDriverImpl($driverImpl);
+        $config->setQueryCacheImpl($cache);
+        $config->setProxyDir(PROJECT_ROOT . '/var/cache/Doctrine/proxies');
+        $config->setProxyNamespace('IkastenBot\Proxies');
+        $config->setAutoGenerateProxyClasses($devMode);
 
         $activePdo = DB::getPdo();
         if (\is_null($activePdo)) {
