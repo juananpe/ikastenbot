@@ -117,16 +117,6 @@ INSERT INTO `system_message` VALUES (1,'faq','FAQ: aquí están algunas de las p
 /*!40000 ALTER TABLE `system_message` ENABLE KEYS */;
 UNLOCK TABLES;
 
-CREATE TABLE IF NOT EXISTS `milestone`
-(
-  `id`                    INT         NOT NULL AUTO_INCREMENT,
-  `chat_id`               BIGINT      NOT NULL,
-  `milestone_name`        varchar(50) NULL,
-  `milestone_date`        datetime    NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_user_id` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE IF NOT EXISTS `task`
 (
   `id`                    INT         NOT NULL AUTO_INCREMENT,
