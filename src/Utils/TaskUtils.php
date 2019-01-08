@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace IkastenBot\Utils;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Setup;
+use IkastenBot\Entity\DoctrineBootstrap;
 use IkastenBot\Entity\Task;
 use IkastenBot\Exception\TaskNotFoundException;
 use Longman\TelegramBot\DB;
@@ -22,13 +21,8 @@ class TaskUtils
     public function __construct(EntityManager $em = null)
     {
         if (\is_null($em)) {
-            $config = Setup::createAnnotationMetadataConfiguration(array(PROJECT_ROOT . "/../Entity/"), false);
-
-            $connectionParams = [
-                'driver' => 'pdo_mysql',
-                'pdo' => DB::getPdo()
-            ];
-            $this->em = EntityManager::create($connectionParams, $config);
+            $db = new DoctrineBootstrap();
+            $this->em = $db->getEntityManager();
         } else {
             $this->em = $em;
         }

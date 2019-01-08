@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Setup;
+use IkastenBot\Entity\DoctrineBootstrap;
 use IkastenBot\Service\MessageSenderService;
 use IkastenBot\Service\TaskReminderService;
 use IkastenBot\Utils\MessageFormatterUtils;
@@ -23,17 +22,9 @@ if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
     $dotenv->load(PROJECT_ROOT . '/.env');
 }
 
-//Setup database
-$config = Setup::createAnnotationMetadataConfiguration(array(PROJECT_ROOT . "/src/Entity/"), false);
-
-$connectionParams = array(
-    'driver'   => 'pdo_mysql',
-    'user'     => getenv('MYSQL_USERNAME'),
-    'password' => getenv('MYSQL_USER_PASSWORD'),
-    'dbname'   => getenv('MYSQL_DATABASE_NAME'),
-);
-
-$em = EntityManager::create($connectionParams, $config);
+// Setup database
+$db = new DoctrineBootstrap();
+$em = $db->getEntityManager();
 
 // Setup Twig
 $loader = new FilesystemLoader(PROJECT_ROOT . '/templates/');
