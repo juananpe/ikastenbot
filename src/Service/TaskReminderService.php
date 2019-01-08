@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace IkastenBot\Service;
 
-use IkastenBot\Entity\Milestone;
+use IkastenBot\Entity\Task;
 use IkastenBot\Service\MessageSenderService;
 use IkastenBot\Utils\MessageFormatterUtils;
 use Doctrine\ORM\EntityManager;
 
-class MilestoneReminderService
+class TaskReminderService
 {
     /**
      * The function to be used in order to calculate the difference between
@@ -32,7 +32,7 @@ class MilestoneReminderService
     protected $mss;
 
     /**
-     * Construct MilestoneReminderService object
+     * Construct TaskReminderService object
      *
      * @param EntityManager         $em     Doctrine entity manager
      * @param MessageFormatterUtils $mfu    Message formatter utils
@@ -46,42 +46,46 @@ class MilestoneReminderService
     }
 
     /**
-     * Finds milestones that are to be reached in 30, 15, 3 or 2 days.
+     * Notify users about the tasks they should reach today according to
+     * their planning.
      *
-     * @return Milestone[] Array of Milestones
+     * @return void
      */
-    public function findMilestonesToNotifyAbout(): array
+    public function notifyUsersTasksToday(): void
     {
-        $qb = $this->em->createQueryBuilder();
+        $tasks = $this->em->getRepository(Task::class)->findTasksReachToday();
 
-        $qb->select('m', self::DATEDIFFFUNCTION)
-            ->from(Milestone::class, 'm')
-            ->where(self::DATEDIFFFUNCTION . ' = 30')
-            ->orWhere(self::DATEDIFFFUNCTION . ' = 15')
-            ->orWhere(self::DATEDIFFFUNCTION . ' BETWEEN 2 AND 3')
-            ->orderBy(self::DATEDIFFFUNCTION);
+        foreach ($tasks as $task) {
+            $text = '';
+            $this->mf->appendTwigFile($text, 'notifications/task/taskTodayText.twig');
+            $this->mf->appendTask($text, $task);
 
-        return $qb->getQuery()->getResult();
+            $this->mss->prepareMessage((int)$task->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
+        }
     }
 
     /**
-     * Finds milestones that are to be reached today.
+     * Notify users about tasks that are close to be reached according
+     * to their planning.
      *
-     * @return mixed[][]    Nested array of Milestones and their
-     *                      corresponding days to be reached.
+     * @return void
      */
-    public function findMilestonesReachToday(): array
+    public function notifyUsersTasksClose(): void
     {
-        $qb = $this->em->createQueryBuilder();
+        $results = $this->em->getRepository(Task::class)->findTasksToNotifyAbout();
 
-        $qb->select('m')
-            ->from(Milestone::class, 'm')
-            ->where(self::DATEDIFFFUNCTION . ' = 0');
+        foreach ($results as $row) {
+            $text = '';
+            $this->mf->appendTwigFile($text, 'notifications/task/tasksCloseText.twig');
+            $this->mf->appendTask($text, $row[0], $row[1]);
 
-        return $qb->getQuery()->getResult();
+            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+            $this->mss->sendMessage();
+        }
     }
 
-    /**
+     /**
      * Notify users about the milestones they should reach today according to
      * their planning.
      *
@@ -89,12 +93,12 @@ class MilestoneReminderService
      */
     public function notifyUsersMilestonesToday(): void
     {
-        $milestones = $this->findMilestonesReachToday();
+        $milestones = $this->em->getRepository(Task::class)->findTasksReachToday(true);
 
         foreach ($milestones as $milestone) {
             $text = '';
-            $this->mf->appendTwigFile($text, 'notifications/milestoneTodayText.twig');
-            $this->mf->appendMilestone($text, $milestone);
+            $this->mf->appendTwigFile($text, 'notifications/milestone/milestoneTodayText.twig');
+            $this->mf->appendTask($text, $milestone, null, $milestone->getIsMilestone());
 
             $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML');
             $this->mss->sendMessage();
@@ -109,12 +113,12 @@ class MilestoneReminderService
      */
     public function notifyUsersMilestonesClose(): void
     {
-        $results = $this->findMilestonesToNotifyAbout();
+        $results = $this->em->getRepository(Task::class)->findTasksToNotifyAbout(true);
 
         foreach ($results as $row) {
             $text = '';
-            $this->mf->appendTwigFile($text, 'notifications/milestonesCloseText.twig');
-            $this->mf->appendMilestone($text, $row[0], $row[1]);
+            $this->mf->appendTwigFile($text, 'notifications/milestone/milestonesCloseText.twig');
+            $this->mf->appendTask($text, $row[0], $row[1], $row[0]->getIsMilestone());
 
             $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
             $this->mss->sendMessage();

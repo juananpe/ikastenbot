@@ -52,5 +52,5 @@ $telegram = new Telegram(getenv('TELEGRAM_BOT_API_KEY'), getenv('TELEGRAM_BOT_US
 
 // Notify users
 $trs = new TaskReminderService($em, $mf, $mss);
-$trs->notifyUsersMilestonesToday();
-$trs->notifyUsersMilestonesClose();
+$trs->notifyUsersTasksToday();
+$trs->notifyUsersTasksClose();

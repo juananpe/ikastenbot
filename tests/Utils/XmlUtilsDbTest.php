@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IkastenBot\Tests\Utils;
 
+use IkastenBot\Exception\NoTasksException;
 use IkastenBot\Utils\XmlUtils;
 use IkastenBot\Tests\DatabaseTestCase;
 use Longman\TelegramBot\Telegram;
@@ -79,45 +80,55 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         return $this->createXmlDataSet($this->xml_dir_gan . 'milestoneSeed.xml');
     }
 
-    public function testInsertFiveMilestonesDb()
+    public function testInsertTwelveTasksDb()
     {
         $telegram = new Telegram('123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'TestO');
         $telegram->enableExternalMySql($this->pdo);
 
-        $this->xu->extractStoreMilestones(
-            $this->xml_dir_gan . 'FiveMilestones.gan',
+        $this->xu->extractStoreTasks(
+            $this->xml_dir_gan . 'TwelveTasks.gan',
             12345
         );
 
         $queryTable = $this->connection->createQueryTable(
-            'milestone', 'SELECT chat_id, milestone_name, milestone_date FROM milestone'
+            'task', 'SELECT chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
         );
 
-        $expectedTable = $this->createFlatXmlDataSet(dirname(__FILE__).'/../_data/xml_milestone_data/expectedMilestones.xml')
-                                ->getTable('milestone');
+        $expectedTable = $this->createFlatXmlDataSet(dirname(__FILE__).'/../_data/xml_task_data/expectedTasks.xml')
+                                ->getTable('task');
 
         $this->assertTablesEqual($expectedTable, $queryTable);
-        $this->assertSame(5, $this->connection->getRowCount('milestone'));
+        $this->assertSame(12, $this->connection->getRowCount('task'));
     }
 
-    public function testInsertFiveMilestonesWithNoNameDb()
+    public function testInsertTwelveTasksWithNoNameDb()
     {
         $telegram = new Telegram('123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'TestO');
         $telegram->enableExternalMySql($this->pdo);
 
-        $this->xu->extractStoreMilestones(
-            $this->xml_dir_gan . 'FiveMilestonesNoName.gan',
+        $this->xu->extractStoreTasks(
+            $this->xml_dir_gan . 'TwelveTasksNoName.gan',
             12345
         );
 
         $queryTable = $this->connection->createQueryTable(
-            'milestone', 'SELECT chat_id, milestone_name, milestone_date FROM milestone'
+            'task', 'SELECT chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
         );
 
-        $expectedTable = $this->createXmlDataSet(dirname(__FILE__).'/../_data/xml_milestone_data/expectedMilestonesWithNoName.xml')
-                                ->getTable('milestone');
+        $expectedTable = $this->createXmlDataSet(dirname(__FILE__).'/../_data/xml_task_data/expectedTasksWithNoName.xml')
+                                ->getTable('task');
 
         $this->assertTablesEqual($expectedTable, $queryTable);
-        $this->assertSame(5, $this->connection->getRowCount('milestone'));
+        $this->assertSame(12, $this->connection->getRowCount('task'));
+    }
+
+    public function testExtractTasksEmptyException()
+    {
+        $this->expectException(NoTasksException::class);
+
+        $this->xu->extractStoreTasks(
+            $this->xml_dir_gan . 'NoTasks.gan',
+            12345
+        );
     }
 }

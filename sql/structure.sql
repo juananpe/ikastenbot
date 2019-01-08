@@ -126,3 +126,15 @@ CREATE TABLE IF NOT EXISTS `milestone`
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_user_id` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `task`
+(
+  `id`                    INT         NOT NULL AUTO_INCREMENT,
+  `chat_id`               BIGINT      NOT NULL,
+  `task_name`             varchar(50) NULL,
+  `task_date`             datetime    NOT NULL,
+  `task_isMilestone`      TINYINT(1)  NOT NULL,
+  `task_duration`         INT         NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_task_chat_id` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

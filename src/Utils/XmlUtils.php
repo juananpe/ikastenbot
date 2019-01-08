@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace IkastenBot\Utils;
 
-use IkastenBot\Entity\Milestone;
+use IkastenBot\Entity\Task;
 use IkastenBot\Exception\IncorrectFileException;
 use IkastenBot\Exception\NoMilestonesException;
+use IkastenBot\Exception\NoTasksException;
 use Longman\TelegramBot\DB;
 
 class XmlUtils
@@ -16,15 +17,12 @@ class XmlUtils
     }
 
     /**
-     * Deserialize a Gan format exported XML file
+     * Extract tasks from gan file
      *
-     * @param   string                  $file_path   The path of the Gan file
-     *
-     * @return  Milestone[]             Array containing Milestone objects
-     *
-     * @throws  IncorrectFileException  if the parsing generated any error
+     * @param   string $file_path   The path of the Gan file
+     * @return  Task[]              Array of tasks
      */
-    public function deserializeGanFile(string $file_path): array
+    public function extractTasksFromGanFile(string $file_path): array
     {
         \libxml_use_internal_errors(true);
 
@@ -36,122 +34,93 @@ class XmlUtils
             throw new IncorrectFileException('Please send a valid GanttProject Gan file.');
         }
 
-        $xmlMilestones = $data->xpath('//task[@meeting=\'true\']');
+        $xmlTasks = $data->xpath('//task');
 
-        $milestones = [];
-        foreach ($xmlMilestones as $xmlMilestone) {
-            $milestone = new Milestone();
-            $milestone->setName((string)$xmlMilestone->attributes()->name);
+        $tasks = [];
+        foreach ($xmlTasks as $xmlTask) {
+            $task = new Task();
+            $task->setName((string)$xmlTask->attributes()->name);
 
-            $date = new \DateTime((string)$xmlMilestone->attributes()->start);
-            $milestone->setDate($date);
+            $date = new \DateTime((string)$xmlTask->attributes()->start);
+            $task->setDate($date);
+            $task->setIsMilestone(\filter_var($xmlTask->attributes()->meeting, FILTER_VALIDATE_BOOLEAN));
+            $task->setDuration((int)$xmlTask->attributes()->duration);
 
-            $milestones[] = $milestone;
+            $tasks[] = $task;
         }
 
-        return $milestones;
+        return $tasks;
     }
 
     /**
-     * Deserialize MSPDI format exported XML file
+     * Extract tasks from the XML Gan file and store them in the database
      *
-     * @param   string                  $file_path  The path of the XML file
-     *
-     * @return  Milestone[]             $milestones Array containing Milestone objects
-     *
-     * @throws  IncorrectFileException  if the parsing generated any error
-     */
-    public function deserializeMspdiFile(string $file_path): array
-    {
-        \libxml_use_internal_errors(true);
-
-        $data = simplexml_load_file($file_path);
-
-        if (count(\libxml_get_errors())) {
-            libxml_clear_errors();
-            \libxml_use_internal_errors(false);
-            throw new IncorrectFileException('Please send a valid GanttProject XML file.');
-        }
-
-        $data->registerXPathNamespace('project', 'http://schemas.microsoft.com/project');
-
-        $xmlMilestones = $data->xpath('//project:Task[./project:Milestone=\'1\']');
-
-        $milestones = [];
-        foreach ($xmlMilestones as $xmlMilestone) {
-            $milestone = new Milestone();
-            $milestone->setName((string)$xmlMilestone->Name);
-
-            $date = new \DateTime((string)$xmlMilestone->Start);
-            $milestone->setDate($date);
-
-            $milestones[] = $milestone;
-        }
-
-        return $milestones;
-    }
-
-    /**
-     * Extract milestones from the XML file and store them in the database
-     *
-     * @param   string  $file_path      The path to the XML file
-     * @param   int     $chat_id        The id of the chat to which the milestones
+     * @param   string  $file_path      The path to the XML Gan file
+     * @param   int     $chat_id        The id of the chat to which the tasks
      *                                  will be assigned to
      *
-     * @return  Milestone[]             Array of Milestones
+     * @return  Task[]                  Array of Tasks
      *
-     * @throws  NoMilestonesException   When no milestones have been found in the
+     * @throws  NoTasksException        When no tasks have been found in the
      *                                  XML file.
      */
-    public function extractStoreMilestones(string $file_path, int $chat_id): array
+    public function extractStoreTasks(string $file_path, int $chat_id): array
     {
         $file_info = new \SplFileInfo($file_path);
         $file_extension = $file_info->getExtension();
 
-        $milestones = [];
+        $tasks = [];
         if ('gan' === $file_extension) {
-            $milestones = $this->deserializeGanFile($file_path);
-        } elseif ('xml' === $file_extension) {
-            $milestones = $this->deserializeMspdiFile($file_path);
+            $tasks = $this->extractTasksFromGanFile($file_path);
         } else {
-            throw new IncorrectFileException('Please send a valid GanttProject or XML MSPDI file.');
+            throw new IncorrectFileException('Please send a valid GanttProject file.');
         }
 
-        if (empty($milestones)) {
-            throw new NoMilestonesException(
-                'The provided file doesn\'t contain any milestones. Please send another file.'
+        if (empty($tasks)) {
+            throw new NoTasksException(
+                'The provided file doesn\'t contain any tasks. Please send another file.'
             );
         }
 
-        foreach ($milestones as $milestone) {
+        foreach ($tasks as $task) {
             $sql = '';
             $parameters = [
                 ':chat_id'          => $chat_id,
-                ':milestone_date'   => $milestone->getDate()->format('Y-m-d'),
+                ':task_date'   => $task->getDate()->format('Y-m-d'),
+                ':task_isMilestone' => $task->getIsMilestone(),
+                ':task_duration' => $task->getDuration(),
             ];
-            $hasName = !empty($milestone->getName());
+            $hasName = !empty($task->getName());
 
             if ($hasName) {
                 $sql = '
-                    INSERT INTO milestone(
+                    INSERT INTO task(
                         chat_id,
-                        milestone_name,
-                        milestone_date
+                        task_name,
+                        task_date,
+                        task_isMilestone,
+                        task_duration
                     ) VALUES (
                         :chat_id,
-                        :milestone_name,
-                        :milestone_date
+                        :task_name,
+                        :task_date,
+                        :task_isMilestone,
+                        :task_duration
                     );
                 ';
-                $parameters[':milestone_name'] = $milestone->getName();
+                $parameters[':task_name'] = $task->getName();
             } else {
                 $sql = '
-                    INSERT INTO milestone(
+                    INSERT INTO task(
                         chat_id,
-                        milestone_date
+                        task_date,
+                        task_isMilestone,
+                        task_duration
                     ) VALUES (
                         :chat_id,
-                        :milestone_date
+                        :task_date,
+                        :task_isMilestone,
+                        :task_duration
                     );
                 ';
             }
@@ -160,6 +129,6 @@ class XmlUtils
             $statement->execute($parameters);
         }
 
-        return $milestones;
+        return $tasks;
     }
 }
