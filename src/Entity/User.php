@@ -317,7 +317,7 @@ class User
      *
      * @return GanttProject
      */
-    public function getGanttProject(): GanttProject
+    public function getGanttProject(): ?GanttProject
     {
         return $this->ganttProject;
     }
