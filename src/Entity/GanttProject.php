@@ -12,7 +12,7 @@ use IkastenBot\Entity\Task;
 /**
  * Represents a GanttProject entity
  *
- * @Entity
+ * @Entity(repositoryClass="IkastenBot\Repository\GanttProjectRepository")
  * @Table(name="ganttproject")
  */
 class GanttProject

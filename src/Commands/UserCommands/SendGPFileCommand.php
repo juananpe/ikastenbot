@@ -103,7 +103,7 @@ class SendGpFileCommand extends UserCommand
         $db = new DoctrineBootstrap();
         $em = $db->getEntityManager();
         $user = $em->getRepository(User::class)->find($user_id);
-        $ganttProject = $user->getGanttProject();
+        $ganttProject = $em->getRepository(GanttProject::class)->findLatestGanttProject($user);
         $ganttProjectVersion = 0;
 
         // Create a new directory for each version of the sent file
@@ -147,7 +147,7 @@ class SendGpFileCommand extends UserCommand
         $gt->setFileName($document->getFileName());
         $gt->setVersion($ganttProjectVersion);
 
-        $user->setGanttProject($gt);
+        $user->addGanttProject($gt);
         $em->persist($user);
         $em->flush();
 
