@@ -52,7 +52,7 @@ class GanttProject
     /**
      * The owner of the Gantt project
      *
-     * @OneToOne(targetEntity="User", mappedBy="ganttProject")
+     * @ManyToOne(targetEntity="User", inversedBy="ganttProject")
      * @var User
      */
     protected $user;

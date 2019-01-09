@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace IkastenBot\Entity;
 
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use IkastenBot\Entity\GanttProject;
 
 /**
@@ -17,7 +19,7 @@ class User
     /**
      * The id of the user
      *
-     * @Id @Column(type="integer") @GeneratedValue
+     * @Id @Column(type="integer")
      * @var int
      */
     protected $id;
@@ -87,14 +89,18 @@ class User
     protected $language;
 
     /**
-     * The associated Gantt project
+     * The associated GanttProjects
      *
-     * @OneToOne(targetEntity="GanttProject", inversedBy="user", cascade={"persist"})
-     * @JoinColumn(name="ganttproject_id", referencedColumnName="id")
+     * @OneToMany(targetEntity="GanttProject", mappedBy="user", cascade={"persist"})
      *
      * @var GanttProject
      */
-    protected $ganttProject;
+    protected $ganttProjects;
+
+    public function __construct()
+    {
+        $this->ganttProjects = new ArrayCollection();
+    }
 
     /**
      * Get the id of the user
@@ -313,13 +319,41 @@ class User
     }
 
     /**
-     * Get the associated Gantt project
+     * Get the associated Gantt projects
      *
-     * @return GanttProject
+     * @return Collection/GanttProject[]
      */
-    public function getGanttProject(): ?GanttProject
+    public function getGanttProjects(): Collection
     {
-        return $this->ganttProject;
+        return $this->ganttProjects;
+    }
+
+    /**
+     * Add a GanttProject
+     *
+     * @param GanttProject $ganttProject
+     * @return self
+     */
+    public function addGanttProject(GanttProject $ganttProject): self
+    {
+        if (!$this->ganttProjects->contains($ganttProject)) {
+            $this->ganttProjects[] = $ganttProject;
+            $ganttProject->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGanttProject(GanttProject $ganttProject): self
+    {
+        if ($this->ganttProjects->contains($ganttProject)) {
+            $this->ganttProjects->removeElement($ganttProject);
+            if ($ganttProject->getUser() === $this) {
+                $ganttProject->setUser(null);
+            }
+        }
+
+        return $this;
     }
 
     /**

@@ -122,7 +122,9 @@ CREATE TABLE IF NOT EXISTS `ganttproject`
   `id`                    INT         NOT NULL AUTO_INCREMENT,
   `file_name`             VARCHAR(50) NOT NULL,
   `version`               INT         NOT NULL,
-  PRIMARY KEY (`id`)
+  `user_id`               BIGINT      NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_ganttproject_user_id` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /* Add a ganttproject column plus a foreign key constraint */
@@ -137,8 +139,6 @@ CREATE TABLE IF NOT EXISTS `task`
   `task_date`             datetime    NOT NULL,
   `task_isMilestone`      TINYINT(1)  NOT NULL,
   `task_duration`         INT         NOT NULL,
-  `ganttproject_id`       INT         NOT NULL,
   PRIMARY KEY (`id`)/*,
   CONSTRAINT `fk_task_chat_id` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_task_ganttproject_id` FOREIGN KEY (`ganttproject_id`) REFERENCES `ganttproject` (`id`) ON DELETE CASCADE*/
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
