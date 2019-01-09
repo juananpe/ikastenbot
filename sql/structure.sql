@@ -122,14 +122,12 @@ CREATE TABLE IF NOT EXISTS `ganttproject`
   `id`                    INT         NOT NULL AUTO_INCREMENT,
   `file_name`             VARCHAR(50) NOT NULL,
   `version`               INT         NOT NULL,
-  `user_id`               BIGINT(20)  NOT NULL,
-  PRIMARY KEY (`id`)/*,
-  CONSTRAINT `fk_ganttproject_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE*/
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /* Add a ganttproject column plus a foreign key constraint */
 ALTER TABLE `user` ADD IF NOT EXISTS `ganttproject_id` INT NULL;
-/*ALTER TABLE `user` ADD CONSTRAINT `fk_user_ganttproject_id` FOREIGN KEY (`ganttproject_id`) REFERENCES `ganttproject` (`id`) ON DELETE CASCADE;*/
+/*ALTER TABLE `user` ADD CONSTRAINT `fk_user_ganttproject_id` FOREIGN KEY (`ganttproject_id`) REFERENCES `ganttproject` (`id`) ON DELETE SET NULL;*/
 
 CREATE TABLE IF NOT EXISTS `task`
 (
