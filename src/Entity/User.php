@@ -89,7 +89,7 @@ class User
     /**
      * The associated Gantt project
      *
-     * @OneToOne(targetEntity="GanttProject", inversedBy="user")
+     * @OneToOne(targetEntity="GanttProject", inversedBy="user", cascade={"persist"})
      * @JoinColumn(name="ganttproject_id", referencedColumnName="id")
      *
      * @var GanttProject
