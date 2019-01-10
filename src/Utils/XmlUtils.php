@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace IkastenBot\Utils;
 
+use Doctrine\ORM\EntityManager;
+use IkastenBot\Entity\GanttProject;
 use IkastenBot\Entity\Task;
 use IkastenBot\Exception\IncorrectFileException;
 use IkastenBot\Exception\NoMilestonesException;
@@ -12,8 +14,16 @@ use Longman\TelegramBot\DB;
 
 class XmlUtils
 {
-    public function __construct()
+    /**
+     * Entity manager
+     *
+     * @var EntityManager
+     */
+    protected $em;
+
+    public function __construct(EntityManager $em)
     {
+        $this->em = $em;
     }
 
     /**
@@ -64,7 +74,7 @@ class XmlUtils
      * @throws  NoTasksException        When no tasks have been found in the
      *                                  XML file.
      */
-    public function extractStoreTasks(string $file_path, int $chat_id): array
+    public function extractStoreTasks(string $file_path, int $chat_id, GanttProject $ganttProject): array
     {
         $file_info = new \SplFileInfo($file_path);
         $file_extension = $file_info->getExtension();
@@ -83,51 +93,13 @@ class XmlUtils
         }
 
         foreach ($tasks as $task) {
-            $sql = '';
-            $parameters = [
-                ':chat_id'          => $chat_id,
-                ':task_date'   => $task->getDate()->format('Y-m-d'),
-                ':task_isMilestone' => $task->getIsMilestone(),
-                ':task_duration' => $task->getDuration(),
-            ];
-            $hasName = !empty($task->getName());
+            $task->setChat_id((string)$chat_id);
+            $task->setGanttProject($ganttProject);
 
-            if ($hasName) {
-                $sql = '
-                    INSERT INTO task(
-                        chat_id,
-                        task_name,
-                        task_date,
-                        task_isMilestone,
-                        task_duration
-                    ) VALUES (
-                        :chat_id,
-                        :task_name,
-                        :task_date,
-                        :task_isMilestone,
-                        :task_duration
-                    );
-                ';
-                $parameters[':task_name'] = $task->getName();
-            } else {
-                $sql = '
-                    INSERT INTO task(
-                        chat_id,
-                        task_date,
-                        task_isMilestone,
-                        task_duration
-                    ) VALUES (
-                        :chat_id,
-                        :task_date,
-                        :task_isMilestone,
-                        :task_duration
-                    );
-                ';
-            }
-
-            $statement = DB::getPdo()->prepare($sql, array(\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY));
-            $statement->execute($parameters);
+            $this->em->persist($task);
         }
+
+        $this->em->flush();
 
         return $tasks;
     }
