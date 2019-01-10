@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace IkastenBot\Entity;
 
+use IkastenBot\Entity\GanttProject;
+
 /**
  * Class that represents the tasks of a GanttProject project
  *
@@ -59,6 +61,16 @@ class Task
      * @var int
      */
     protected $duration;
+
+    /**
+     * Associated Gantt Project
+     *
+     * @ManyToOne(targetEntity="GanttProject", inversedBy="tasks", cascade={"persist"})
+     * @JoinColumn(name="ganttproject_id", referencedColumnName="id")
+     *
+     * @var GanttProject
+     */
+    protected $ganttProject;
 
     public function __construct()
     {
@@ -200,6 +212,30 @@ class Task
     public function setDuration(int $duration)
     {
         $this->duration = $duration;
+
+        return $this;
+    }
+
+    /**
+     * Get associated GanttProject
+     *
+     * @return GanttProject
+     */
+    public function getGanttProject(): GanttProject
+    {
+        return $this->ganttProject;
+    }
+
+    /**
+     * Set associated GanttProject
+     *
+     * @param GanttProject $ganttProject Associated GanttProject
+     *
+     * @return self
+     */
+    public function setGanttProject(GanttProject $ganttProject): self
+    {
+        $this->ganttProject = $ganttProject;
 
         return $this;
     }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace IkastenBot\Tests;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 use PHPUnit\DbUnit\TestCaseTrait;
@@ -41,10 +43,27 @@ abstract class DatabaseTestCase extends TestCase
         return $this->conn;
     }
 
+    /**
+     * Check the link for the configuration reference
+     *
+     * @link https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/reference/advanced-configuration.html#advanced-configuration
+     * @return void
+     */
     public function getDoctrineEntityManager()
     {
         if (self::$em === null) {
-            $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/../Entity/"), false);
+
+            $cache = new ArrayCache();
+
+            $config = new Configuration();
+            $config->setMetadataCacheImpl($cache);
+            $driverImpl = $config->newDefaultAnnotationDriver(array(PROJECT_ROOT . '/src/Entity'));
+            $config->setMetadataDriverImpl($driverImpl);
+            $config->setQueryCacheImpl($cache);
+            $config->setProxyDir(PROJECT_ROOT . '/var/cache/Doctrine/proxies');
+            $config->setProxyNamespace('IkastenBot\Proxies');
+            $config->setAutoGenerateProxyClasses(true);
+            $config = Setup::createAnnotationMetadataConfiguration(array(PROJECT_ROOT . '/src/Entity'), true);
 
             $connectionParams = array(
                 'pdo' => self::$pdo

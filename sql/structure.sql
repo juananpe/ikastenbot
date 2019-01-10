@@ -117,6 +117,20 @@ INSERT INTO `system_message` VALUES (1,'faq','FAQ: aquí están algunas de las p
 /*!40000 ALTER TABLE `system_message` ENABLE KEYS */;
 UNLOCK TABLES;
 
+CREATE TABLE IF NOT EXISTS `ganttproject`
+(
+  `id`                    INT         NOT NULL AUTO_INCREMENT,
+  `file_name`             VARCHAR(50) NOT NULL,
+  `version`               INT         NOT NULL,
+  `user_id`               BIGINT      NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_ganttproject_user_id` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+/* Add a ganttproject column plus a foreign key constraint */
+ALTER TABLE `user` ADD IF NOT EXISTS `ganttproject_id` INT NULL;
+ALTER TABLE `user` ADD CONSTRAINT `fk_user_ganttproject_id` FOREIGN KEY (`ganttproject_id`) REFERENCES `ganttproject` (`id`) ON DELETE SET NULL;
+
 CREATE TABLE IF NOT EXISTS `task`
 (
   `id`                    INT         NOT NULL AUTO_INCREMENT,
@@ -125,6 +139,8 @@ CREATE TABLE IF NOT EXISTS `task`
   `task_date`             datetime    NOT NULL,
   `task_isMilestone`      TINYINT(1)  NOT NULL,
   `task_duration`         INT         NOT NULL,
+  `ganttproject_id`       INT         NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_task_chat_id` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_task_chat_id` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_task_ganttrpoject_id` FOREIGN KEY (`ganttproject_id`) REFERENCES `ganttproject` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

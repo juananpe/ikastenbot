@@ -5,6 +5,9 @@ declare(strict_types=1);
 // Longman's namespace must be used as otherwise the command is not recognized
 namespace Longman\TelegramBot\Commands\UserCommands;
 
+use IkastenBot\Entity\DoctrineBootstrap;
+use IkastenBot\Entity\GanttProject;
+use IkastenBot\Entity\User;
 use IkastenBot\Exception\IncorrectFileException;
 use IkastenBot\Exception\NoTasksException;
 use IkastenBot\Service\MessageSenderService;
@@ -13,6 +16,7 @@ use IkastenBot\Utils\XmlUtils;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Commands\UserCommand;
+use Symfony\Component\Filesystem\Filesystem;
 
 class SendGpFileCommand extends UserCommand
 {
@@ -95,6 +99,30 @@ class SendGpFileCommand extends UserCommand
             return $ms->sendMessage();
         }
 
+        // Fetch the user from the database and the corresponding GanttProject
+        $db = new DoctrineBootstrap();
+        $em = $db->getEntityManager();
+        $user = $em->getRepository(User::class)->find($user_id);
+        $ganttProject = $em->getRepository(GanttProject::class)->findLatestGanttProject($user);
+        $ganttProjectVersion = 0;
+
+        // Create a new directory for each version of the sent file
+        $defaultDownloadPath = $this->telegram->getDownloadPath();
+        $specificDownloadPath = $defaultDownloadPath . '/' . $user_id;
+        if(\is_null($ganttProject)) {
+            $specificDownloadPath .= '/1';
+            $ganttProjectVersion = 1;
+        } else {
+            $ganttProjectVersion = $ganttProject->getVersion() + 1;
+            $specificDownloadPath .= '/' . $ganttProjectVersion;
+        }
+
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($specificDownloadPath);
+
+        // Set the library's download path to the generated path temporarily
+        $this->telegram->setDownloadPath($specificDownloadPath);
+
         // Download the file
         $response = Request::getFile(['file_id' => $document->getFileId()]);
         if (!Request::downloadFile($response->getResult())) {
@@ -102,11 +130,31 @@ class SendGpFileCommand extends UserCommand
             return $ms->sendMessage();
         }
 
+        // Set back the library's download path to the default one
+        $this->telegram->setDownloadPath($defaultDownloadPath);
+
+        // Rename the file to the original name it had and delete the
+        // 'documents' folder
+        $ganFilePath = $specificDownloadPath . '/' . $document->getFileName();
+        $filesystem->rename(
+            $specificDownloadPath . '/' . $response->getResult()->getFilePath(),
+            $ganFilePath
+        );
+        $filesystem->remove($specificDownloadPath .'/documents');
+
+        // Create a new GanttProject
+        $gt = new GanttProject();
+        $gt->setFileName($document->getFileName());
+        $gt->setVersion($ganttProjectVersion);
+
+        $user->addGanttProject($gt);
+        $em->persist($user);
+        $em->flush();
+
         // Extract the tasks and store them in the database
-        $file_path = $this->telegram->getDownloadPath() . '/' . $response->getResult()->getFilePath();
-        $xmlManCon = new XmlUtils();
+        $xmlManCon = new XmlUtils($em);
         try {
-            $tasks = $xmlManCon->extractStoreTasks($file_path, $chat->getId());
+            $tasks = $xmlManCon->extractStoreTasks($ganFilePath, $chat->getId(), $gt);
         } catch (NoTasksException $e) {
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
             return $ms->sendMessage();
@@ -114,7 +162,6 @@ class SendGpFileCommand extends UserCommand
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
             return $ms->sendMessage();
         }
-        unlink($file_path);
         $this->conversation->stop();
         $ms->prepareMessage($chat_id, $this->prepareFormattedMessage($tasks), 'HTML', $selective_reply);
         return $ms->sendMessage();
