@@ -152,9 +152,9 @@ class SendGpFileCommand extends UserCommand
         $em->flush();
 
         // Extract the tasks and store them in the database
-        $xmlManCon = new XmlUtils();
+        $xmlManCon = new XmlUtils($em);
         try {
-            $tasks = $xmlManCon->extractStoreTasks($ganFilePath, $chat->getId());
+            $tasks = $xmlManCon->extractStoreTasks($ganFilePath, $chat->getId(), $gt);
         } catch (NoTasksException $e) {
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
             return $ms->sendMessage();

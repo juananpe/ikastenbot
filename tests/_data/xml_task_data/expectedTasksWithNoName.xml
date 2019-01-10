@@ -8,84 +8,84 @@
         <column>task_duration</column>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-11 00:00:00</value>
             <value>0</value>
             <value>5</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-18 00:00:00</value>
             <value>1</value>
             <value>0</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-13 00:00:00</value>
             <value>0</value>
             <value>5</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-19 00:00:00</value>
             <value>1</value>
             <value>0</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-20 00:00:00</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-20 00:00:00</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-20 00:00:00</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-21 00:00:00</value>
             <value>1</value>
             <value>0</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-21 00:00:00</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-24 00:00:00</value>
             <value>1</value>
             <value>0</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-25 00:00:00</value>
             <value>0</value>
             <value>3</value>
         </row>
         <row>
             <value>12345</value>
-            <null />
+            <value></value>
             <value>2021-05-28 00:00:00</value>
             <value>1</value>
             <value>0</value>

@@ -4,9 +4,16 @@ declare(strict_types=1);
 
 namespace IkastenBot\Tests\Utils;
 
+use Doctrine\Common\DataFixtures\Loader;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use IkastenBot\Entity\GanttProject;
+use IkastenBot\Entity\User;
 use IkastenBot\Exception\NoTasksException;
 use IkastenBot\Utils\XmlUtils;
 use IkastenBot\Tests\DatabaseTestCase;
+use IkastenBot\Tests\Fixtures\GanttProjectDataLoader;
+use IkastenBot\Tests\Fixtures\UserDataLoader;
 use Longman\TelegramBot\Telegram;
 use PHPUnit\Framework\TestCase;
 
@@ -52,24 +59,75 @@ final class XmlUtilsDbTest extends DatabaseTestCase
      */
     protected $tester;
 
+    /**
+     * Entity manager
+     *
+     * @var Doctrine\ORM\EntityManager
+     */
+    protected $em;
+
+    /**
+     * Test user
+     *
+     * @var User
+     */
+    protected $user;
+
+    /**
+     * Test GanttProject
+     *
+     * @var GanttProject
+     */
+    protected $ganttProject;
+
     public function setUp(): void
     {
         $this->data_dir    = __DIR__ . '/../_data/xml_milestone_data';
         $this->xml_dir_gan  = $this->data_dir . '/gan/';
-        $this->xu = new XmlUtils();
 
         $this->connection = $this->getConnection();
         $this->pdo = $this->connection->getConnection();
-        $this->pdo->beginTransaction();
 
         $insert_test_chat = 'INSERT INTO chat (id) VALUES (12345)';
         $statement = $this->pdo->prepare($insert_test_chat);
         $statement->execute();
+
+        // Load fixtures into the database for the tests
+        $this->em = $this->getDoctrineEntityManager();
+        $this->xu = new XmlUtils($this->em);
+
+        $loader = new Loader();
+        $loader->addFixture(new UserDataLoader());
+        $loader->addFixture(new GanttProjectDataLoader());
+
+        $purger = new ORMPurger();
+        $executor = new ORMExecutor($this->em, $purger);
+        $executor->execute($loader->getFixtures());
+
+        $this->user = $this->em->getRepository(User::class)->find(12345);
+        $this->ganttProject = $this->user->getGanttProjects()[0];
     }
 
     public function tearDown(): void
     {
-        $this->pdo->rollBack();
+        $connection = $this->em->getConnection();
+        $platform   = $connection->getDatabasePlatform();
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0;');
+
+        $truncate = $platform->getTruncateTableSQL('chat');
+        $connection->executeUpdate($truncate);
+
+        $truncate = $platform->getTruncateTableSQL('user');
+        $connection->executeUpdate($truncate);
+
+        $truncate = $platform->getTruncateTableSQL('ganttproject');
+        $connection->executeUpdate($truncate);
+
+        $truncate = $platform->getTruncateTableSQL('task');
+        $connection->executeUpdate($truncate);
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
     }
 
     /**
@@ -87,7 +145,8 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
         $this->xu->extractStoreTasks(
             $this->xml_dir_gan . 'TwelveTasks.gan',
-            12345
+            12345,
+            $this->ganttProject
         );
 
         $queryTable = $this->connection->createQueryTable(
@@ -108,7 +167,8 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
         $this->xu->extractStoreTasks(
             $this->xml_dir_gan . 'TwelveTasksNoName.gan',
-            12345
+            12345,
+            $this->ganttProject
         );
 
         $queryTable = $this->connection->createQueryTable(
@@ -128,7 +188,8 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
         $this->xu->extractStoreTasks(
             $this->xml_dir_gan . 'NoTasks.gan',
-            12345
+            12345,
+            $this->ganttProject
         );
     }
 }

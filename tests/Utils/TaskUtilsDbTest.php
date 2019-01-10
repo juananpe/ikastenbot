@@ -60,6 +60,52 @@ final class TaskUtilsDbTest extends DatabaseTestCase
         $statement = $this->pdo->prepare($insert_test_chat);
         $statement->execute();
 
+            // Insert a test user to avoid triggering foreign key constraints
+            $insertTestUser = '
+            INSERT INTO `user` (
+                `id`,
+                `is_bot`,
+                `first_name`,
+                `last_name`,
+                `username`,
+                `language_code`,
+                `created_at`,
+                `updated_at`,
+                `language`
+            ) VALUES (
+                12345,
+                0,
+                "Test",
+                "User",
+                "TestUsername",
+                "en",
+                "2021-01-01 00:00:00",
+                "2021-01-01 00:00:00",
+                "es"
+            )
+        ';
+
+        $statement = $this->pdo->prepare($insertTestUser);
+        $statement->execute();
+
+        // Insert a test GanttProject to avoid triggering foreign key constraints
+        $insertTestGanttProject = '
+            INSERT INTO `ganttproject` (
+                `id`,
+                `file_name`,
+                `version`,
+                `user_id`
+            ) VALUES (
+                1,
+                "Test.gan",
+                1,
+                12345
+            )'
+        ;
+
+        $statement = $this->pdo->prepare($insertTestGanttProject);
+        $statement->execute();
+
         // Insert a test task to test with
         $insert_test_task = '
             INSERT INTO `task` (
@@ -68,14 +114,16 @@ final class TaskUtilsDbTest extends DatabaseTestCase
                 `task_name`,
                 `task_date`,
                 `task_isMilestone`,
-                `task_duration`
+                `task_duration`,
+                `ganttproject_id`
             ) VALUES (
                 1,
                 12345,
                 "Test task",
                 "2021-01-01 00:00:00",
                 0,
-                3
+                3,
+                1
             )
         ';
         $statement = $this->pdo->prepare($insert_test_task);

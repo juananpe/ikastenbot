@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Doctrine\ORM\EntityManager;
 use IkastenBot\Exception\IncorrectFileException;
 use IkastenBot\Exception\NoMilestonesException;
 use IkastenBot\Utils\XmlUtils;
@@ -42,7 +43,9 @@ final class XmlUtilsTest extends TestCase
         $this->data_dir        = __DIR__ . '/../_data/xml_milestone_data';
         $this->xml_dir_mspdi    = $this->data_dir . '/mspdi/';
         $this->xml_dir_gan      = $this->data_dir . '/gan/';
-        $this->xu = new XmlUtils();
+
+        $em = $this->createMock(EntityManager::class);
+        $this->xu = new XmlUtils($em);
     }
 
     public function testExtractNoTasksGanFile()
