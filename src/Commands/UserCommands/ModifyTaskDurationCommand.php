@@ -5,6 +5,8 @@ declare(strict_types=1);
 // Longman's namespace must be used as otherwise the command is not recognized
 namespace Longman\TelegramBot\Commands\UserCommands;
 
+use IkastenBot\Entity\DatabaseBootstrap;
+use IkastenBot\Entity\Task;
 use IkastenBot\Exception\TaskNotFoundException;
 use IkastenBot\Service\MessageSenderService;
 use IkastenBot\Utils\MessageFormatterUtils;
@@ -63,14 +65,18 @@ class ModifyTaskDurationCommand extends UserCommand
         $taskId     = (int)$arguments[0];
         $taskOffset = (int)$arguments[1];
 
-        $tu = new TaskUtils();
+        $db = new DatabaseBootstrap();
+        $em = $db->getEntityManager();
 
-        try {
-            $tu->modifyTaskDuration($taskId, $taskOffset);
-        } catch (TaskNotFoundException $e) {
+        $task = $em->getRepository(Task::class)->find($taskId);
+
+        if(\is_null($task)) {
             $ms->prepareMessage($chat_id, $e->getMessage());
-            return $ms->sendMessage();
+            return $ms->sendMessage('The specified task doesn\'t exist.');
         }
+
+        $taskUtils = new TaskUtils($em);
+        $taskUtils->modifyTaskDuration($task, $taskOffset);
 
         $ms->prepareMessage($chat_id, 'The task\'s duration was successfully modified.');
         return $ms->sendMessage();
