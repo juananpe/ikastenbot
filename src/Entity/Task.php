@@ -65,7 +65,7 @@ class Task
     /**
      * Associated Gantt Project
      *
-     * @ManyToOne(targetEntity="GanttProject", inversedBy="tasks")
+     * @ManyToOne(targetEntity="GanttProject", inversedBy="tasks", cascade={"persist"})
      * @JoinColumn(name="ganttproject_id", referencedColumnName="id")
      *
      * @var GanttProject
