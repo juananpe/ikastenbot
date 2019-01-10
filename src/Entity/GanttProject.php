@@ -145,6 +145,40 @@ class GanttProject
     }
 
     /**
+     * Add a task
+     *
+     * @param Task $task
+     * @return self
+     */
+    public function addTask(Task $task): self
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks[] = $task;
+            $task->setGanttProject($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove a task
+     *
+     * @param Task $task
+     * @return self
+     */
+    public function removeTask(Task $task): self
+    {
+        if ($this->tasks->contains($task)) {
+            $this->tasks->removeElement($task);
+            if ($task->getGanttProject() === $this) {
+                $task->setGanttProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Get the owner of the Gantt project
      *
      * @return  User
