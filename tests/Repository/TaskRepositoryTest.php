@@ -95,6 +95,7 @@ class TaskRepositoryTest extends DatabaseTestCase
 
         $sql = '
             INSERT INTO `task` (
+                `gan_id`,
                 `chat_id`,
                 `task_name`,
                 `task_date`,
@@ -102,6 +103,7 @@ class TaskRepositoryTest extends DatabaseTestCase
                 `task_duration`,
                 `ganttproject_id`
             ) VALUES (
+                1,
                 12345,
                 :task_name,
                 :task_date,

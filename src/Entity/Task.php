@@ -23,6 +23,14 @@ class Task
     protected $id;
 
     /**
+     * The id of the task in the .gan file
+     *
+     * @Column(type="integer", name="gan_id")
+     * @var int
+     */
+    protected $ganId;
+
+    /**
      * Id of the chat to which the task is associated
      *
      * @Column(type="bigint")
@@ -96,6 +104,30 @@ class Task
     public function setId(int $id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get the id of the task in the .gan file
+     *
+     * @return int
+     */
+    public function getGanId()
+    {
+        return $this->ganId;
+    }
+
+    /**
+     * Set the id of the task in the .gan file
+     *
+     * @param int $ganId The id of the task in the .gan file
+     *
+     * @return self
+     */
+    public function setGanId(int $ganId)
+    {
+        $this->ganId = $ganId;
 
         return $this;
     }

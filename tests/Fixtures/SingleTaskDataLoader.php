@@ -16,6 +16,7 @@ class SingleTaskDataLoader extends AbstractFixture implements OrderedFixtureInte
         $fixedDate = new \DateTime('2021-01-01');
 
         $task = new Task();
+        $task->setGanId(1);
         $task->setChat_id('12345');
         $task->setName('Test task');
         $task->setDate($fixedDate);

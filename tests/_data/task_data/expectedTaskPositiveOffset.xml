@@ -1,4 +1,4 @@
 <?xml version="1.0" ?>
 <dataset>
-    <task chat_id="12345" task_name="Test task" task_date="2021-01-01 00:00:00" task_isMilestone="0" task_duration="8"/>
+    <task gan_id="1" chat_id="12345" task_name="Test task" task_date="2021-01-01 00:00:00" task_isMilestone="0" task_duration="8"/>
 </dataset>

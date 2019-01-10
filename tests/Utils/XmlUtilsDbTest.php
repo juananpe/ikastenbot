@@ -150,7 +150,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         );
 
         $queryTable = $this->connection->createQueryTable(
-            'task', 'SELECT chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
+            'task', 'SELECT gan_id, chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
         );
 
         $expectedTable = $this->createFlatXmlDataSet(dirname(__FILE__).'/../_data/xml_task_data/expectedTasks.xml')
@@ -172,7 +172,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         );
 
         $queryTable = $this->connection->createQueryTable(
-            'task', 'SELECT chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
+            'task', 'SELECT gan_id, chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
         );
 
         $expectedTable = $this->createXmlDataSet(dirname(__FILE__).'/../_data/xml_task_data/expectedTasksWithNoName.xml')

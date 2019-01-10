@@ -52,6 +52,7 @@ class XmlUtils
             $task->setName((string)$xmlTask->attributes()->name);
 
             $date = new \DateTime((string)$xmlTask->attributes()->start);
+            $task->setGanId((int)$xmlTask->attributes()->id);
             $task->setDate($date);
             $task->setIsMilestone(\filter_var($xmlTask->attributes()->meeting, FILTER_VALIDATE_BOOLEAN));
             $task->setDuration((int)$xmlTask->attributes()->duration);

@@ -98,6 +98,7 @@ class TaskReminderServiceTest extends DatabaseTestCase
         // Insert test chat to avoid foreign key triggering
         $sql = '
             INSERT INTO `task` (
+                `gan_id`,
                 `chat_id`,
                 `task_name`,
                 `task_date`,
@@ -105,6 +106,7 @@ class TaskReminderServiceTest extends DatabaseTestCase
                 `task_duration`,
                 `ganttproject_id`
             ) VALUES (
+                1,
                 12345,
                 :task_name,
                 :task_date,

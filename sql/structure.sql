@@ -134,6 +134,7 @@ ALTER TABLE `user` ADD CONSTRAINT `fk_user_ganttproject_id` FOREIGN KEY (`ganttp
 CREATE TABLE IF NOT EXISTS `task`
 (
   `id`                    INT         NOT NULL AUTO_INCREMENT,
+  `gan_id`                INT         NOT NULL,
   `chat_id`               BIGINT      NOT NULL,
   `task_name`             varchar(50) NULL,
   `task_date`             datetime    NOT NULL,

@@ -137,6 +137,7 @@ final class TaskUtilsDbTest extends DatabaseTestCase
         $queryTable = $this->connection->createQueryTable(
             'task',
             'SELECT
+                `gan_id`,
                 `chat_id`,
                 `task_name`,
                 `task_date`,
@@ -159,6 +160,7 @@ final class TaskUtilsDbTest extends DatabaseTestCase
         $queryTable = $this->connection->createQueryTable(
             'task',
             'SELECT
+                `gan_id`,
                 `chat_id`,
                 `task_name`,
                 `task_date`,
