@@ -27,6 +27,32 @@ class XmlUtils
     }
 
     /**
+     * Opens the XML file of the provided path and throws and exception if
+     * any errors occur.
+     *
+     * @param   string $xmlFilePath     The path of the XML file
+     *
+     * @return  \SimpleXmlElement       The XML contents of the file
+     *
+     * @throws IncorrectFileException   if any errors occur during the opening
+     *                                  or the parsing of the file
+     */
+    public function openXmlFile(string $xmlFilePath): \SimpleXmlElement
+    {
+        \libxml_use_internal_errors(true);
+
+        $xml = simplexml_load_file($xmlFilePath);
+
+        if (count(\libxml_get_errors())) {
+            libxml_clear_errors();
+            \libxml_use_internal_errors(false);
+            throw new IncorrectFileException('The provided file contains invalid XML');
+        }
+
+        return $xml;
+    }
+
+    /**
      * Extract tasks from gan file
      *
      * @param   string $file_path   The path of the Gan file
@@ -34,15 +60,7 @@ class XmlUtils
      */
     public function extractTasksFromGanFile(string $file_path): array
     {
-        \libxml_use_internal_errors(true);
-
-        $data = simplexml_load_file($file_path);
-
-        if (count(\libxml_get_errors())) {
-            libxml_clear_errors();
-            \libxml_use_internal_errors(false);
-            throw new IncorrectFileException('Please send a valid GanttProject Gan file.');
-        }
+        $data= $this->openXmlFile($file_path);
 
         $xmlTasks = $data->xpath('//task');
 
