@@ -92,10 +92,16 @@ class Task
      */
     public function delayDate(int $days): self
     {
+        /**
+         * The following link explains why the object is cloned instead of
+         * using ->add directly with $this->date
+         *
+         * @link https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/cookbook/working-with-datetime.html
+         */
         $interval = 'P' . $days . 'D';
-
         $dateInterval = new \DateInterval($interval);
 
+        $this->date = clone $this->date;
         $this->date->add($dateInterval);
 
         return $this;
