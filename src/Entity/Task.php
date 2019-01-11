@@ -85,6 +85,23 @@ class Task
     }
 
     /**
+     * Delays date for the given amount of days
+     *
+     * @param   integer $days The amount of days the date is to be delayed
+     * @return  self
+     */
+    public function delayDate(int $days): self
+    {
+        $interval = 'P' . $days . 'D';
+
+        $dateInterval = new \DateInterval($interval);
+
+        $this->date->add($dateInterval);
+
+        return $this;
+    }
+
+    /**
      * Get id of the task
      *
      * @return int

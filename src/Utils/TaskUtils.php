@@ -42,31 +42,4 @@ class TaskUtils
         $this->em->flush();
 
     }
-
-    /**
-     * Updates a given task's date depending on the provided offset
-     *
-     * @param   Task      $task     Task object to update the date from
-     * @param   integer   $offset   The offset —positive or negative— in days
-     *                              to apply to the date
-     * @return  Task
-     */
-    public function updateTaskDateWithOffset(Task $task, int $offset): Task
-    {
-        $interval = 'P' . \abs($offset) . 'D';
-
-        $dateInterval = new \DateInterval($interval);
-
-        if ($offset > 0) {
-            $task->setDate(
-                $task->getDate()->add($dateInterval)
-            );
-        } else {
-            $task->setDate(
-                $task->getDate()->sub($dateInterval)
-            );
-        }
-
-        return $task;
-    }
 }
