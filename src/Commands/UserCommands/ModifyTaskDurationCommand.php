@@ -72,7 +72,19 @@ class ModifyTaskDurationCommand extends UserCommand
 
         $task = $em->getRepository(Task::class)->find($taskId);
 
-        if(\is_null($task)) {
+        /**
+         * Check that the user who requested the modification is the owner of
+         * the task
+         */
+        $taskOwner = $task->getGanttProject()->getUser()->getId();
+        $isUserTheOwner = $taskOwner === $message->getFrom()->getId();
+
+        /**
+         * If the task doesn't exist or the user who requested the change isn't
+         * the owner, return a task not found message. This is made on purpose
+         * to avoid giving clues about other users' tasks to the user.
+         */
+        if(\is_null($task) || !$isUserTheOwner) {
             $ms->prepareMessage($chat_id, 'The specified task doesn\'t exist.');
             return $ms->sendMessage();
         }
