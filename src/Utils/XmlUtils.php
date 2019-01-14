@@ -129,12 +129,14 @@ class XmlUtils
      *
      * @param Task[]            &$taskPool  The array to which the task
      *                                      will be pushed
+     * @param GanttProject      $ganttProject   The GanttProject the task
+     *                                          belongs to
      * @param \SimpleXmlElement $xml        The XML to be parsed
      * @param boolean $findTask             True for finding a task element,
      *                                      false for finding a depend element
      * @return void
      */
-    public function findNestedTaskOrDepend(array &$taskPool, \SimpleXmlElement $xml, bool $findTask): void
+    public function findNestedTaskOrDepend(array &$taskPool, GanttProject $ganttProject, \SimpleXmlElement $xml, bool $findTask): void
     {
         $xpathQuery = './';
 
@@ -149,7 +151,8 @@ class XmlUtils
             foreach ($hasNested as $xmlElement) {
                 $tmpTask = $this->em->getRepository(Task::class)->findOneBy(
                     array(
-                        'ganId' => $xmlElement->attributes()->id
+                        'ganId' => $xmlElement->attributes()->id,
+                        'ganttProject' => $ganttProject
                     )
                 );
                 $taskPool[] = $tmpTask;
@@ -182,6 +185,8 @@ class XmlUtils
             $task->getDuration() + $delay
         );
 
+        $ganttProject = $task->getGanttProject();
+
         $xmlTask = $xml->xpath('//task[@id="' . $task->getGanId() . '"]')[0];
         $xmlTask->attributes()->duration = $task->getDuration();
 
@@ -190,8 +195,8 @@ class XmlUtils
          * in the XML
          */
         $taskPool = [];
-        $this->findNestedTaskOrDepend($taskPool, $xmlTask, true);
-        $this->findNestedTaskOrDepend($taskPool, $xmlTask, false);
+        $this->findNestedTaskOrDepend($taskPool, $ganttProject, $xmlTask, true);
+        $this->findNestedTaskOrDepend($taskPool, $ganttProject, $xmlTask, false);
         while (!empty($taskPool)) {
             $tmpTask = \array_shift($taskPool);
             $tmpTask->delayDate($delay);
@@ -202,8 +207,8 @@ class XmlUtils
 
             $xmlTask->attributes()->start = $tmpTask->getDate()->format('Y-m-d');
 
-            $this->findNestedTaskOrDepend($taskPool, $xmlTask, true);
-            $this->findNestedTaskOrDepend($taskPool, $xmlTask, false);
+            $this->findNestedTaskOrDepend($taskPool, $ganttProject, $xmlTask, true);
+            $this->findNestedTaskOrDepend($taskPool, $ganttProject, $xmlTask, false);
         }
 
         $this->em->flush();

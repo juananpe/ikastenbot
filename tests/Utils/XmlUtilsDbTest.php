@@ -209,7 +209,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $xmlTask = $xml->xpath('//task[@id="4"]')[0];
 
         $taskPool = [];
-        $this->xu->findNestedTaskOrDepend($taskPool, $xmlTask, true);
+        $this->xu->findNestedTaskOrDepend($taskPool, $this->ganttProject, $xmlTask, true);
 
         $this->assertEquals(1, \count($taskPool));
 
@@ -231,13 +231,43 @@ final class XmlUtilsDbTest extends DatabaseTestCase
             $this->ganttProject
         );
 
+        /**
+         * The task below is modified and then the same file is imported again.
+         * Then, a new GanttProject is created and the same tasks are imported
+         * into the database. Without the GanttProject variable in the
+         * findNestedTaskOrDepend function, the performed search by ganId would
+         * retrieve this modified task, and therefore making the test fail.
+         *
+         * This little hack is to justify searching not only by ganId, but also
+         * by GanttProject to retrieve the correct task.
+         */
+        $task = $this->em->getRepository(Task::class)->find(7);
+        $task->setDate(new \DateTime('2021-05-10'));
+        $this->em->persist($task);
+        $this->em->flush();
+
+        $ganttProject = new GanttProject();
+        $ganttProject->setFileName('TwelveTasks.gan');
+        $ganttProject->setVersion(2);
+        $ganttProject->setUser($this->user);
+
+        $this->em->persist($ganttProject);
+        $this->em->flush();
+
+        // Load the fixtures
+        $this->xu->extractStoreTasks(
+            $this->xml_dir_gan . 'TwelveTasks.gan',
+            12345,
+            $ganttProject
+        );
+
         $xml = $this->xu->openXmlFile($this->xml_dir_gan . 'TwelveTasks.gan');
 
         // Get the XML task which has two nested tasks
         $xmlTask = $xml->xpath('//task[@id="7"]')[0];
 
         $taskPool = [];
-        $this->xu->findNestedTaskOrDepend($taskPool, $xmlTask, true);
+        $this->xu->findNestedTaskOrDepend($taskPool, $ganttProject, $xmlTask, true);
 
         $this->assertEquals(2, \count($taskPool));
 
@@ -273,7 +303,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $xmlTask = $xml->xpath('//task[@id="14"]')[0];
 
         $taskPool = [];
-        $this->xu->findNestedTaskOrDepend($taskPool, $xmlTask, false);
+        $this->xu->findNestedTaskOrDepend($taskPool, $this->ganttProject, $xmlTask, false);
 
         $this->assertEquals(1, \count($taskPool));
 
@@ -284,6 +314,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $this->assertEquals(true, $task->getIsMilestone());
         $this->assertEquals('2021-05-18', $task->getDate()->format('Y-m-d'));
         $this->assertEquals(0, $task->getDuration());
+        $this->assertSame($this->ganttProject, $task->getGanttProject());
     }
 
     public function testModifyDurationTaskOneDependency()
