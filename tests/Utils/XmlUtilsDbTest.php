@@ -329,7 +329,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
         // Check that the XML was properly udpated
         $xmlTask = $resultingXml->xpath('//task[@id="14"]')[0];
-        $this->assertEquals('2021-05-14', $xmlTask->attributes()->start);
+        $this->assertEquals('2021-05-11', $xmlTask->attributes()->start);
         $this->assertEquals('8', $xmlTask[0]->attributes()->duration);
 
         $xmlTask = $resultingXml->xpath('//task[@id="0"]')[0];
@@ -379,7 +379,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
         // Check that the XML was properly udpated
         $xmlTask = $resultingXml->xpath('//task[@id="4"]')[0];
-        $this->assertEquals('2021-05-23', $xmlTask->attributes()->start);
+        $this->assertEquals('2021-05-20', $xmlTask->attributes()->start);
         $this->assertEquals('6', $xmlTask[0]->attributes()->duration);
 
         $xmlTask = $resultingXml->xpath('//task[@id="7"]')[0];

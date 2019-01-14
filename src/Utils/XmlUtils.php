@@ -189,7 +189,9 @@ class XmlUtils
          * Delay the date of the tasks and save them both in the database and
          * in the XML
          */
-        $taskPool = [$task];
+        $taskPool = [];
+        $this->findNestedTaskOrDepend($taskPool, $xmlTask, true);
+        $this->findNestedTaskOrDepend($taskPool, $xmlTask, false);
         while (!empty($taskPool)) {
             $tmpTask = \array_shift($taskPool);
             $tmpTask->delayDate($delay);
