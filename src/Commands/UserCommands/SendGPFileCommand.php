@@ -159,7 +159,12 @@ class SendGpFileCommand extends UserCommand
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
             return $ms->sendMessage();
         } catch (IncorrectFileException $e) {
-            $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
+            $ms->prepareMessage(
+                $chat_id,
+                'The provided Gan file could not be processed. Please send a ' .
+                'valid Gan file.',
+                null,
+                $selective_reply);
             return $ms->sendMessage();
         }
         $this->conversation->stop();

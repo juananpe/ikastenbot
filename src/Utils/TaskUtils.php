@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IkastenBot\Utils;
 
+use Doctrine\ORM\EntityManager;
 use IkastenBot\Entity\DoctrineBootstrap;
 use IkastenBot\Entity\Task;
 use IkastenBot\Exception\TaskNotFoundException;
@@ -20,40 +21,25 @@ class TaskUtils
 
     public function __construct(EntityManager $em = null)
     {
-        if (\is_null($em)) {
-            $db = new DoctrineBootstrap();
-            $this->em = $db->getEntityManager();
-        } else {
-            $this->em = $em;
-        }
+        $this->em = $em;
     }
 
     /**
      * Modifies a task's duration
      *
-     * @param   integer $taskId     The id of the task
+     * @param   Task    $task       The task to modify
      * @param   integer $duration   The duration offset —negative or positive— to apply to
      *                              the task
      * @return  void
-     *
-     * @throws TaskNotFoundException When the task doesn't exist
      */
-    public function modifyTaskDuration(int $taskId, int $durationOffset): void
+    public function modifyTaskDuration(Task $task, int $durationOffset): void
     {
-        $qb = $this->em->createQueryBuilder();
+        $task->setDuration(
+            $task->getDuration() + $durationOffset
+        );
 
-        $qb
-            ->update(Task::class, 't')
-            ->set('t.duration', 't.duration + :duration')
-            ->where('t.id = :task_id')
-            ->setParameter(':duration', $durationOffset)
-            ->setParameter(':task_id', $taskId)
-        ;
+        $this->em->persist($task);
+        $this->em->flush();
 
-        if (!$qb->getQuery()->getResult()) {
-            throw new TaskNotFoundException(
-                'The specified task doesn\'t exist.'
-            );
-        }
     }
 }

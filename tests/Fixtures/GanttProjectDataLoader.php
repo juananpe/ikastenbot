@@ -14,7 +14,7 @@ class GanttProjectDataLoader extends AbstractFixture implements OrderedFixtureIn
     public function load(ObjectManager $manager)
     {
         $ganttProject = new GanttProject();
-        $ganttProject->setFileName('Test.gan');
+        $ganttProject->setFileName('TwelveTasks.gan');
         $ganttProject->setVersion(1);
         $ganttProject->setUser(
             $this->getReference('user')
@@ -22,6 +22,8 @@ class GanttProjectDataLoader extends AbstractFixture implements OrderedFixtureIn
 
         $manager->persist($ganttProject);
         $manager->flush();
+
+        $this->addReference('ganttProject', $ganttProject);
     }
 
     public function getOrder()

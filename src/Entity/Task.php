@@ -23,6 +23,14 @@ class Task
     protected $id;
 
     /**
+     * The id of the task in the .gan file
+     *
+     * @Column(type="integer", name="gan_id")
+     * @var int
+     */
+    protected $ganId;
+
+    /**
      * Id of the chat to which the task is associated
      *
      * @Column(type="bigint")
@@ -77,6 +85,29 @@ class Task
     }
 
     /**
+     * Delays date for the given amount of days
+     *
+     * @param   integer $days The amount of days the date is to be delayed
+     * @return  self
+     */
+    public function delayDate(int $days): self
+    {
+        /**
+         * The following link explains why the object is cloned instead of
+         * using ->add directly with $this->date
+         *
+         * @link https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/cookbook/working-with-datetime.html
+         */
+        $interval = 'P' . $days . 'D';
+        $dateInterval = new \DateInterval($interval);
+
+        $this->date = clone $this->date;
+        $this->date->add($dateInterval);
+
+        return $this;
+    }
+
+    /**
      * Get id of the task
      *
      * @return int
@@ -96,6 +127,30 @@ class Task
     public function setId(int $id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get the id of the task in the .gan file
+     *
+     * @return int
+     */
+    public function getGanId()
+    {
+        return $this->ganId;
+    }
+
+    /**
+     * Set the id of the task in the .gan file
+     *
+     * @param int $ganId The id of the task in the .gan file
+     *
+     * @return self
+     */
+    public function setGanId(int $ganId)
+    {
+        $this->ganId = $ganId;
 
         return $this;
     }

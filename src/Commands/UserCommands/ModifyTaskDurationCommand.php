@@ -5,12 +5,16 @@ declare(strict_types=1);
 // Longman's namespace must be used as otherwise the command is not recognized
 namespace Longman\TelegramBot\Commands\UserCommands;
 
+use IkastenBot\Entity\DoctrineBootstrap;
+use IkastenBot\Entity\Task;
 use IkastenBot\Exception\TaskNotFoundException;
 use IkastenBot\Service\MessageSenderService;
 use IkastenBot\Utils\MessageFormatterUtils;
-use IkastenBot\Utils\TaskUtils;
+use IkastenBot\Utils\FilesystemUtils;
+use IkastenBot\Utils\XmlUtils;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Commands\UserCommand;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ModifyTaskDurationCommand extends UserCommand
 {
@@ -63,16 +67,53 @@ class ModifyTaskDurationCommand extends UserCommand
         $taskId     = (int)$arguments[0];
         $taskOffset = (int)$arguments[1];
 
-        $tu = new TaskUtils();
+        $db = new DoctrineBootstrap();
+        $em = $db->getEntityManager();
 
-        try {
-            $tu->modifyTaskDuration($taskId, $taskOffset);
-        } catch (TaskNotFoundException $e) {
-            $ms->prepareMessage($chat_id, $e->getMessage());
+        $task = $em->getRepository(Task::class)->find($taskId);
+
+        /**
+         * Check that the user who requested the modification is the owner of
+         * the task
+         */
+        $taskOwner = $task->getGanttProject()->getUser()->getId();
+        $isUserTheOwner = $taskOwner === $message->getFrom()->getId();
+
+        /**
+         * If the task doesn't exist or the user who requested the change isn't
+         * the owner, return a task not found message. This is made on purpose
+         * to avoid giving clues about other users' tasks to the user.
+         */
+        if(\is_null($task) || !$isUserTheOwner) {
+            $ms->prepareMessage($chat_id, 'The specified task doesn\'t exist.');
             return $ms->sendMessage();
         }
 
-        $ms->prepareMessage($chat_id, 'The task\'s duration was successfully modified.');
+        // Get the task's GanttProject
+        $ganttProject = $task->getGanttProject();
+
+        // Get the path of the Gan file
+        $ganFilePath = DOWNLOAD_DIR . '/' . $ganttProject->getUser()->getId();
+        $ganFilePath .= '/' . $ganttProject->getVersion();
+        $ganFilePath .= '/' . $ganttProject->getFileName();
+
+        // Delay the task and its dependants
+        $xmlUtils = new XmlUtils($em);
+        $newGanXml = $xmlUtils->delayTaskAndDependants(
+                                                        $ganFilePath,
+                                                        $task,
+                                                        $taskOffset
+                                                    );
+
+        // Save the new Gan file
+        $fs = new Filesystem();
+        $fsUtils = new FilesystemUtils($em, $fs);
+        $fsUtils->saveToNewGanFile($newGanXml, $task->getGanttProject());
+
+        $ms->prepareMessage($chat_id,
+            'The task\'s duration was successfully modified, and the ' .
+            'GanttProject was updated.'
+        );
         return $ms->sendMessage();
     }
 }

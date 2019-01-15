@@ -91,6 +91,9 @@ try {
             $uploadDirectory    = PROJECT_ROOT . '/' . $uploadDirectory;
         }
 
+        define('DOWNLOAD_DIR', $downloadDirectory);
+        define('UPLOAD_DIR', $uploadDirectory);
+
         $telegram->setDownloadPath($downloadDirectory);
         $telegram->setUploadPath($uploadDirectory);
     }

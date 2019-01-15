@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <dataset>
     <table name="task">
-        <column>id</column>
         <column>chat_id</column>
         <column>task_name</column>
         <column>task_date</column>
