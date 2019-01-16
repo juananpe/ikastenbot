@@ -14,6 +14,7 @@ use IkastenBot\Utils\FilesystemUtils;
 use IkastenBot\Utils\XmlUtils;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Commands\UserCommand;
+use Longman\TelegramBot\Request;
 use Symfony\Component\Filesystem\Filesystem;
 
 class DelayTaskCommand extends UserCommand
@@ -46,16 +47,42 @@ class DelayTaskCommand extends UserCommand
     public function execute()
     {
         $message = $this->getMessage();
-        $text    = trim($message->getText(true));
+        $callbackQuery = $this->getUpdate()->getCallbackQuery();
 
-        $chat       = $this->getMessage()->getChat();
+        // If it's a callback query extract the information from there
+        $text = '';
+        if (!\is_null($message)) {
+            $text = trim($message->getText(true));
+            $user = $message->getFrom();
+        } else {
+            $message = $callbackQuery->getMessage();
+            $data = $callbackQuery->getData();
+
+            $text = \str_replace('/delaytask ', '', $data);
+
+            $user = $callbackQuery->getFrom();
+        }
+
+        $chat       = $message->getChat();
         $chat_id    = $chat->getId();
 
         //reply to message id is applied by default
         //Force reply is applied by default so it can work with privacy on
         $selective_reply = $chat->isGroupChat() || $chat->isSuperGroup();
 
-        $user       = $this->getMessage()->getFrom();
+        /**
+         * If it's a callback query, immediately remove the "Delay"
+         * button
+         */
+        if ($callbackQuery) {
+            $data = [];
+
+            // Remove the inline button from the chat
+            $data['chat_id'] = $chat_id;
+            $data['message_id'] = $message->getMessageId();
+            Request::editMessageReplyMarkup($data);
+        }
+
         $user_id    = $user->getId();
 
         // Begin a new conversation
@@ -72,6 +99,7 @@ class DelayTaskCommand extends UserCommand
         }
 
         $ms = new MessageSenderService();
+        $messageFormatterUtils = new MessageFormatterUtils();
 
         $db = new DoctrineBootstrap();
         $em = $db->getEntityManager();
@@ -108,7 +136,13 @@ class DelayTaskCommand extends UserCommand
                  * owner of the task
                  */
                 $taskOwner = $task->getGanttProject()->getUser()->getId();
-                $isUserTheOwner = $taskOwner === $user_id;
+                $authorized = $taskOwner === $user_id;
+
+                if (!$authorized) {
+                    $authorized = \preg_match(
+                        '/^' . getenv('TELEGRAM_BOT_USERNAME') . '$/mi', $user->getUsername()
+                    );
+                }
 
                 /**
                  * If the task doesn't exist or the user who requested the
@@ -116,7 +150,7 @@ class DelayTaskCommand extends UserCommand
                  * This is made on purpose to avoid giving clues about other
                  * users' tasks to the user.
                  */
-                if(\is_null($task) || !$isUserTheOwner) {
+                if(\is_null($task) || !$authorized) {
                     $ms->prepareMessage($chat_id, 'The specified task ' .
                                                    'doesn\'t exist.'
                     );
@@ -133,9 +167,17 @@ class DelayTaskCommand extends UserCommand
                 $this->conversation->update();
 
                 // Ask the user for the delay of the task
-                $ms->prepareMessage($chat_id, 'Please specify in days the ' .
-                                                'delay of the task'
+                $parameters = [
+                    'task' => $task
+                ];
+                $responseMessage = '';
+                $messageFormatterUtils->appendTwigFileWithParameters(
+                    $responseMessage,
+                    'notifications/task/delay/delayTask.twig',
+                    $parameters
                 );
+                $ms->prepareMessage($chat_id, $responseMessage, 'HTML');
+
                 return $ms->sendMessage();
 
             case 1:
@@ -173,10 +215,19 @@ class DelayTaskCommand extends UserCommand
                 $fsUtils = new FilesystemUtils($em, $fs);
                 $fsUtils->saveToNewGanFile($newGanXml, $task->getGanttProject());
 
-                $ms->prepareMessage($chat_id,
-                    'The task was successfully delayed, and the ' .
-                    'GanttProject was updated.'
+                // Prepare the success message to be sent and send it
+                $parameters = [
+                    'task' => $task
+                ];
+
+                $responseMessage = '';
+                $messageFormatterUtils->appendTwigFileWithParameters(
+                    $responseMessage,
+                    'notifications/task/delay/successDelayTask.twig',
+                    $parameters
                 );
+
+                $ms->prepareMessage($chat_id, $responseMessage, 'HTML');
 
                 // Stop the conversation
                 $this->conversation->stop();

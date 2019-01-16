@@ -7,6 +7,7 @@ namespace IkastenBot\Service;
 use IkastenBot\Entity\Task;
 use IkastenBot\Service\MessageSenderService;
 use IkastenBot\Utils\MessageFormatterUtils;
+use Longman\TelegramBot\Entities\InlineKeyboard;
 use Doctrine\ORM\EntityManager;
 
 class TaskReminderService
@@ -60,7 +61,16 @@ class TaskReminderService
             $this->mf->appendTwigFile($text, 'notifications/task/taskTodayText.twig');
             $this->mf->appendTask($text, $task);
 
-            $this->mss->prepareMessage((int)$task->getChat_id(), $text, 'HTML');
+            $keyboard = new InlineKeyboard(
+                [
+                    [
+                        'text' => 'Delay task',
+                        'callback_data' => '/delaytask ' . $task->getId()
+                    ]
+                ]
+            );
+
+            $this->mss->prepareMessage((int)$task->getChat_id(), $text, 'HTML', null, $keyboard);
             $this->mss->sendMessage();
         }
     }
@@ -80,7 +90,16 @@ class TaskReminderService
             $this->mf->appendTwigFile($text, 'notifications/task/tasksCloseText.twig');
             $this->mf->appendTask($text, $row[0], $row[1]);
 
-            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+            $keyboard = new InlineKeyboard(
+                [
+                    [
+                        'text' => 'Delay task',
+                        'callback_data' => '/delaytask ' . $row[0]->getId()
+                    ]
+                ]
+            );
+
+            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML', null, $keyboard);
             $this->mss->sendMessage();
         }
     }
@@ -100,7 +119,16 @@ class TaskReminderService
             $this->mf->appendTwigFile($text, 'notifications/milestone/milestoneTodayText.twig');
             $this->mf->appendTask($text, $milestone, null, $milestone->getIsMilestone());
 
-            $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML');
+            $keyboard = new InlineKeyboard(
+                [
+                    [
+                        'text' => 'Delay task',
+                        'callback_data' => '/delaytask ' . $milestone->getId()
+                    ]
+                ]
+            );
+
+            $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML', null, $keyboard);
             $this->mss->sendMessage();
         }
     }
@@ -120,7 +148,16 @@ class TaskReminderService
             $this->mf->appendTwigFile($text, 'notifications/milestone/milestonesCloseText.twig');
             $this->mf->appendTask($text, $row[0], $row[1], $row[0]->getIsMilestone());
 
-            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML');
+            $keyboard = new InlineKeyboard(
+                [
+                    [
+                        'text' => 'Delay task',
+                        'callback_data' => '/delaytask ' . $row[0]->getId()
+                    ]
+                ]
+            );
+
+            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML', null, $keyboard);
             $this->mss->sendMessage();
         }
     }

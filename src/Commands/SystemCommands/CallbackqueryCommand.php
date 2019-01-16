@@ -63,6 +63,14 @@ class CallbackqueryCommand extends SystemCommand
         $callback_query_id = $callback_query->getId();
         $callback_data     = $callback_query->getData();
 
+        /**
+         * If the message is a callback response, then forward the request to
+         * the DelayTask command
+         */
+        if (\preg_match('/^\/delaytask [0-9]+$/', $callback_data)) {
+            return $this->getTelegram()->executeCommand('delaytask', $update);
+        }
+
         $user_id = $callback_query->getFrom()->getId();
         $chat_id = $callback_query->getMessage()->getChat()->getId();
 
