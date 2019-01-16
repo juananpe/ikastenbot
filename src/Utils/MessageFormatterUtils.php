@@ -45,6 +45,24 @@ class MessageFormatterUtils
     }
 
     /**
+     * Append twig file to the given text rendering the specified parameters if
+     * they apply. It appends a new line as well.
+     *
+     * @param string &$text         Text to which the file contents will
+     *                              be appended
+     * @param string $twigFilePath  Path of the twig file
+     * @param array  $parameters    The parameters to be included in the
+     *                              rendering
+     *
+     * @return void
+     */
+    public function appendTwigFileWithParameters(string &$text, string $twigFilePath, array $parameters): void
+    {
+        $text .= $this->twig->render($twigFilePath, $parameters);
+        $text .= PHP_EOL;
+    }
+
+    /**
      * Append a task to the given text. It appends a new line after each
      * task as well.
      *
