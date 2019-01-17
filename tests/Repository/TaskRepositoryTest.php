@@ -2,8 +2,14 @@
 
 declare(strict_types=1);
 
+use Doctrine\Common\DataFixtures\Loader;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use IkastenBot\Entity\Task;
 use IkastenBot\Tests\DatabaseTestCase;
+use IkastenBot\Tests\Fixtures\GanttProjectDataLoader;
+use IkastenBot\Tests\Fixtures\TaskDataLoader;
+use IkastenBot\Tests\Fixtures\UserDataLoader;
 use IkastenBot\Utils\MessageFormatterUtils;
 
 class TaskRepositoryTest extends DatabaseTestCase
@@ -40,108 +46,26 @@ class TaskRepositoryTest extends DatabaseTestCase
     {
         $this->connection = $this->getConnection();
         $this->pdo = $this->connection->getConnection();
-        $this->pdo->beginTransaction();
+        $this->dem = $this->getDoctrineEntityManager();
 
         // Insert test chat to avoid triggering foreign key constraints
         $insert_test_chat = 'INSERT INTO `chat` (id) VALUES (12345)';
         $statement = $this->pdo->prepare($insert_test_chat);
         $statement->execute();
 
-        // Insert a test user to avoid triggering foreign key constraints
-        $insertTestUser = '
-            INSERT INTO `user` (
-                `id`,
-                `is_bot`,
-                `first_name`,
-                `last_name`,
-                `username`,
-                `language_code`,
-                `created_at`,
-                `updated_at`,
-                `language`
-            ) VALUES (
-                12345,
-                0,
-                "Test",
-                "User",
-                "TestUsername",
-                "en",
-                "2021-01-01 00:00:00",
-                "2021-01-01 00:00:00",
-                "es"
-            )
-        ';
+        // Load fixtures into the database for the tests
+        $loader = new Loader();
+        $loader->addFixture(new UserDataLoader());
+        $loader->addFixture(new GanttProjectDataLoader());
+        $loader->addFixture(new TaskDataLoader());
 
-        $statement = $this->pdo->prepare($insertTestUser);
-        $statement->execute();
+        $purger = new ORMPurger();
+        $executor = new ORMExecutor($this->dem, $purger);
+        $executor->execute($loader->getFixtures());
 
-        // Insert a test GanttProject to avoid triggering foreign key constraints
-        $insertTestGanttProject = '
-            INSERT INTO `ganttproject` (
-                `id`,
-                `file_name`,
-                `version`,
-                `user_id`
-            ) VALUES (
-                1,
-                "Test.gan",
-                1,
-                12345
-            )'
-        ;
-
-        $statement = $this->pdo->prepare($insertTestGanttProject);
-        $statement->execute();
-
-        $sql = '
-            INSERT INTO `task` (
-                `gan_id`,
-                `chat_id`,
-                `task_name`,
-                `task_date`,
-                `task_isMilestone`,
-                `task_duration`,
-                `ganttproject_id`
-            ) VALUES (
-                1,
-                12345,
-                :task_name,
-                :task_date,
-                :task_isMilestone,
-                :task_duration,
-                1
-            )
-        ';
-
-        // Insert three tasks to be reached today
-        for ($i = 0; $i < 3; $i++) {
-            $task = new Task();
-            $today = new \DateTime();
-
-            $today = new \DateTime();
-            $parameters = [
-                ':task_name'        => 'Task T',
-                ':task_date'        => $today->format('Y-m-d'),
-                ':task_isMilestone' => false,
-                ':task_duration'    => 3
-            ];
-
-            $statement = $this->pdo->prepare($sql);
-            $statement->execute($parameters);
-        }
-
-        // Insert one milestone to be reached today
-        $parameters = [
-            ':task_name' => 'Milestone T',
-            ':task_date' => $today->format('Y-m-d'),
-            ':task_isMilestone' => true,
-            ':task_duration'    => 0
-        ];
-        $statement = $this->pdo->prepare($sql);
-        $statement->execute($parameters);
-
-        // Insert tasks to be reminded of, and three tasks that should
-        // not be fetched in the queries
+        /**
+         * Intervals used in TaskDataLoader to create the tasks
+         */
         $this->plusDays = [
             'P3D',
             'P3D',
@@ -149,42 +73,28 @@ class TaskRepositoryTest extends DatabaseTestCase
             'P30D',
             'P100D'
         ];
-
-        $j = 0;
-        for ($i = 1; $i <= 15; $i++) {
-            $today = new \DateTime();
-            $todayPlusDays = $today->add(new \DateInterval($this->plusDays[$j]));
-
-            $parameters = [
-                ':task_name' => $this->plusDays[$j],
-                ':task_date' => $todayPlusDays->format('Y-m-d'),
-                ':task_isMilestone' => false,
-                ':task_duration'    => 3
-            ];
-            $statement = $this->pdo->prepare($sql);
-            $statement->execute($parameters);
-
-            if ($i % 3 === 0) {
-                $parameters = [
-                    ':task_name' => $this->plusDays[$j],
-                    ':task_date' => $todayPlusDays->format('Y-m-d'),
-                    ':task_isMilestone' => true,
-                    ':task_duration'    => 0
-                ];
-
-                $statement = $this->pdo->prepare($sql);
-                $statement->execute($parameters);
-
-                $j++;
-            }
-        }
-
-        $this->dem = $this->getDoctrineEntityManager();
     }
 
     public function tearDown(): void
     {
-        $this->pdo->rollBack();
+        $connection = $this->dem->getConnection();
+        $platform   = $connection->getDatabasePlatform();
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
+
+        $truncate = $platform->getTruncateTableSQL('chat');
+        $connection->executeUpdate($truncate);
+
+        $truncate = $platform->getTruncateTableSQL('user');
+        $connection->executeUpdate($truncate);
+
+        $truncate = $platform->getTruncateTableSQL('ganttproject');
+        $connection->executeUpdate($truncate);
+
+        $truncate = $platform->getTruncateTableSQL('task');
+        $connection->executeUpdate($truncate);
+
+        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
     }
 
     public function testFindTodayTasks()
