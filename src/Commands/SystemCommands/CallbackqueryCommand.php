@@ -64,6 +64,28 @@ class CallbackqueryCommand extends SystemCommand
         $callback_data     = $callback_query->getData();
 
         /**
+         * If the message is a callback noop response, then just disable the
+         * keyboard
+         */
+        if (\preg_match('/^affirmative_noop+$/', $callback_data)) {
+            $message = $callback_query->getMessage();
+
+            $data = [];
+            $data['chat_id'] = $message->getChat()->getId();
+            $data['message_id'] = $message->getMessageId();
+
+            return Request::editMessageReplyMarkup($data);;
+        }
+
+        /**
+         * If the message is a callback disable notifications response, then
+         * forward the request to the disable notifications command
+         */
+        if (\preg_match('/^\/disablenotifications [0-9]+$/', $callback_data)) {
+            return $this->getTelegram()->executeCommand('disablenotifications', $update);
+        }
+
+        /**
          * If the message is a callback response, then forward the request to
          * the DelayTask command
          */

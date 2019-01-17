@@ -87,14 +87,40 @@ class TaskReminderService
 
         foreach ($results as $row) {
             $text = '';
-            $this->mf->appendTwigFile($text, 'notifications/task/tasksCloseText.twig');
-            $this->mf->appendTask($text, $row[0], $row[1]);
+
+            // Append the text to the message to be sent
+            $parameters = [
+                'task'      => $row[0],
+                'daysLeft'  => $row[1]
+            ];
+
+            $this->mf->appendTwigFileWithParameters(
+                $text,
+                'notifications/notifyTaskMilestoneClose.twig',
+                $parameters
+            );
+
+            // Modify the text if the task is a milestone
+            $milestoneOrTask = 'task';
+            if ($row[0]->getIsMilestone()) {
+                $milestoneOrTask = 'milestone';
+            }
 
             $keyboard = new InlineKeyboard(
                 [
                     [
-                        'text' => 'Delay task',
+                        'text' => '💪 Yes',
+                        'callback_data' => 'affirmative_noop'
+                    ],
+                    [
+                        'text' => '🥵 No, let\'s delay it',
                         'callback_data' => '/delaytask ' . $row[0]->getId()
+                    ]
+                ],
+                [
+                    [
+                        'text' => '💤 Disable this ' . $milestoneOrTask . '\'s notifications',
+                        'callback_data' => '/disablenotifications ' . $row[0]->getId()
                     ]
                 ]
             );
@@ -145,14 +171,33 @@ class TaskReminderService
 
         foreach ($results as $row) {
             $text = '';
-            $this->mf->appendTwigFile($text, 'notifications/milestone/milestonesCloseText.twig');
-            $this->mf->appendTask($text, $row[0], $row[1], $row[0]->getIsMilestone());
+
+            $parameters = [
+                'task'      => $row[0],
+                'daysLeft'  => $row[1]
+            ];
+
+            $this->mf->appendTwigFileWithParameters(
+                $text,
+                'notifications/notifyTaskMilestoneClose.twig',
+                $parameters
+            );
 
             $keyboard = new InlineKeyboard(
                 [
                     [
-                        'text' => 'Delay task',
-                        'callback_data' => '/delaytask ' . $row[0]->getId()
+                        'text' => '💪 Yes',
+                        'callback_data' => 'affirmative_noop'
+                    ],
+                    [
+                        'text' => '🥵 No, let\'s delay it',
+                        'callback_data' => '/delaytask ' . $milestone->getId()
+                    ]
+                ],
+                [
+                    [
+                        'text' => '💤 Disable this milestone\'s notifications',
+                        'callback_data' => '/disablenotifications ' . $milestone->getId()
                     ]
                 ]
             );

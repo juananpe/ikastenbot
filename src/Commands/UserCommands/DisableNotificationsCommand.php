@@ -47,17 +47,57 @@ class DisableNotificationsCommand extends UserCommand
 
     public function execute()
     {
-        $chat       = $this->getMessage()->getChat();
+        $message = $this->getMessage();
+        $callbackQuery = $this->getUpdate()->getCallbackQuery();
+
+        // If it's a callback query extract the information from there
+        $text = '';
+        if (!\is_null($message)) {
+            $text = trim($message->getText(true));
+            $user = $message->getFrom();
+        } else {
+            $message = $callbackQuery->getMessage();
+            $data = $callbackQuery->getData();
+
+            $text = \str_replace('/disablenotifications ', '', $data);
+
+            $user = $callbackQuery->getFrom();
+        }
+
+        $chat       = $message->getChat();
         $chat_id    = $chat->getId();
 
-        //reply to message id is applied by default
-        //Force reply is applied by default so it can work with privacy on
-        $selective_reply = $chat->isGroupChat() || $chat->isSuperGroup();
+        /**
+         * If it's a callback query, edit the original message and remove the
+         * buttons from the chat
+         */
+        if ($callbackQuery) {
+            $mfu = new MessageFormatterUtils();
 
-        $user       = $this->getMessage()->getFrom();
+            // Edit the original message
+            $data = [];
+            $data['chat_id'] = $chat_id;
+            $data['message_id'] = $message->getMessageId();
+
+            $editedText = $message->getText();
+            $editedText .= PHP_EOL . PHP_EOL;
+
+            $mfu->appendTwigFile(
+                $editedText, 'notifications/notFurtherNotifications.twig'
+            );
+
+            $data['text'] = $editedText;
+
+            Request::editMessageText($data);
+
+            // Remove the buttons from the chat
+            $data = [];
+            $data['chat_id'] = $chat_id;
+            $data['message_id'] = $message->getMessageId();
+            Request::editMessageReplyMarkup($data);
+        }
+
         $user_id    = $user->getId();
-
-        $text       = trim($this->getMessage()->getText(true));
 
         $ms = new MessageSenderService();
 
@@ -121,8 +161,8 @@ class DisableNotificationsCommand extends UserCommand
 
         $ms->prepareMessage(
             $chat_id,
-            'The notifications for the task have been disabled',
-            null, $selective_reply);
+            'The notifications for the task have been disabled'
+        );
         return $ms->sendMessage();
     }
 }
