@@ -191,13 +191,13 @@ class TaskReminderService
                     ],
                     [
                         'text' => '🥵 No, let\'s delay it',
-                        'callback_data' => '/delaytask ' . $milestone->getId()
+                        'callback_data' => '/delaytask ' . $row[0]->getId()
                     ]
                 ],
                 [
                     [
                         'text' => '💤 Disable this milestone\'s notifications',
-                        'callback_data' => '/disablenotifications ' . $milestone->getId()
+                        'callback_data' => '/disablenotifications ' . $row[0]->getId()
                     ]
                 ]
             );
