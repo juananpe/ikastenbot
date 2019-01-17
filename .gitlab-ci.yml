@@ -1,0 +1,22 @@
+image: php:7.2
+# As the CI is going to use PHP 7.2, MySQL is restricted to version 5.7.24,
+# because of the following: http://php.net/manual/en/ref.pdo-mysql.php —
+# MySQL 8 section —
+services:
+  - mysql:5.7.24
+
+variables:
+  MYSQL_DATABASE: testdb
+  MYSQL_ROOT_PASSWORD: testdb
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - vendor/
+
+before_script:
+  - bash ci/docker_install.sh > /dev/null
+
+test:
+  script:
+    - phpunit --configuration ci/phpunit-ci.xml
