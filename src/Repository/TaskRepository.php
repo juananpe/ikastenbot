@@ -28,7 +28,8 @@ class TaskRepository extends EntityRepository
 
         $qb->select('t')
             ->from(Task::class, 't')
-            ->where(self::DATEDIFFFUNCTION . ' = 0');
+            ->where(self::DATEDIFFFUNCTION . ' = 0')
+            ->andWhere('t.notify = 1');
 
         if ($restrictToMilestones) {
             $qb->andWhere('t.isMilestone = 1');
@@ -55,6 +56,7 @@ class TaskRepository extends EntityRepository
             ->where(self::DATEDIFFFUNCTION . ' = 30')
             ->orWhere(self::DATEDIFFFUNCTION . ' = 15')
             ->orWhere(self::DATEDIFFFUNCTION . ' BETWEEN 1 AND 3')
+            ->andWhere('t.notify = 1')
             ->orderBy(self::DATEDIFFFUNCTION);
 
         if ($restrictToMilestones) {

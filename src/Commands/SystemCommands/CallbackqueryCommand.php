@@ -11,6 +11,7 @@
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
 use IkastenBot\Utils\DBikastenbot;
+use IkastenBot\Utils\MessageFormatterUtils;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Conversation;
@@ -62,6 +63,49 @@ class CallbackqueryCommand extends SystemCommand
         $callback_query    = $this->getCallbackQuery();
         $callback_query_id = $callback_query->getId();
         $callback_data     = $callback_query->getData();
+
+        /**
+         * If the message is a callback noop response, edit the original message
+         * and disable the keyboard
+         */
+        if (\preg_match('/^affirmative_noop+$/', $callback_data)) {
+            // Prepare the message to send it
+            $message = $callback_query->getMessage();
+
+            $mfu = new MessageFormatterUtils();
+
+            $editedText = $message->getText();
+            $editedText .= PHP_EOL . PHP_EOL;
+
+            $mfu->appendTwigFile(
+                $editedText,
+                'notifications/successCheersMessage.twig'
+            );
+
+            // The missing reply_markup parameter will remove the keyboard
+            $data = [];
+            $data['chat_id'] = $message->getChat()->getId();
+            $data['message_id'] = $message->getMessageId();
+            $data['text'] = $editedText;
+
+            return Request::editMessageText($data);
+        }
+
+        /**
+         * If the message is a callback disable notifications response, then
+         * forward the request to the disable notifications command
+         */
+        if (\preg_match('/^\/disablenotifications [0-9]+$/', $callback_data)) {
+            return $this->getTelegram()->executeCommand('disablenotifications', $update);
+        }
+
+        /**
+         * If the message is a callback response, then forward the request to
+         * the DelayTask command
+         */
+        if (\preg_match('/^\/delaytask [0-9]+$/', $callback_data)) {
+            return $this->getTelegram()->executeCommand('delaytask', $update);
+        }
 
         $user_id = $callback_query->getFrom()->getId();
         $chat_id = $callback_query->getMessage()->getChat()->getId();

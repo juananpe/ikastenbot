@@ -140,6 +140,7 @@ CREATE TABLE IF NOT EXISTS `task`
   `task_date`             datetime    NOT NULL,
   `task_isMilestone`      TINYINT(1)  NOT NULL,
   `task_duration`         INT         NOT NULL,
+  `notify`                TINYINT(1)  NOT NULL,
   `ganttproject_id`       INT         NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_task_chat_id` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`id`) ON DELETE CASCADE,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use IkastenBot\Service\MessageSenderService;
 use Longman\TelegramBot\Entities\Keyboard;
+use Longman\TelegramBot\Entities\InlineKeyboard;
 use PHPUnit\Framework\TestCase;
 
 class MessageSenderServiceTest extends TestCase
@@ -95,6 +96,28 @@ class MessageSenderServiceTest extends TestCase
             'text'          => '<b>Test</b> text',
             'parse_mode'    => 'HTML',
             'reply_markup'  => Keyboard::remove(['selective' => true])
+        ];
+
+        foreach ($expectedValues as $key => $ev) {
+            $this->assertEquals($ev, $result[$key]);
+        }
+    }
+
+    public function testAddKeyboard()
+    {
+        $keyboard = new InlineKeyboard([
+            ['text' => 'Yes', 'callback_data' => 'YesTest'],
+            ['text' => 'No', 'callback_data' => 'NoTest'],
+        ]);
+
+        $this->mss->prepareMessage(12345, '<b>Test</b> text', 'HTML', false, $keyboard);
+        $result = $this->mss->getData();
+
+        $expectedValues = [
+            'chat_id'       => 12345,
+            'text'          => '<b>Test</b> text',
+            'parse_mode'    => 'HTML',
+            'reply_markup'  => $keyboard
         ];
 
         foreach ($expectedValues as $key => $ev) {

@@ -113,6 +113,7 @@ class XmlUtils
 
         foreach ($tasks as $task) {
             $task->setChat_id((string)$chat_id);
+            $task->setNotify(true);
             $task->setGanttProject($ganttProject);
 
             $this->em->persist($task);
@@ -185,6 +186,11 @@ class XmlUtils
             $task->getDuration() + $delay
         );
 
+        /**
+         * Reset the reached status to get notified by the system
+         */
+        $task->setNotify(true);
+
         $ganttProject = $task->getGanttProject();
 
         $xmlTask = $xml->xpath('//task[@id="' . $task->getGanId() . '"]')[0];
@@ -200,6 +206,7 @@ class XmlUtils
         while (!empty($taskPool)) {
             $tmpTask = \array_shift($taskPool);
             $tmpTask->delayDate($delay);
+            $tmpTask->setNotify(true);
 
             $this->em->persist($tmpTask);
 

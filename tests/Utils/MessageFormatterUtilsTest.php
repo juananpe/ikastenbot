@@ -222,4 +222,43 @@ final class MessageFormattrUtilsTest extends TestCase
 
         $this->assertSame($expectedText, $result);
     }
+
+    public function testAppendWithParameters()
+    {
+        $task = new Task();
+        $task->setName('Task');
+        $task->setDate(new \DateTime());
+
+        $expectedText = 'Lorem ipsum dolor sit amet';
+        $expectedText .= $this->twig->render(
+            'notifications/task/task.twig',
+            ['task' => $task]
+        );
+        $expectedText .= PHP_EOL;
+        $expectedText .= $this->twig->render(
+            'notifications/task/task.twig',
+            ['task' => $task]
+        );
+        $expectedText .= PHP_EOL;
+
+        $parameters = [
+            'task' => $task
+        ];
+
+        $result = 'Lorem ipsum dolor sit amet';
+        $this->mfu->appendTwigFileWithParameters(
+            $result,
+            'notifications/task/task.twig',
+            $parameters
+        );
+
+        $this->mfu->appendTwigFileWithParameters(
+            $result,
+            'notifications/task/task.twig',
+            $parameters
+        );
+
+        $this->assertSame($expectedText, $result);
+
+    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IkastenBot\Service;
 
+use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
@@ -31,10 +32,12 @@ class MessageSenderService
      *                                              Telegram's API supports 'HTML' or
      *                                              'Markdown' options
      * @param   boolean   $selectiveReply           Enable or disable selective reply
+     * @param   array     $keyboard                 A keyboard to include to the message.
+     *                                              Overrides the $selectiveReply parameter.
      *
      * @return  void
      */
-    public function prepareMessage(int $chat_id, string $text, string $parseMode = null, bool $selectiveReply = null): void
+    public function prepareMessage(int $chat_id, string $text, string $parseMode = null, bool $selectiveReply = null, InlineKeyboard $keyboard = null): void
     {
         $data['chat_id']    = $chat_id;
         $data['text']       = $text;
@@ -49,12 +52,14 @@ class MessageSenderService
             $data['parse_mode'] = $parseMode;
         }
 
-        if (!\is_null($selectiveReply)) {
+        if (\is_null($keyboard) && !\is_null($selectiveReply)) {
             if($selectiveReply) {
                 $data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
             } else {
                 $data['reply_markup'] = Keyboard::remove(['selective' => true]);
             }
+        } else {
+            $data['reply_markup'] = $keyboard;
         }
 
         $this->data = $data;
