@@ -46,6 +46,8 @@ class DelayTaskCommand extends UserCommand
 
     public function execute()
     {
+        $messageFormatterUtils = new MessageFormatterUtils();
+
         $message = $this->getMessage();
         $callbackQuery = $this->getUpdate()->getCallbackQuery();
 
@@ -71,16 +73,26 @@ class DelayTaskCommand extends UserCommand
         $selective_reply = $chat->isGroupChat() || $chat->isSuperGroup();
 
         /**
-         * If it's a callback query, immediately remove the "Delay"
-         * button
+         * If it's a callback query, edit the message and remove the buttons
          */
         if ($callbackQuery) {
             $data = [];
 
-            // Remove the inline button from the chat
+            // Edit the original message
+            $data = [];
             $data['chat_id'] = $chat_id;
             $data['message_id'] = $message->getMessageId();
-            Request::editMessageReplyMarkup($data);
+
+            $editedText = $message->getText();
+            $editedText .= PHP_EOL . PHP_EOL;
+
+            $messageFormatterUtils->appendTwigFile(
+                $editedText, 'notifications/cheeryDelayMessage.twig'
+            );
+
+            $data['text'] = $editedText;
+
+            Request::editMessageText($data);
         }
 
         $user_id    = $user->getId();
@@ -99,8 +111,6 @@ class DelayTaskCommand extends UserCommand
         }
 
         $ms = new MessageSenderService();
-        $messageFormatterUtils = new MessageFormatterUtils();
-
         $db = new DoctrineBootstrap();
         $em = $db->getEntityManager();
 
