@@ -87,7 +87,7 @@ class DelayTaskCommand extends UserCommand
             $editedText .= PHP_EOL . PHP_EOL;
 
             $messageFormatterUtils->appendTwigFile(
-                $editedText, 'notifications/cheeryDelayMessage.twig'
+                $editedText, 'notifications/task/delay/cheeryDelayMessage.twig'
             );
 
             $data['text'] = $editedText;
