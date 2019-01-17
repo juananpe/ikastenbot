@@ -106,7 +106,7 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
     {
         // Load a test XML file
         $xml = $this->xu->openXmlFile(
-            __DIR__ . '/../_data/xml_milestone_data/gan/TwelveTasks.gan'
+            __DIR__ . '/../_data/task_data/gan/TwelveTasks.gan'
         );
 
         $this->fu->saveToNewGanFile($xml, $this->ganttProject);

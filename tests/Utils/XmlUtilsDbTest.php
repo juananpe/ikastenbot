@@ -25,14 +25,14 @@ final class XmlUtilsDbTest extends DatabaseTestCase
      *
      * @var string
      */
-    private $data_dir;
+    private $dataDir;
 
     /**
      * Directory containing Gan XML files to be imported
      *
      * @var string
      */
-    private $xml_dir_gan;
+    private $ganDir;
 
     /**
      * XML Utils
@@ -83,8 +83,8 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
     public function setUp(): void
     {
-        $this->data_dir    = __DIR__ . '/../_data/xml_milestone_data';
-        $this->xml_dir_gan  = $this->data_dir . '/gan/';
+        $this->dataDir    = __DIR__ . '/../_data/task_data/';
+        $this->ganDir  = $this->dataDir . 'gan/';
 
         $this->connection = $this->getConnection();
         $this->pdo = $this->connection->getConnection();
@@ -136,7 +136,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
      */
     public function getDataSet()
     {
-        return $this->createXmlDataSet($this->xml_dir_gan . 'milestoneSeed.xml');
+        return $this->createXmlDataSet($this->ganDir . 'milestoneSeed.xml');
     }
 
     public function testInsertTwelveTasksDb()
@@ -145,7 +145,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $telegram->enableExternalMySql($this->pdo);
 
         $this->xu->extractStoreTasks(
-            $this->xml_dir_gan . 'TwelveTasks.gan',
+            $this->ganDir . 'TwelveTasks.gan',
             12345,
             $this->ganttProject
         );
@@ -154,7 +154,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
             'task', 'SELECT gan_id, chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
         );
 
-        $expectedTable = $this->createFlatXmlDataSet(dirname(__FILE__).'/../_data/xml_task_data/expectedTasks.xml')
+        $expectedTable = $this->createFlatXmlDataSet(dirname(__FILE__).'/../_data/task_data/expectedTasks.xml')
                                 ->getTable('task');
 
         $this->assertTablesEqual($expectedTable, $queryTable);
@@ -167,7 +167,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $telegram->enableExternalMySql($this->pdo);
 
         $this->xu->extractStoreTasks(
-            $this->xml_dir_gan . 'TwelveTasksNoName.gan',
+            $this->ganDir . 'TwelveTasksNoName.gan',
             12345,
             $this->ganttProject
         );
@@ -176,7 +176,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
             'task', 'SELECT gan_id, chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
         );
 
-        $expectedTable = $this->createXmlDataSet(dirname(__FILE__).'/../_data/xml_task_data/expectedTasksWithNoName.xml')
+        $expectedTable = $this->createXmlDataSet(dirname(__FILE__).'/../_data/task_data/expectedTasksWithNoName.xml')
                                 ->getTable('task');
 
         $this->assertTablesEqual($expectedTable, $queryTable);
@@ -188,7 +188,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $this->expectException(NoTasksException::class);
 
         $this->xu->extractStoreTasks(
-            $this->xml_dir_gan . 'NoTasks.gan',
+            $this->ganDir . 'NoTasks.gan',
             12345,
             $this->ganttProject
         );
@@ -198,12 +198,12 @@ final class XmlUtilsDbTest extends DatabaseTestCase
     {
         // Load the fixtures
         $this->xu->extractStoreTasks(
-            $this->xml_dir_gan . 'TwelveTasks.gan',
+            $this->ganDir . 'TwelveTasks.gan',
             12345,
             $this->ganttProject
         );
 
-        $xml = $this->xu->openXmlFile($this->xml_dir_gan . 'TwelveTasks.gan');
+        $xml = $this->xu->openXmlFile($this->ganDir . 'TwelveTasks.gan');
 
         // Get the XML task which has one nested task
         $xmlTask = $xml->xpath('//task[@id="4"]')[0];
@@ -226,7 +226,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
     {
         // Load the fixtures
         $this->xu->extractStoreTasks(
-            $this->xml_dir_gan . 'TwelveTasks.gan',
+            $this->ganDir . 'TwelveTasks.gan',
             12345,
             $this->ganttProject
         );
@@ -256,12 +256,12 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
         // Load the fixtures
         $this->xu->extractStoreTasks(
-            $this->xml_dir_gan . 'TwelveTasks.gan',
+            $this->ganDir . 'TwelveTasks.gan',
             12345,
             $ganttProject
         );
 
-        $xml = $this->xu->openXmlFile($this->xml_dir_gan . 'TwelveTasks.gan');
+        $xml = $this->xu->openXmlFile($this->ganDir . 'TwelveTasks.gan');
 
         // Get the XML task which has two nested tasks
         $xmlTask = $xml->xpath('//task[@id="7"]')[0];
@@ -292,12 +292,12 @@ final class XmlUtilsDbTest extends DatabaseTestCase
     {
         // Load the fixtures
         $this->xu->extractStoreTasks(
-            $this->xml_dir_gan . 'TwelveTasks.gan',
+            $this->ganDir . 'TwelveTasks.gan',
             12345,
             $this->ganttProject
         );
 
-        $xml = $this->xu->openXmlFile($this->xml_dir_gan . 'TwelveTasks.gan');
+        $xml = $this->xu->openXmlFile($this->ganDir . 'TwelveTasks.gan');
 
         // Get the XML task which has two nested tasks
         $xmlTask = $xml->xpath('//task[@id="14"]')[0];
@@ -321,7 +321,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
     {
         // Load the fixtures
         $this->xu->extractStoreTasks(
-            $this->xml_dir_gan . 'TwelveTasks.gan',
+            $this->ganDir . 'TwelveTasks.gan',
             12345,
             $this->ganttProject
         );
@@ -334,7 +334,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
         // Delay the task three days
         $resultingXml = $this->xu->delayTaskAndDependants(
-            $this->xml_dir_gan . 'TwelveTasks.gan',
+            $this->ganDir . 'TwelveTasks.gan',
             $task,
             3
         );
@@ -353,7 +353,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         );
 
         $expectedTable = $this->createXmlDataSet(
-            __DIR__ . '/../_data/xml_task_data/expectedTasksWithModifiedDateOneDependency.xml'
+           $this->dataDir . '/expectedTasksWithModifiedDateOneDependency.xml'
         )->getTable('task');
 
         $this->assertTablesEqual($expectedTable, $queryTable);
@@ -371,7 +371,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
     {
         // Load the fixtures
         $this->xu->extractStoreTasks(
-            $this->xml_dir_gan . 'TwelveTasks.gan',
+            $this->ganDir . 'TwelveTasks.gan',
             12345,
             $this->ganttProject
         );
@@ -384,7 +384,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
 
         // Delay the task three days
         $resultingXml = $this->xu->delayTaskAndDependants(
-            $this->xml_dir_gan . 'TwelveTasks.gan',
+            $this->ganDir . 'TwelveTasks.gan',
             $task,
             3
         );
@@ -403,7 +403,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         );
 
         $expectedTable = $this->createXmlDataSet(
-            __DIR__ . '/../_data/xml_task_data/expectedTasksWithModifiedDateManyDependencies.xml'
+            $this->dataDir . '/expectedTasksWithModifiedDateManyDependencies.xml'
         )->getTable('task');
 
         $this->assertTablesEqual($expectedTable, $queryTable);

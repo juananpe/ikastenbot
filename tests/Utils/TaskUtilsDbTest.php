@@ -27,7 +27,7 @@ final class TaskUtilsDbTest extends DatabaseTestCase
      *
      * @var string
      */
-    private $data_dir;
+    private $dataDir;
 
     /**
      * Task Utils
