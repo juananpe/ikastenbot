@@ -47,6 +47,8 @@ class DisableNotificationsCommand extends UserCommand
 
     public function execute()
     {
+        $mfu = new MessageFormatterUtils();
+
         $message = $this->getMessage();
         $callbackQuery = $this->getUpdate()->getCallbackQuery();
 
@@ -72,8 +74,6 @@ class DisableNotificationsCommand extends UserCommand
          * buttons from the chat
          */
         if ($callbackQuery) {
-            $mfu = new MessageFormatterUtils();
-
             // Edit the original message
             $data = [];
             $data['chat_id'] = $chat_id;
@@ -159,10 +159,17 @@ class DisableNotificationsCommand extends UserCommand
         $em->persist($task);
         $em->flush();
 
-        $ms->prepareMessage(
-            $chat_id,
-            'The notifications for the task have been disabled'
-        );
-        return $ms->sendMessage();
+        /**
+         * Send a message only if the user manually modified the notifications
+         * for a task
+         */
+        $text = '';
+        if (!$callbackQuery) {
+            $mfu->appendTwigFile(
+                $text, 'notifications/notFurtherNotifications.twig'
+            );
+            $ms->prepareMessage($chat_id, $text);
+            return $ms->sendMessage();
+        }
     }
 }

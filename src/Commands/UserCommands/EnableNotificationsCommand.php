@@ -47,6 +47,8 @@ class EnableNotificationsCommand extends UserCommand
 
     public function execute()
     {
+        $messageFormatterUtils = new MessageFormatterUtils();
+
         $chat       = $this->getMessage()->getChat();
         $chat_id    = $chat->getId();
 
@@ -119,10 +121,14 @@ class EnableNotificationsCommand extends UserCommand
         $em->persist($task);
         $em->flush();
 
-        $ms->prepareMessage(
-            $chat_id,
-            'The notifications for the task have been enabled',
-            null, $selective_reply);
+        // Prepare the message and send it
+        $text = '';
+        $messageFormatterUtils->appendTwigFile(
+            $text,
+            'notifications/enableNotifications.twig'
+        );
+
+        $ms->prepareMessage($chat_id, $text, null, $selective_reply);
         return $ms->sendMessage();
     }
 }
