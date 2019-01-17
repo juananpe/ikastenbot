@@ -22,6 +22,7 @@ class SingleTaskDataLoader extends AbstractFixture implements OrderedFixtureInte
         $task->setDate($fixedDate);
         $task->setIsMilestone(false);
         $task->setDuration(3);
+        $task->setNotify(true);
         $task->setGanttProject(
             $this->getReference('ganttProject')
         );

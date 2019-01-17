@@ -60,9 +60,22 @@ class FilesystemUtils
             $newTask->setDate($task->getDate());
             $newTask->setIsMilestone($task->getIsMilestone());
             $newTask->setDuration($task->getDuration());
+            /**
+             * When a new GanttProject is created, the notify flag is enabled
+             * by default
+             */
+            $newTask->setNotify(true);
             $newTask->setGanttProject($newGanttProject);
 
             $this->em->persist($newTask);
+
+            /**
+             * Notifications for the older GanttProject's tasks are disabled to
+             * avoid getting inaccurate or duplicated notifications
+             */
+            $task->setNotify(false);
+
+            $this->em->persist($task);
         }
 
         $this->em->flush();

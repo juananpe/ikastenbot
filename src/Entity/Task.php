@@ -71,6 +71,14 @@ class Task
     protected $duration;
 
     /**
+     * Should the user be notified about the task
+     *
+     * @Column(type="boolean", name="notify")
+     * @var bool
+     */
+    protected $notify;
+
+    /**
      * Associated Gantt Project
      *
      * @ManyToOne(targetEntity="GanttProject", inversedBy="tasks", cascade={"persist"})
@@ -291,6 +299,30 @@ class Task
     public function setGanttProject(GanttProject $ganttProject): self
     {
         $this->ganttProject = $ganttProject;
+
+        return $this;
+    }
+
+    /**
+     * Get the notify flag
+     *
+     * @return bool
+     */
+    public function getNotify(): bool
+    {
+        return $this->notify;
+    }
+
+    /**
+     * Set the notify flag
+     *
+     * @param bool $notify Notify flag
+     *
+     * @return self
+     */
+    public function setNotify(bool $notify): self
+    {
+        $this->notify = $notify;
 
         return $this;
     }

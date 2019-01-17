@@ -26,6 +26,28 @@ class TaskDataLoader extends AbstractFixture implements OrderedFixtureInterface
             $task->setDate($today);
             $task->setIsMilestone(false);
             $task->setDuration(3);
+            $task->setNotify(true);
+            $task->setGanttProject(
+                $this->getReference('ganttProject')
+            );
+
+            $manager->persist($task);
+        }
+
+        /**
+         * Insert three tasks to be reached today, but that the user
+         * specifically told no to be notified about
+         */
+        for ($i = 0; $i < 3; $i++) {
+            $task = new Task();
+
+            $task->setGanId(0);
+            $task->setChat_id("12345");
+            $task->setName('Task T');
+            $task->setDate($today);
+            $task->setIsMilestone(false);
+            $task->setDuration(3);
+            $task->setNotify(false);
             $task->setGanttProject(
                 $this->getReference('ganttProject')
             );
@@ -41,6 +63,7 @@ class TaskDataLoader extends AbstractFixture implements OrderedFixtureInterface
         $milestone->setDate($today);
         $milestone->setIsMilestone(true);
         $milestone->setDuration(0);
+        $milestone->setNotify(true);
         $milestone->setGanttProject(
             $this->getReference('ganttProject')
         );
@@ -71,6 +94,7 @@ class TaskDataLoader extends AbstractFixture implements OrderedFixtureInterface
             $task->setDate($todayPlusDays);
             $task->setIsMilestone(false);
             $task->setDuration(3);
+            $task->setNotify(true);
             $task->setGanttProject(
                 $this->getReference('ganttProject')
             );
@@ -85,6 +109,7 @@ class TaskDataLoader extends AbstractFixture implements OrderedFixtureInterface
                 $milestone->setDate($todayPlusDays);
                 $milestone->setIsMilestone(true);
                 $milestone->setDuration(0);
+                $milestone->setNotify(true);
                 $milestone->setGanttProject(
                     $this->getReference('ganttProject')
                 );
