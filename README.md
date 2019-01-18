@@ -27,11 +27,15 @@ renamed to `public/index.php`, following the [front controller pattern][3].
 
 ## For production
 1. Set [environment variables][2] that match the `.env.dist` file.
-2. Point the web server to the `public/` directory of this project.
-3. Repeat steps from `3.` and `4.` from the previous section in the production
+2. Set an environment variable `TBGP_ENV` to any value.
+3. Point the web server to the `public/` directory of this project.
+4. Repeat steps from `3.` and `4.` from the previous section in the production
     server.
-4. Generate Doctrine's proxy entities with
+5. Generate Doctrine's proxy entities with
     `vendor/bin/doctriene orm:generate-proxies`.
+
+Step number 2 makes the application read the environment variables from the
+server, instead of the `.env` file.
 
 ## Send reminders to users
 The bot will send notifications to the users whenever the tasks or milestones
