@@ -31,11 +31,6 @@ mv composer.phar /usr/local/bin/composer
 chmod +x /usr/local/bin/composer
 composer install --dev
 
-# Install Php-CS-Fixer
-wget https://cs.symfony.com/download/php-cs-fixer-v2.phar -O php-cs-fixer
-chmod a+x php-cs-fixer
-mv php-cs-fixer /usr/local/bin/php-cs-fixer
-
 # Install mysql driver
 # Here you can install any other extension that you need
 docker-php-ext-configure zip --with-libzip

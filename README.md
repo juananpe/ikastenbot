@@ -55,11 +55,9 @@ suit your needs better.
 ## Coding guidelines
 The code of this project follows the rules from the `@PhpCsFixer` rule set. In
 order to check whether the code you wrote follows the rules or not, you just
-have to:
+have to run:
 
-1. Install [PHP-CS-Fixer][6].
-2. Run the checker with
-    `php-cs-fixer fix --config=.php_cs.dist --dry-run --verbose --diff`
+`vendor/bin/php-cs-fixer fix --config=.php_cs.dist --dry-run --verbose --diff`
 
 ## Code tests
 In order to run tests you have to make the following steps:
