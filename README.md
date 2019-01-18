@@ -9,11 +9,11 @@ variables. When using `development` mode, these variables are read from the
 `.env` file, and in `production` mode, these will have to be set in the web
 server's configuration.
 
-Also, `set.php` and `unset.php` files are now under `src/Utils` folder, as it
+Also, `set.php` and `unset.php` files are now under `src/Misc` folder, as it
 doesn't make sense to expose them in the public directory of the web server.
 In order to use them, just execute the `PHP` interpreter like so:
 
-`php src/Utils/set.php` or `php src/Utils/unset.php`
+`php src/Misc/set.php` or `php src/Misc/unset.php`
 
 Finally, the `hook.php` file was renamed to `index.php` under the `public/`
 directory. This was done to follow the [front controller pattern][3].

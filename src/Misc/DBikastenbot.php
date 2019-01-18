@@ -6,7 +6,7 @@
  * Time: 0:16
  */
 
-namespace IkastenBot\Utils;
+namespace IkastenBot\Misc;
 
 use Longman\TelegramBot\Exception\TelegramException;
 use \PDO;
