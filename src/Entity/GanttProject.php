@@ -54,7 +54,7 @@ class GanttProject
     /**
      * The owner of the Gantt project.
      *
-     * @ManyToOne(targetEntity="User", inversedBy="ganttProject", cascade={"persist"})
+     * @ManyToOne(targetEntity="User", inversedBy="ganttProjects", cascade={"persist"})
      *
      * @var User
      */
