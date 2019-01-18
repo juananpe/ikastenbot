@@ -1,5 +1,5 @@
 /* Add language column to Longman's user table */
-ALTER TABLE `user` ADD `language` char(10) DEFAULT 'es'; 
+ALTER TABLE `user` ADD `language` char(10) DEFAULT 'es';
 
 DROP TABLE IF EXISTS `TFG`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
