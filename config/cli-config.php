@@ -19,4 +19,11 @@ $db = new DoctrineBootstrap();
 // replace with mechanism to retrieve EntityManager in your app
 $entityManager = $db->getEntityManager();
 
+// @see https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/cookbook/mysql-enums.html
+$entityManager
+    ->getConnection()
+    ->getDatabasePlatform()
+    ->registerDoctrineTypeMapping('enum', 'string')
+;
+
 return ConsoleRunner::createHelperSet($entityManager);
