@@ -13,12 +13,11 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 use IkastenBot\Misc\DBikastenbot;
 use IkastenBot\Utils\MessageFormatterUtils;
 use Longman\TelegramBot\Commands\SystemCommand;
-use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Conversation;
-
+use Longman\TelegramBot\Request;
 
 /**
- * Callback query command
+ * Callback query command.
  *
  * This command handles all callback queries sent via inline keyboard buttons.
  *
@@ -41,30 +40,14 @@ class CallbackqueryCommand extends SystemCommand
      */
     protected $version = '1.1.1';
 
-    /**
-     * Command execute method
-     *
-     * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
-     */
-
-    private function insertDates($text, $dates){
-        $db = DBikastenbot::getInstance();
-        $fechas=$db->getNextDate($dates);
-//            $texto = str_replace("##", $fechas[0]['to'], $text);
-        $texto = $text . " ". $fechas['to'];
-        return $texto;
-    }
-
-
     public function execute()
     {
-        $update            = $this->getUpdate();
-        $callback_query    = $this->getCallbackQuery();
+        $update = $this->getUpdate();
+        $callback_query = $this->getCallbackQuery();
         $callback_query_id = $callback_query->getId();
-        $callback_data     = $callback_query->getData();
+        $callback_data = $callback_query->getData();
 
-        /**
+        /*
          * If the message is a callback noop response, edit the original message
          * and disable the keyboard
          */
@@ -75,7 +58,7 @@ class CallbackqueryCommand extends SystemCommand
             $mfu = new MessageFormatterUtils();
 
             $editedText = $message->getText();
-            $editedText .= PHP_EOL . PHP_EOL;
+            $editedText .= PHP_EOL.PHP_EOL;
 
             $mfu->appendTwigFile(
                 $editedText,
@@ -91,7 +74,7 @@ class CallbackqueryCommand extends SystemCommand
             return Request::editMessageText($data);
         }
 
-        /**
+        /*
          * If the message is a callback disable notifications response, then
          * forward the request to the disable notifications command
          */
@@ -99,7 +82,7 @@ class CallbackqueryCommand extends SystemCommand
             return $this->getTelegram()->executeCommand('disablenotifications', $update);
         }
 
-        /**
+        /*
          * If the message is a callback response, then forward the request to
          * the DelayTask command
          */
@@ -114,7 +97,7 @@ class CallbackqueryCommand extends SystemCommand
             'chat_id' => $chat_id,
         ];
 
-        if(is_numeric($callback_data)){
+        if (is_numeric($callback_data)) {
             $db = DBikastenbot::getInstance();
 
             $r = $db->getUserLang($user_id);
@@ -122,73 +105,81 @@ class CallbackqueryCommand extends SystemCommand
 
             $res = $db->getResponseByQuestionID($callback_data);
 
-            $texto = '<b>'.$db->getQuestionText($callback_data, $lang)[$lang].'</b>'. PHP_EOL. PHP_EOL;
+            $texto = '<b>'.$db->getQuestionText($callback_data, $lang)[$lang].'</b>'.PHP_EOL.PHP_EOL;
 
-            $result =null;
+            $result = null;
             foreach ($res as $r) {
                 $text_id = $r['text'];
-                if(is_numeric($text_id)){
-                    $text_respon=$db->getMessageByID($text_id, $lang);
+                if (is_numeric($text_id)) {
+                    $text_respon = $db->getMessageByID($text_id, $lang);
 
                     $texto .= $text_respon[$lang];
 
-                    if($r['date']!=null){
-                        $texto=$this->insertDates($texto,$r['date']);
+                    if (null != $r['date']) {
+                        $texto = $this->insertDates($texto, $r['date']);
                     }
-
 
                     $data['parse_mode'] = 'HTML';
                     $data['text'] = $texto;
 
                     $result = Request::sendMessage($data);
-                    $texto='';
+                    $texto = '';
                 }
 
-                if($r['photo']!=null){
-                    $data['photo'] = Request::encodeFile($this->telegram->getUploadPath() . '/' . $r['photo']);
+                if (null != $r['photo']) {
+                    $data['photo'] = Request::encodeFile($this->telegram->getUploadPath().'/'.$r['photo']);
 
 //                $texto = $r[$lang];
 //                $data['parse_mode'] = 'HTML';
 //                $data['caption'] = $texto;
                     $result = Request::sendPhoto($data);
-
                 }
 
-                if($r['video']!=null){
-                    $data['video'] = Request::encodeFile($this->telegram->getUploadPath() . '/' . $r['video']);
-
+                if (null != $r['video']) {
+                    $data['video'] = Request::encodeFile($this->telegram->getUploadPath().'/'.$r['video']);
 
                     $result = Request::sendVideo($data);
-
                 }
 
-                if($r['document']!=null){
-                    $data['document'] = Request::encodeFile($this->telegram->getUploadPath() . '/' . $r['document']);
-
+                if (null != $r['document']) {
+                    $data['document'] = Request::encodeFile($this->telegram->getUploadPath().'/'.$r['document']);
 
 //                $data['parse_mode'] = 'HTML';
                     $result = Request::sendDocument($data);
-
                 }
-
             }
-
 
             return $result;
-        }else{
-//            echo "CAllback".PHP_EOL;
-            $json = json_decode($callback_data,true);
-            if(isset($json['mostrar_pagina'])){
-//                echo "pagina: ".$json['mostrar_pagina'].PHP_EOL;
-                $pagina =$json['mostrar_pagina'];
-
-                    $this->conversation = new Conversation($user_id, $chat_id, "correctTFG");
-                    $this->conversation->notes['pagina'] = $pagina;
-                    $this->conversation->update();
-                    return $this->getTelegram()->executeCommand("correctTFG", $update);
-
-            }
         }
+//            echo "CAllback".PHP_EOL;
+        $json = json_decode($callback_data, true);
+        if (isset($json['mostrar_pagina'])) {
+//                echo "pagina: ".$json['mostrar_pagina'].PHP_EOL;
+            $pagina = $json['mostrar_pagina'];
 
+            $this->conversation = new Conversation($user_id, $chat_id, 'correctTFG');
+            $this->conversation->notes['pagina'] = $pagina;
+            $this->conversation->update();
+
+            return $this->getTelegram()->executeCommand('correctTFG', $update);
+        }
+    }
+
+    /**
+     * Command execute method.
+     *
+     * @param mixed $text
+     * @param mixed $dates
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
+     *
+     * @return \Longman\TelegramBot\Entities\ServerResponse
+     */
+    private function insertDates($text, $dates)
+    {
+        $db = DBikastenbot::getInstance();
+        $fechas = $db->getNextDate($dates);
+//            $texto = str_replace("##", $fechas[0]['to'], $text);
+        return $text.' '.$fechas['to'];
     }
 }

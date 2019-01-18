@@ -14,7 +14,7 @@ use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Request;
 
 /**
- * Start command
+ * Start command.
  *
  * Gets executed when a user first starts using the bot.
  */
@@ -46,21 +46,22 @@ class StartCommand extends SystemCommand
     protected $private_only = true;
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function execute()
     {
         $message = $this->getMessage();
 
         $chat_id = $message->getChat()->getId();
-        $text    = 'Hi there!' . PHP_EOL . 'Type /help to see all commands!';
+        $text = 'Hi there!'.PHP_EOL.'Type /help to see all commands!';
 
         $data = [
             'chat_id' => $chat_id,
-            'text'    => $text,
+            'text' => $text,
         ];
 
         return Request::sendMessage($data);

@@ -11,16 +11,17 @@ class TaskRepository extends EntityRepository
 {
     /**
      * The function to be used in order to calculate the difference between
-     * dates
+     * dates.
      */
     const DATEDIFFFUNCTION = 'DATE_DIFF(t.date, CURRENT_DATE())';
 
     /**
-     * Finds Tasks that are to be reached today
+     * Finds Tasks that are to be reached today.
      *
-     * @param   bool    $restrictToMilestones   Restrict search to milestones
-     *                                          only
-     * @return  Task[]  Array of tasks
+     * @param bool $restrictToMilestones Restrict search to milestones
+     *                                   only
+     *
+     * @return Task[] Array of tasks
      */
     public function findTasksReachToday(bool $restrictToMilestones = false): array
     {
@@ -28,8 +29,9 @@ class TaskRepository extends EntityRepository
 
         $qb->select('t')
             ->from(Task::class, 't')
-            ->where(self::DATEDIFFFUNCTION . ' = 0')
-            ->andWhere('t.notify = 1');
+            ->where(self::DATEDIFFFUNCTION.' = 0')
+            ->andWhere('t.notify = 1')
+        ;
 
         if ($restrictToMilestones) {
             $qb->andWhere('t.isMilestone = 1');
@@ -41,11 +43,10 @@ class TaskRepository extends EntityRepository
     /**
      * Finds Tasks that are to be reached in 30, 15, 3, 2 or 1 days.
      *
-     * @param  bool     $restrictToMilestones   Restrict search to milestones
-     *                                          only
+     * @param bool $restrictToMilestones Restrict search to milestones only
      *
-     * @return Task[][] Nested array of Tasks and their corresponding days
-     *                  to be reached.
+     * @return task[][] Nested array of Tasks and their corresponding days to
+     *                  be reached
      */
     public function findTasksToNotifyAbout(bool $restrictToMilestones = false)
     {
@@ -53,11 +54,12 @@ class TaskRepository extends EntityRepository
 
         $qb->select('t', self::DATEDIFFFUNCTION)
             ->from(Task::class, 't')
-            ->where(self::DATEDIFFFUNCTION . ' = 30')
-            ->orWhere(self::DATEDIFFFUNCTION . ' = 15')
-            ->orWhere(self::DATEDIFFFUNCTION . ' BETWEEN 1 AND 3')
+            ->where(self::DATEDIFFFUNCTION.' = 30')
+            ->orWhere(self::DATEDIFFFUNCTION.' = 15')
+            ->orWhere(self::DATEDIFFFUNCTION.' BETWEEN 1 AND 3')
             ->andWhere('t.notify = 1')
-            ->orderBy(self::DATEDIFFFUNCTION);
+            ->orderBy(self::DATEDIFFFUNCTION)
+        ;
 
         if ($restrictToMilestones) {
             $qb->andWhere('t.isMilestone = 1');

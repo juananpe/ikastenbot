@@ -3,45 +3,45 @@
 declare(strict_types=1);
 
 // Longman's namespace must be used as otherwise the command is not recognized
+
 namespace Longman\TelegramBot\Commands\UserCommands;
 
 use IkastenBot\Entity\DoctrineBootstrap;
 use IkastenBot\Entity\Task;
 use IkastenBot\Service\MessageSenderService;
 use IkastenBot\Utils\MessageFormatterUtils;
-use Longman\TelegramBot\Conversation;
-use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Commands\UserCommand;
+use Longman\TelegramBot\Request;
 
 class DisableNotificationsCommand extends UserCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $name         = 'disablenotifications';
+    protected $name = 'disablenotifications';
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $description  = 'Disable the reminders for the specified task';
+    protected $description = 'Disable the reminders for the specified task';
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $usage        = '/disablenotifications <taskID>';
+    protected $usage = '/disablenotifications <taskID>';
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $version      = '1.0.0';
+    protected $version = '1.0.0';
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $need_mysql   = true;
+    protected $need_mysql = true;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected $private_only = true;
 
@@ -66,10 +66,10 @@ class DisableNotificationsCommand extends UserCommand
             $user = $callbackQuery->getFrom();
         }
 
-        $chat       = $message->getChat();
-        $chat_id    = $chat->getId();
+        $chat = $message->getChat();
+        $chat_id = $chat->getId();
 
-        /**
+        /*
          * If it's a callback query, edit the original message and remove the
          * buttons from the chat
          */
@@ -80,10 +80,11 @@ class DisableNotificationsCommand extends UserCommand
             $data['message_id'] = $message->getMessageId();
 
             $editedText = $message->getText();
-            $editedText .= PHP_EOL . PHP_EOL;
+            $editedText .= PHP_EOL.PHP_EOL;
 
             $mfu->appendTwigFile(
-                $editedText, 'notifications/notFurtherNotifications.twig'
+                $editedText,
+                'notifications/notFurtherNotifications.twig'
             );
 
             $data['text'] = $editedText;
@@ -97,27 +98,29 @@ class DisableNotificationsCommand extends UserCommand
             Request::editMessageReplyMarkup($data);
         }
 
-        $user_id    = $user->getId();
+        $user_id = $user->getId();
 
         $ms = new MessageSenderService();
 
-        $remindUsageMessage = 'Command usage: ' . $this->getUsage();
+        $remindUsageMessage = 'Command usage: '.$this->getUsage();
 
-        /**
+        /*
          * If the command doesn't come with any parameters, remind the
          * user about the proper usage
          */
         if ('' === $text) {
             $ms->prepareMessage($chat_id, $remindUsageMessage);
+
             return $ms->sendMessage();
         }
 
-        /**
+        /*
          * If the command isn't supplied with a task id, remind the
          * user about the proper usage
          */
         if (!\preg_match('/^[0-9]+$/', $text)) {
             $ms->prepareMessage($chat_id, $remindUsageMessage);
+
             return $ms->sendMessage();
         }
 
@@ -130,27 +133,30 @@ class DisableNotificationsCommand extends UserCommand
 
         /**
          * Check that the user who requested the modification is the
-         * owner of the task
+         * owner of the task.
          */
         $taskOwner = $task->getGanttProject()->getUser()->getId();
         $authorized = $taskOwner === $user_id;
 
         if (!$authorized) {
             $authorized = \preg_match(
-                '/^' . getenv('TELEGRAM_BOT_USERNAME') . '$/mi', $user->getUsername()
+                '/^'.getenv('TELEGRAM_BOT_USERNAME').'$/mi',
+                $user->getUsername()
             );
         }
 
-        /**
+        /*
          * If the task doesn't exist or the user who requested the
          * change isn't the owner, return a task not found message.
          * This is made on purpose to avoid giving clues about other
          * users' tasks to the user.
          */
-        if(\is_null($task) || !$authorized) {
-            $ms->prepareMessage($chat_id, 'The specified task ' .
-                                           'doesn\'t exist.'
+        if (\is_null($task) || !$authorized) {
+            $ms->prepareMessage(
+                $chat_id,
+                'The specified task doesn\'t exist.'
             );
+
             return $ms->sendMessage();
         }
 
@@ -161,14 +167,16 @@ class DisableNotificationsCommand extends UserCommand
 
         /**
          * Send a message only if the user manually modified the notifications
-         * for a task
+         * for a task.
          */
         $text = '';
         if (!$callbackQuery) {
             $mfu->appendTwigFile(
-                $text, 'notifications/notFurtherNotifications.twig'
+                $text,
+                'notifications/notFurtherNotifications.twig'
             );
             $ms->prepareMessage($chat_id, $text);
+
             return $ms->sendMessage();
         }
     }

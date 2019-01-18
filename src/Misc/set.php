@@ -2,11 +2,11 @@
 /**
  * README
  * This file is intended to set the webhook.
- * Uncommented parameters must be filled
+ * Uncommented parameters must be filled.
  */
 
 // Load composer
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 
 use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Telegram;
@@ -18,11 +18,11 @@ if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
 }
 
 // Add you bot's API key and name
-$bot_api_key  = getenv('TELEGRAM_BOT_API_KEY');
+$bot_api_key = getenv('TELEGRAM_BOT_API_KEY');
 $bot_username = getenv('TELEGRAM_BOT_USERNAME');
 
 // Define the URL to your hook.php file
-$hook_url     = getenv('TELEGRAM_BOT_HOOK_URL');
+$hook_url = getenv('TELEGRAM_BOT_HOOK_URL');
 
 try {
     // Create Telegram API object

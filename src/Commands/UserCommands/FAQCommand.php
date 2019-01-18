@@ -15,8 +15,6 @@ use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\Keyboard;
-use Longman\TelegramBot\Entities\KeyboardButton;
-use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
 
 class FAQCommand extends UserCommand
@@ -47,24 +45,19 @@ class FAQCommand extends UserCommand
     protected $need_mysql = true;
 
     /**
-     * Conversation Object
+     * Conversation Object.
      *
      * @var \Longman\TelegramBot\Conversation
      */
     protected $conversation;
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
-
-
-
-
-
-
     public function execute()
     {
         $callback_query = $this->getUpdate()->getCallbackQuery();
@@ -83,7 +76,7 @@ class FAQCommand extends UserCommand
             $chat_id = $chat->getId();
             $user_id = $user->getId();
             $message_id = $message->getMessageId();
-        }elseif ($callback_query) {
+        } elseif ($callback_query) {
             $message = $callback_query->getMessage();
             $message_id = $message->getMessageId();
             $chat = $message->getChat();
@@ -105,14 +98,11 @@ class FAQCommand extends UserCommand
             $data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
         }
 
-
         //cache data from the tracking session if any
-
 
         $result = Request::emptyResponse();
 
         $db = DBikastenbot::getInstance();
-
 
         $r = $db->getUserLang($user_id);
         $lang = $r[0]['language'];
@@ -120,29 +110,24 @@ class FAQCommand extends UserCommand
         $res = $db->getSystemMessageById(1, $lang);
         $texto = $res[$lang];
 
-        $data['text'] =$texto;
+        $data['text'] = $texto;
         $data['parse_mode'] = 'HTML';
         $questions = $db->getFAQquestions($lang);
 
-        $buttons =[];
-        foreach ($questions as $ques){
-            $boton =array('text' => $ques[$lang], 'callback_data' => $ques['question_id']);
-            array_push( $buttons,$boton );
+        $buttons = [];
+        foreach ($questions as $ques) {
+            $boton = ['text' => $ques[$lang], 'callback_data' => $ques['question_id']];
+            array_push($buttons, $boton);
         }
 
         $inline_keyboard = new InlineKeyboard([]);
-        $i=0;
+        $i = 0;
         while (isset($buttons[$i])) {
             $inline_keyboard->addRow($buttons[$i]);
-            $i++;
+            ++$i;
         }
         $data['reply_markup'] = $inline_keyboard;
-        $result = Request::sendMessage($data);
 
-
-
-
-
-                return $result;
+        return Request::sendMessage($data);
     }
 }

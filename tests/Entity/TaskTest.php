@@ -7,10 +7,14 @@ namespace IkastenBot\Tests\Entity;
 use IkastenBot\Entity\Task;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class TaskTest extends TestCase
 {
     /**
-     * Test task
+     * Test task.
      *
      * @var Task
      */

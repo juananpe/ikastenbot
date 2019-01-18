@@ -6,31 +6,35 @@ use IkastenBot\Entity\GanttProject;
 use IkastenBot\Entity\User;
 use IkastenBot\Tests\DatabaseTestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class GanttProjectRepositoryTest extends DatabaseTestCase
 {
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PHPUnit\DbUnit\Database\Connection
      */
     private $connection;
 
     /**
-     * PDO object
+     * PDO object.
      *
      * @var PDO
      */
     private $pdo;
 
     /**
-     * Doctrine entity manager
+     * Doctrine entity manager.
      *
      * @var Doctrine\ORM\EntityManager
      */
     private $dem;
 
     /**
-     * The created test user
+     * The created test user.
      *
      * @var User
      */
@@ -58,7 +62,7 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
         $this->dem->persist($this->user);
         $this->dem->flush();
 
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $gp = new GanttProject();
             $gp->setFilename('TestFilename.gan');
             $gp->setVersion($i + 1);
@@ -89,9 +93,10 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
     public function testFindLatestGanttProject()
     {
         $gp = $this
-                ->dem
-                ->getRepository(GanttProject::class)
-                ->findLatestGanttProject($this->user);
+            ->dem
+            ->getRepository(GanttProject::class)
+            ->findLatestGanttProject($this->user)
+        ;
 
         $this->assertSame('TestFilename.gan', $gp->getFileName('TestFilename.gan'));
         $this->assertSame(3, $gp->getVersion());
@@ -103,9 +108,10 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
         $user->setId(1);
 
         $gp = $this
-                ->dem
-                ->getRepository(GanttProject::class)
-                ->findLatestGanttProject($user);
+            ->dem
+            ->getRepository(GanttProject::class)
+            ->findLatestGanttProject($user)
+        ;
 
         $this->assertSame(null, $gp);
     }

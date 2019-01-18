@@ -11,7 +11,7 @@ use Twig\Loader\FilesystemLoader;
 class MessageFormatterUtils
 {
     /**
-     * Twig templating engine
+     * Twig templating engine.
      *
      * @var Environment
      */
@@ -20,10 +20,10 @@ class MessageFormatterUtils
     public function __construct(Environment $twig = null)
     {
         if (\is_null($twig)) {
-            $loader = new FilesystemLoader(PROJECT_ROOT . '/templates/');
-            $this->twig = new Environment($loader, array(
-                'cache' => PROJECT_ROOT . '/var/cache/',
-            ));
+            $loader = new FilesystemLoader(PROJECT_ROOT.'/templates/');
+            $this->twig = new Environment($loader, [
+                'cache' => PROJECT_ROOT.'/var/cache/',
+            ]);
         } else {
             $this->twig = $twig;
         }
@@ -32,11 +32,9 @@ class MessageFormatterUtils
     /**
      * Append twig file to the given text. It appends a new line as well.
      *
-     * @param string &$text         Text to which the file contents will
-     *                              be appended
-     * @param string $twigFilePath  Path of the twig file
-     *
-     * @return void
+     * @param string &$text        Text to which the file contents will
+     *                             be appended
+     * @param string $twigFilePath Path of the twig file
      */
     public function appendTwigFile(string &$text, string $twigFilePath): void
     {
@@ -48,13 +46,11 @@ class MessageFormatterUtils
      * Append twig file to the given text rendering the specified parameters if
      * they apply. It appends a new line as well.
      *
-     * @param string &$text         Text to which the file contents will
-     *                              be appended
-     * @param string $twigFilePath  Path of the twig file
-     * @param array  $parameters    The parameters to be included in the
-     *                              rendering
-     *
-     * @return void
+     * @param string &$text        Text to which the file contents will
+     *                             be appended
+     * @param string $twigFilePath Path of the twig file
+     * @param array  $parameters   The parameters to be included in the
+     *                             rendering
      */
     public function appendTwigFileWithParameters(string &$text, string $twigFilePath, array $parameters): void
     {
@@ -66,12 +62,10 @@ class MessageFormatterUtils
      * Append a task to the given text. It appends a new line after each
      * task as well.
      *
-     * @param string    &$text          Text to which the milestone will be appended
-     * @param Task      $task           The task
-     * @param string    $daysLeft       Days left to reach the milestone
-     * @param boolean   $isMilestone    The task is a milestone
-     *
-     * @return void
+     * @param string &$text       Text to which the milestone will be appended
+     * @param Task   $task        The task
+     * @param string $daysLeft    Days left to reach the milestone
+     * @param bool   $isMilestone The task is a milestone
      */
     public function appendTask(string &$text, Task $task, string $daysLeft = null, bool $isMilestone = false): void
     {

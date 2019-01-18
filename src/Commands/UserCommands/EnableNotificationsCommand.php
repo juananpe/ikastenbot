@@ -3,45 +3,44 @@
 declare(strict_types=1);
 
 // Longman's namespace must be used as otherwise the command is not recognized
+
 namespace Longman\TelegramBot\Commands\UserCommands;
 
 use IkastenBot\Entity\DoctrineBootstrap;
 use IkastenBot\Entity\Task;
 use IkastenBot\Service\MessageSenderService;
 use IkastenBot\Utils\MessageFormatterUtils;
-use Longman\TelegramBot\Conversation;
-use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Commands\UserCommand;
 
 class EnableNotificationsCommand extends UserCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $name         = 'enablenotifications';
+    protected $name = 'enablenotifications';
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $description  = 'Enable the reminders for the specified task';
+    protected $description = 'Enable the reminders for the specified task';
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $usage        = '/enablenotifications <taskID>';
+    protected $usage = '/enablenotifications <taskID>';
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $version      = '1.0.0';
+    protected $version = '1.0.0';
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    protected $need_mysql   = true;
+    protected $need_mysql = true;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected $private_only = true;
 
@@ -49,37 +48,39 @@ class EnableNotificationsCommand extends UserCommand
     {
         $messageFormatterUtils = new MessageFormatterUtils();
 
-        $chat       = $this->getMessage()->getChat();
-        $chat_id    = $chat->getId();
+        $chat = $this->getMessage()->getChat();
+        $chat_id = $chat->getId();
 
         //reply to message id is applied by default
         //Force reply is applied by default so it can work with privacy on
         $selective_reply = $chat->isGroupChat() || $chat->isSuperGroup();
 
-        $user       = $this->getMessage()->getFrom();
-        $user_id    = $user->getId();
+        $user = $this->getMessage()->getFrom();
+        $user_id = $user->getId();
 
-        $text       = trim($this->getMessage()->getText(true));
+        $text = trim($this->getMessage()->getText(true));
 
         $ms = new MessageSenderService();
 
-        $remindUsageMessage = 'Command usage: ' . $this->getUsage();
+        $remindUsageMessage = 'Command usage: '.$this->getUsage();
 
-        /**
+        /*
          * If the command doesn't come with any parameters, remind the
          * user about the proper usage
          */
         if ('' === $text) {
             $ms->prepareMessage($chat_id, $remindUsageMessage);
+
             return $ms->sendMessage();
         }
 
-        /**
+        /*
          * If the command isn't supplied with a task id, remind the
          * user about the proper usage
          */
         if (!\preg_match('/^[0-9]+$/', $text)) {
             $ms->prepareMessage($chat_id, $remindUsageMessage);
+
             return $ms->sendMessage();
         }
 
@@ -92,27 +93,30 @@ class EnableNotificationsCommand extends UserCommand
 
         /**
          * Check that the user who requested the modification is the
-         * owner of the task
+         * owner of the task.
          */
         $taskOwner = $task->getGanttProject()->getUser()->getId();
         $authorized = $taskOwner === $user_id;
 
         if (!$authorized) {
             $authorized = \preg_match(
-                '/^' . getenv('TELEGRAM_BOT_USERNAME') . '$/mi', $user->getUsername()
+                '/^'.getenv('TELEGRAM_BOT_USERNAME').'$/mi',
+                $user->getUsername()
             );
         }
 
-        /**
+        /*
          * If the task doesn't exist or the user who requested the
          * change isn't the owner, return a task not found message.
          * This is made on purpose to avoid giving clues about other
          * users' tasks to the user.
          */
-        if(\is_null($task) || !$authorized) {
-            $ms->prepareMessage($chat_id, 'The specified task ' .
-                                           'doesn\'t exist.'
+        if (\is_null($task) || !$authorized) {
+            $ms->prepareMessage(
+                $chat_id,
+                'The specified task doesn\'t exist.'
             );
+
             return $ms->sendMessage();
         }
 
@@ -129,6 +133,7 @@ class EnableNotificationsCommand extends UserCommand
         );
 
         $ms->prepareMessage($chat_id, $text, null, $selective_reply);
+
         return $ms->sendMessage();
     }
 }

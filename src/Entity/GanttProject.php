@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace IkastenBot\Entity;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use IkastenBot\Entity\User;
-use IkastenBot\Entity\Task;
+use Doctrine\Common\Collections\Collection;
 
 /**
- * Represents a GanttProject entity
+ * Represents a GanttProject entity.
  *
  * @Entity(repositoryClass="IkastenBot\Repository\GanttProjectRepository")
  * @Table(name="ganttproject")
@@ -18,41 +16,46 @@ use IkastenBot\Entity\Task;
 class GanttProject
 {
     /**
-     * The ID of the Gant project
+     * The ID of the Gant project.
      *
      * @Id @Column(type="integer") @GeneratedValue
+     *
      * @var int
      */
     protected $id;
 
     /**
-     * The file name associated to the Gantt project
+     * The file name associated to the Gantt project.
      *
      * @Column(type="string", name="file_name")
+     *
      * @var string
      */
     protected $fileName;
 
     /**
-     * The latest version of the Gantt project
+     * The latest version of the Gantt project.
      *
      * @Column(type="integer", name="version")
+     *
      * @var int
      */
     protected $version;
 
     /**
-     * The related tasks of the Gantt project
+     * The related tasks of the Gantt project.
      *
      * @OneToMany(targetEntity="Task", mappedBy="ganttProject")
+     *
      * @var Collection
      */
     protected $tasks;
 
     /**
-     * The owner of the Gantt project
+     * The owner of the Gantt project.
      *
      * @ManyToOne(targetEntity="User", inversedBy="ganttProject", cascade={"persist"})
+     *
      * @var User
      */
     protected $user;
@@ -63,7 +66,7 @@ class GanttProject
     }
 
     /**
-     * Get the ID of the Gant project
+     * Get the ID of the Gant project.
      *
      * @return int
      */
@@ -73,9 +76,9 @@ class GanttProject
     }
 
     /**
-     * Set the ID of the Gant project
+     * Set the ID of the Gant project.
      *
-     * @param int $id  The ID of the Gant project
+     * @param int $id The ID of the Gant project
      *
      * @return self
      */
@@ -87,7 +90,7 @@ class GanttProject
     }
 
     /**
-     * Get the file name associated to the Gantt project
+     * Get the file name associated to the Gantt project.
      *
      * @return string
      */
@@ -97,7 +100,7 @@ class GanttProject
     }
 
     /**
-     * Set the file name associated to the Gantt project
+     * Set the file name associated to the Gantt project.
      *
      * @param string $fileName The file name associated to the Gantt project
      *
@@ -111,9 +114,9 @@ class GanttProject
     }
 
     /**
-     * Get the latest version of the Gantt project
+     * Get the latest version of the Gantt project.
      *
-     * @return  int
+     * @return int
      */
     public function getVersion(): int
     {
@@ -121,7 +124,7 @@ class GanttProject
     }
 
     /**
-     * Set the latest version of the Gantt project
+     * Set the latest version of the Gantt project.
      *
      * @param int $version The latest version of the Gantt project
      *
@@ -135,7 +138,7 @@ class GanttProject
     }
 
     /**
-     * Get the related tasks of the Gantt project
+     * Get the related tasks of the Gantt project.
      *
      * @return Collection/Task[]
      */
@@ -145,9 +148,10 @@ class GanttProject
     }
 
     /**
-     * Add a task
+     * Add a task.
      *
      * @param Task $task
+     *
      * @return self
      */
     public function addTask(Task $task): self
@@ -161,9 +165,10 @@ class GanttProject
     }
 
     /**
-     * Remove a task
+     * Remove a task.
      *
      * @param Task $task
+     *
      * @return self
      */
     public function removeTask(Task $task): self
@@ -179,9 +184,9 @@ class GanttProject
     }
 
     /**
-     * Get the owner of the Gantt project
+     * Get the owner of the Gantt project.
      *
-     * @return  User
+     * @return User
      */
     public function getUser(): User
     {
@@ -189,7 +194,7 @@ class GanttProject
     }
 
     /**
-     * Set the owner of the Gantt project
+     * Set the owner of the Gantt project.
      *
      * @param User $user The owner of the Gantt project
      *

@@ -4,40 +4,39 @@ declare(strict_types=1);
 
 namespace IkastenBot\Service;
 
+use Doctrine\ORM\EntityManager;
 use IkastenBot\Entity\Task;
-use IkastenBot\Service\MessageSenderService;
 use IkastenBot\Utils\MessageFormatterUtils;
 use Longman\TelegramBot\Entities\InlineKeyboard;
-use Doctrine\ORM\EntityManager;
 
 class TaskReminderService
 {
     /**
      * The function to be used in order to calculate the difference between
-     * dates
+     * dates.
      */
     const DATEDIFFFUNCTION = 'DATE_DIFF(m.date, CURRENT_DATE())';
 
     /**
-     * Entity manager
+     * Entity manager.
      *
      * @var EntityManager
      */
     protected $em;
 
     /**
-     * Message sender service
+     * Message sender service.
      *
      * @var MessageSenderService
      */
     protected $mss;
 
     /**
-     * Construct TaskReminderService object
+     * Construct TaskReminderService object.
      *
-     * @param EntityManager         $em     Doctrine entity manager
-     * @param MessageFormatterUtils $mfu    Message formatter utils
-     * @param MessageSenderService  $mss    Message sender service
+     * @param EntityManager         $em  Doctrine entity manager
+     * @param MessageFormatterUtils $mfu Message formatter utils
+     * @param MessageSenderService  $mss Message sender service
      */
     public function __construct(EntityManager $em, MessageFormatterUtils $mfu, MessageSenderService $mss)
     {
@@ -49,8 +48,6 @@ class TaskReminderService
     /**
      * Notify users about the tasks they should reach today according to
      * their planning.
-     *
-     * @return void
      */
     public function notifyUsersTasksToday(): void
     {
@@ -65,12 +62,12 @@ class TaskReminderService
                 [
                     [
                         'text' => 'Delay task',
-                        'callback_data' => '/delaytask ' . $task->getId()
-                    ]
+                        'callback_data' => '/delaytask '.$task->getId(),
+                    ],
                 ]
             );
 
-            $this->mss->prepareMessage((int)$task->getChat_id(), $text, 'HTML', null, $keyboard);
+            $this->mss->prepareMessage((int) $task->getChat_id(), $text, 'HTML', null, $keyboard);
             $this->mss->sendMessage();
         }
     }
@@ -78,8 +75,6 @@ class TaskReminderService
     /**
      * Notify users about tasks that are close to be reached according
      * to their planning.
-     *
-     * @return void
      */
     public function notifyUsersTasksClose(): void
     {
@@ -90,8 +85,8 @@ class TaskReminderService
 
             // Append the text to the message to be sent
             $parameters = [
-                'task'      => $row[0],
-                'daysLeft'  => $row[1]
+                'task' => $row[0],
+                'daysLeft' => $row[1],
             ];
 
             $this->mf->appendTwigFileWithParameters(
@@ -110,31 +105,29 @@ class TaskReminderService
                 [
                     [
                         'text' => '💪 Yes',
-                        'callback_data' => 'affirmative_noop'
+                        'callback_data' => 'affirmative_noop',
                     ],
                     [
                         'text' => '🥵 No, let\'s delay it',
-                        'callback_data' => '/delaytask ' . $row[0]->getId()
-                    ]
+                        'callback_data' => '/delaytask '.$row[0]->getId(),
+                    ],
                 ],
                 [
                     [
-                        'text' => '💤 Disable this ' . $milestoneOrTask . '\'s notifications',
-                        'callback_data' => '/disablenotifications ' . $row[0]->getId()
-                    ]
+                        'text' => '💤 Disable this '.$milestoneOrTask.'\'s notifications',
+                        'callback_data' => '/disablenotifications '.$row[0]->getId(),
+                    ],
                 ]
             );
 
-            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML', null, $keyboard);
+            $this->mss->prepareMessage((int) $row[0]->getChat_id(), $text, 'HTML', null, $keyboard);
             $this->mss->sendMessage();
         }
     }
 
-     /**
+    /**
      * Notify users about the milestones they should reach today according to
      * their planning.
-     *
-     * @return void
      */
     public function notifyUsersMilestonesToday(): void
     {
@@ -149,12 +142,12 @@ class TaskReminderService
                 [
                     [
                         'text' => 'Delay task',
-                        'callback_data' => '/delaytask ' . $milestone->getId()
-                    ]
+                        'callback_data' => '/delaytask '.$milestone->getId(),
+                    ],
                 ]
             );
 
-            $this->mss->prepareMessage((int)$milestone->getChat_id(), $text, 'HTML', null, $keyboard);
+            $this->mss->prepareMessage((int) $milestone->getChat_id(), $text, 'HTML', null, $keyboard);
             $this->mss->sendMessage();
         }
     }
@@ -162,8 +155,6 @@ class TaskReminderService
     /**
      * Notify users about milestones that are close to be reached according
      * to their planning.
-     *
-     * @return void
      */
     public function notifyUsersMilestonesClose(): void
     {
@@ -173,8 +164,8 @@ class TaskReminderService
             $text = '';
 
             $parameters = [
-                'task'      => $row[0],
-                'daysLeft'  => $row[1]
+                'task' => $row[0],
+                'daysLeft' => $row[1],
             ];
 
             $this->mf->appendTwigFileWithParameters(
@@ -187,22 +178,22 @@ class TaskReminderService
                 [
                     [
                         'text' => '💪 Yes',
-                        'callback_data' => 'affirmative_noop'
+                        'callback_data' => 'affirmative_noop',
                     ],
                     [
                         'text' => '🥵 No, let\'s delay it',
-                        'callback_data' => '/delaytask ' . $row[0]->getId()
-                    ]
+                        'callback_data' => '/delaytask '.$row[0]->getId(),
+                    ],
                 ],
                 [
                     [
                         'text' => '💤 Disable this milestone\'s notifications',
-                        'callback_data' => '/disablenotifications ' . $row[0]->getId()
-                    ]
+                        'callback_data' => '/disablenotifications '.$row[0]->getId(),
+                    ],
                 ]
             );
 
-            $this->mss->prepareMessage((int)$row[0]->getChat_id(), $text, 'HTML', null, $keyboard);
+            $this->mss->prepareMessage((int) $row[0]->getChat_id(), $text, 'HTML', null, $keyboard);
             $this->mss->sendMessage();
         }
     }

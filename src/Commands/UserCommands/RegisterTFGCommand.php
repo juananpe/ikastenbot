@@ -3,25 +3,19 @@
  * Created by PhpStorm.
  * User: amaia
  * Date: 18/06/18
- * Time: 13:04
+ * Time: 13:04.
  */
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
-
 use IkastenBot\Misc\DBikastenbot;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
-use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\Keyboard;
-use Longman\TelegramBot\Entities\KeyboardButton;
-use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Request;
-
 
 class registerTFGCommand extends UserCommand
 {
-
     /**
      * @var string
      */
@@ -48,35 +42,28 @@ class registerTFGCommand extends UserCommand
     protected $need_mysql = true;
 
     /**
-     * Conversation Object
+     * Conversation Object.
      *
      * @var \Longman\TelegramBot\Conversation
      */
     protected $conversation;
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
-
-
-
-
-
-
     public function execute()
     {
-
-
-        $idiomas = ['es','eus'];
+        $idiomas = ['es', 'eus'];
 
         $message = $this->getMessage();
 
-        $chat    = $message->getChat();
-        $user    = $message->getFrom();
-        $text    = trim($message->getText(true));
+        $chat = $message->getChat();
+        $user = $message->getFrom();
+        $text = trim($message->getText(true));
         $chat_id = $chat->getId();
         $user_id = $user->getId();
 
@@ -107,18 +94,16 @@ class registerTFGCommand extends UserCommand
 
         $db = DBikastenbot::getInstance();
 
-
-
         //State machine
         //Entrypoint of the machine state if given by the track
         //Every time a step is achieved the track is updated
         switch ($state) {
             case 0:
-                if ($text === '') {
+                if ('' === $text) {
                     $notes['state'] = 0;
                     $this->conversation->update();
 
-                   //comprobar si el usuario tiene un TFG registrado
+                    //comprobar si el usuario tiene un TFG registrado
                     $tfg = $db->getTFGbyUser($user_id);
 
                     if ($tfg) {
@@ -133,28 +118,28 @@ class registerTFGCommand extends UserCommand
                         $this->conversation->stop();
 
                         $result = Request::sendMessage($data);
-                        break;
-                    }else{
-                        $r = $db->getUserLang($user_id);
-                        $lang = $r[0]['language'];
 
-                        $res = $db->getSystemMessageById(14, $lang);
-                        $texto = $res[$lang];
-                        $data['text'] = $texto;
-                        $data['reply_markup'] = Keyboard::remove(['selective' => true]);
-
-
-                        $result = Request::sendMessage($data);
                         break;
                     }
+                    $r = $db->getUserLang($user_id);
+                    $lang = $r[0]['language'];
+
+                    $res = $db->getSystemMessageById(14, $lang);
+                    $texto = $res[$lang];
+                    $data['text'] = $texto;
+                    $data['reply_markup'] = Keyboard::remove(['selective' => true]);
+
+                    $result = Request::sendMessage($data);
+
+                    break;
                 }
 
                 $notes['name'] = $text;
-                $text          = '';
+                $text = '';
 
             // no break
             case 1:
-                if ($text === '' || !in_array($text,$idiomas)) {
+                if ('' === $text || !in_array($text, $idiomas)) {
                     $notes['state'] = 1;
                     $this->conversation->update();
 
@@ -166,18 +151,20 @@ class registerTFGCommand extends UserCommand
                     $data['text'] = $texto;
 //                    $keyboard = new Keyboard('es','eus');
                     $keyboard = new Keyboard([]);
-                    $i=0;
+                    $i = 0;
                     while (isset($idiomas[$i])) {
                         $keyboard->addRow($idiomas[$i]);
-                        $i++;
+                        ++$i;
                     }
                     $keyboard->setResizeKeyboard(true)
                         ->setOneTimeKeyboard(true)
-                        ->setSelective(false);
+                        ->setSelective(false)
+                    ;
 
                     $data['reply_markup'] = $keyboard;
 
                     $result = Request::sendMessage($data);
+
                     break;
                 }
 
@@ -187,16 +174,15 @@ class registerTFGCommand extends UserCommand
             case 2:
                 $this->conversation->update();
 
-
-                $anadido = $db->registerTFG($user_id,$notes['name'],$notes['lang']);
-                if($anadido) {
+                $anadido = $db->registerTFG($user_id, $notes['name'], $notes['lang']);
+                if ($anadido) {
                     $r = $db->getUserLang($user_id);
                     $lang = $r[0]['language'];
 
                     $res = $db->getSystemMessageById(16, $lang);
                     $texto = $res[$lang];
                     $data['text'] = $texto;
-                }else{
+                } else {
                     $r = $db->getUserLang($user_id);
                     $lang = $r[0]['language'];
 
@@ -208,13 +194,10 @@ class registerTFGCommand extends UserCommand
                 $data['reply_markup'] = Keyboard::remove(['selective' => true]);
                 $this->conversation->stop();
 
-
                 $result = Request::sendMessage($data);
+
                 break;
         }
-
-
-
 
         return $result;
     }

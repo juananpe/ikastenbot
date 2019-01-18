@@ -11,14 +11,12 @@ use IkastenBot\Entity\User;
 class GanttProjectRepository extends EntityRepository
 {
     /**
-     * Get latest GanttProject from user
+     * Get latest GanttProject from user.
      *
-     * @param   User                            $user   The user for whom the
-     *                                                  latest GanttProject
-     *                                                  will be fetched
-     * @return  GanttProject|null                       Returns null if no
-     *                                                  GanttProject has been
-     *                                                  found
+     * @param User $user The user for whom the latest GanttProject will be
+     *                   fetched
+     *
+     * @return null|GanttProject Returns null if no GanttProject has been found
      */
     public function findLatestGanttProject(User $user): ?GanttProject
     {

@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace IkastenBot\Utils;
 
 use Doctrine\ORM\EntityManager;
-use IkastenBot\Entity\DoctrineBootstrap;
 use IkastenBot\Entity\Task;
-use IkastenBot\Exception\TaskNotFoundException;
-use Longman\TelegramBot\DB;
 
 class TaskUtils
 {
     /**
-     * Entity Manager
+     * Entity Manager.
      *
      * @var EntityManager
      */
@@ -25,12 +22,11 @@ class TaskUtils
     }
 
     /**
-     * Modifies a task's duration
+     * Modifies a task's duration.
      *
-     * @param   Task    $task       The task to modify
-     * @param   integer $duration   The duration offset —negative or positive— to apply to
-     *                              the task
-     * @return  void
+     * @param Task $task     The task to modify
+     * @param int  $duration The duration offset —negative or positive— to apply to
+     *                       the task
      */
     public function modifyTaskDuration(Task $task, int $durationOffset): void
     {
@@ -40,6 +36,5 @@ class TaskUtils
 
         $this->em->persist($task);
         $this->em->flush();
-
     }
 }

@@ -8,14 +8,12 @@ use Doctrine\ORM\EntityManager;
 use IkastenBot\Entity\GanttProject;
 use IkastenBot\Entity\Task;
 use IkastenBot\Exception\IncorrectFileException;
-use IkastenBot\Exception\NoMilestonesException;
 use IkastenBot\Exception\NoTasksException;
-use Longman\TelegramBot\DB;
 
 class XmlUtils
 {
     /**
-     * Entity manager
+     * Entity manager.
      *
      * @var EntityManager
      */
@@ -30,12 +28,12 @@ class XmlUtils
      * Opens the XML file of the provided path and throws and exception if
      * any errors occur.
      *
-     * @param   string $xmlFilePath     The path of the XML file
+     * @param string $xmlFilePath The path of the XML file
      *
-     * @return  \SimpleXmlElement       The XML contents of the file
+     * @throws IncorrectFileException if any errors occur during the opening
+     *                                or the parsing of the file
      *
-     * @throws IncorrectFileException   if any errors occur during the opening
-     *                                  or the parsing of the file
+     * @return \SimpleXmlElement The XML contents of the file
      */
     public function openXmlFile(string $xmlFilePath): \SimpleXmlElement
     {
@@ -46,6 +44,7 @@ class XmlUtils
         if (count(\libxml_get_errors())) {
             libxml_clear_errors();
             \libxml_use_internal_errors(false);
+
             throw new IncorrectFileException('The provided file contains invalid XML');
         }
 
@@ -53,27 +52,28 @@ class XmlUtils
     }
 
     /**
-     * Extract tasks from gan file
+     * Extract tasks from gan file.
      *
-     * @param   string $file_path   The path of the Gan file
-     * @return  Task[]              Array of tasks
+     * @param string $file_path The path of the Gan file
+     *
+     * @return Task[] Array of tasks
      */
     public function extractTasksFromGanFile(string $file_path): array
     {
-        $data= $this->openXmlFile($file_path);
+        $data = $this->openXmlFile($file_path);
 
         $xmlTasks = $data->xpath('//task');
 
         $tasks = [];
         foreach ($xmlTasks as $xmlTask) {
             $task = new Task();
-            $task->setName((string)$xmlTask->attributes()->name);
+            $task->setName((string) $xmlTask->attributes()->name);
 
-            $date = new \DateTime((string)$xmlTask->attributes()->start);
-            $task->setGanId((int)$xmlTask->attributes()->id);
+            $date = new \DateTime((string) $xmlTask->attributes()->start);
+            $task->setGanId((int) $xmlTask->attributes()->id);
             $task->setDate($date);
             $task->setIsMilestone(\filter_var($xmlTask->attributes()->meeting, FILTER_VALIDATE_BOOLEAN));
-            $task->setDuration((int)$xmlTask->attributes()->duration);
+            $task->setDuration((int) $xmlTask->attributes()->duration);
 
             $tasks[] = $task;
         }
@@ -82,16 +82,16 @@ class XmlUtils
     }
 
     /**
-     * Extract tasks from the XML Gan file and store them in the database
+     * Extract tasks from the XML Gan file and store them in the database.
      *
-     * @param   string  $file_path      The path to the XML Gan file
-     * @param   int     $chat_id        The id of the chat to which the tasks
-     *                                  will be assigned to
+     * @param string $file_path The path to the XML Gan file
+     * @param int    $chat_id   The id of the chat to which the tasks
+     *                          will be assigned to
      *
-     * @return  Task[]                  Array of Tasks
+     * @throws NoTasksException when no tasks have been found in the
+     *                          XML file
      *
-     * @throws  NoTasksException        When no tasks have been found in the
-     *                                  XML file.
+     * @return Task[] Array of Tasks
      */
     public function extractStoreTasks(string $file_path, int $chat_id, GanttProject $ganttProject): array
     {
@@ -112,7 +112,7 @@ class XmlUtils
         }
 
         foreach ($tasks as $task) {
-            $task->setChat_id((string)$chat_id);
+            $task->setChat_id((string) $chat_id);
             $task->setNotify(true);
             $task->setGanttProject($ganttProject);
 
@@ -128,14 +128,13 @@ class XmlUtils
      * Finds if the provided XML has a nested task or depend element, and
      * stores the corresponding Task in the provided array.
      *
-     * @param Task[]            &$taskPool  The array to which the task
-     *                                      will be pushed
-     * @param GanttProject      $ganttProject   The GanttProject the task
-     *                                          belongs to
-     * @param \SimpleXmlElement $xml        The XML to be parsed
-     * @param boolean $findTask             True for finding a task element,
-     *                                      false for finding a depend element
-     * @return void
+     * @param Task[]            &$taskPool    The array to which the task
+     *                                        will be pushed
+     * @param GanttProject      $ganttProject The GanttProject the task
+     *                                        belongs to
+     * @param \SimpleXmlElement $xml          The XML to be parsed
+     * @param bool              $findTask     True for finding a task element,
+     *                                        false for finding a depend element
      */
     public function findNestedTaskOrDepend(array &$taskPool, GanttProject $ganttProject, \SimpleXmlElement $xml, bool $findTask): void
     {
@@ -151,10 +150,10 @@ class XmlUtils
         if ($hasNested) {
             foreach ($hasNested as $xmlElement) {
                 $tmpTask = $this->em->getRepository(Task::class)->findOneBy(
-                    array(
+                    [
                         'ganId' => $xmlElement->attributes()->id,
-                        'ganttProject' => $ganttProject
-                    )
+                        'ganttProject' => $ganttProject,
+                    ]
                 );
                 $taskPool[] = $tmpTask;
             }
@@ -166,18 +165,19 @@ class XmlUtils
      * days specified. The tasks are updated in the database and in the
      * provided XML.
      *
-     * @param   string              $ganFilePath The path to the Gan file
-     * @param   Task                $task        The task from which to begin
-     *                                           iterating
-     * @param   integer             $delay       The delay —in days— to be
-     *                                           applied
-     * @return  \SimpleXmlElement
+     * @param string $ganFilePath The path to the Gan file
+     * @param Task   $task        The task from which to begin
+     *                            iterating
+     * @param int    $delay       The delay —in days— to be
+     *                            applied
+     *
+     * @return \SimpleXmlElement
      */
     public function delayTaskAndDependants(string $ganFilePath, Task $task, int $delay): \SimpleXmlElement
     {
         $xml = $this->openXmlFile($ganFilePath);
 
-        /**
+        /*
          * The first task's duration is adjusted to sum the delay specified by
          * the user. The dependant or nested tasks only need to change their
          * start date, as we assume that those haven't been started yet.
@@ -186,19 +186,17 @@ class XmlUtils
             $task->getDuration() + $delay
         );
 
-        /**
-         * Reset the reached status to get notified by the system
-         */
+        // Reset the reached status to get notified by the system
         $task->setNotify(true);
 
         $ganttProject = $task->getGanttProject();
 
-        $xmlTask = $xml->xpath('//task[@id="' . $task->getGanId() . '"]')[0];
+        $xmlTask = $xml->xpath('//task[@id="'.$task->getGanId().'"]')[0];
         $xmlTask->attributes()->duration = $task->getDuration();
 
         /**
          * Delay the date of the tasks and save them both in the database and
-         * in the XML
+         * in the XML.
          */
         $taskPool = [];
         $this->findNestedTaskOrDepend($taskPool, $ganttProject, $xmlTask, true);
@@ -210,7 +208,7 @@ class XmlUtils
 
             $this->em->persist($tmpTask);
 
-            $xmlTask = $xml->xpath('//task[@id="' . $tmpTask->getGanId() . '"]')[0];
+            $xmlTask = $xml->xpath('//task[@id="'.$tmpTask->getGanId().'"]')[0];
 
             $xmlTask->attributes()->start = $tmpTask->getDate()->format('Y-m-d');
 

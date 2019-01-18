@@ -16,23 +16,23 @@ abstract class DatabaseTestCase extends TestCase
     use TestCaseTrait;
 
     // only instantiate pdo once for test clean-up/fixture load
-    static private $pdo = null;
+    private static $pdo = null;
 
     // only instantiate PHPUnit\DbUnit\Database\Connection once per test
-    private $conn = null;
+    private $conn;
 
     // only instantiate doctrine once for test clean-up/fixture load
-    static private $em = null;
+    private static $em = null;
 
     /**
      * @return PHPUnit\DbUnit\Database\Connection
      */
     public function getConnection()
     {
-        if ($this->conn === null) {
-            if (self::$pdo == null) {
+        if (null === $this->conn) {
+            if (null == self::$pdo) {
                 self::$pdo = new \PDO(
-                    'mysql:dbname=' . $GLOBALS['MYSQL_TEST_DATABASE_NAME'] . ';host=' . $GLOBALS['MYSQL_TEST_HOST'],
+                    'mysql:dbname='.$GLOBALS['MYSQL_TEST_DATABASE_NAME'].';host='.$GLOBALS['MYSQL_TEST_HOST'],
                     $GLOBALS['MYSQL_TEST_USER'],
                     $GLOBALS['MYSQL_TEST_PASSWORD']
                     );
@@ -44,30 +44,28 @@ abstract class DatabaseTestCase extends TestCase
     }
 
     /**
-     * Check the link for the configuration reference
+     * Check the link for the configuration reference.
      *
-     * @link https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/reference/advanced-configuration.html#advanced-configuration
-     * @return void
+     * @see https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/reference/advanced-configuration.html#advanced-configuration
      */
     public function getDoctrineEntityManager()
     {
-        if (self::$em === null) {
-
+        if (null === self::$em) {
             $cache = new ArrayCache();
 
             $config = new Configuration();
             $config->setMetadataCacheImpl($cache);
-            $driverImpl = $config->newDefaultAnnotationDriver(array(PROJECT_ROOT . '/src/Entity'));
+            $driverImpl = $config->newDefaultAnnotationDriver([PROJECT_ROOT.'/src/Entity']);
             $config->setMetadataDriverImpl($driverImpl);
             $config->setQueryCacheImpl($cache);
-            $config->setProxyDir(PROJECT_ROOT . '/var/cache/Doctrine/proxies');
+            $config->setProxyDir(PROJECT_ROOT.'/var/cache/Doctrine/proxies');
             $config->setProxyNamespace('IkastenBot\Proxies');
             $config->setAutoGenerateProxyClasses(true);
-            $config = Setup::createAnnotationMetadataConfiguration(array(PROJECT_ROOT . '/src/Entity'), true);
+            $config = Setup::createAnnotationMetadataConfiguration([PROJECT_ROOT.'/src/Entity'], true);
 
-            $connectionParams = array(
-                'pdo' => self::$pdo
-            );
+            $connectionParams = [
+                'pdo' => self::$pdo,
+            ];
 
             self::$em = EntityManager::create($connectionParams, $config);
         }

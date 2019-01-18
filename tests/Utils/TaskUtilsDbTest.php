@@ -4,67 +4,66 @@ declare(strict_types=1);
 
 namespace IkastenBot\Tests\Utils;
 
-use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Doctrine\ORM\EntityManager;
-use IkastenBot\Exception\NoTasksException;
-use IkastenBot\Exception\TaskNotFoundException;
 use IkastenBot\Entity\Task;
 use IkastenBot\Entity\User;
 use IkastenBot\Tests\DatabaseTestCase;
 use IkastenBot\Tests\Fixtures\GanttProjectDataLoader;
-use IkastenBot\Tests\Fixtures\UserDataLoader;
 use IkastenBot\Tests\Fixtures\SingleTaskDataLoader;
+use IkastenBot\Tests\Fixtures\UserDataLoader;
 use IkastenBot\Utils\TaskUtils;
 use Longman\TelegramBot\Telegram;
-use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class TaskUtilsDbTest extends DatabaseTestCase
 {
-    /**
-     * Directory path containing test files
-     *
-     * @var string
-     */
-    private $dataDir;
-
-    /**
-     * Task Utils
-     *
-     * @var TaskUtils
-     */
-    private $tu;
-
-    /**
-     * Database connection
-     *
-     * @var PHPUnit\DbUnit\Database\Connection
-     */
-    private $connection;
-
-    /**
-     * PDO object
-     *
-     * @var PDO
-     */
-    private $pdo;
-
     /**
      * @var \UnitTester
      */
     protected $tester;
 
     /**
-     * Test task
+     * Test task.
      *
      * @var Task
      */
     protected $task;
+    /**
+     * Directory path containing test files.
+     *
+     * @var string
+     */
+    private $dataDir;
+
+    /**
+     * Task Utils.
+     *
+     * @var TaskUtils
+     */
+    private $tu;
+
+    /**
+     * Database connection.
+     *
+     * @var PHPUnit\DbUnit\Database\Connection
+     */
+    private $connection;
+
+    /**
+     * PDO object.
+     *
+     * @var PDO
+     */
+    private $pdo;
 
     public function setUp(): void
     {
-        $this->dataDir = __DIR__ . '/../_data/task_data/';
+        $this->dataDir = __DIR__.'/../_data/task_data/';
 
         $this->connection = $this->getConnection();
         $this->pdo = $this->connection->getConnection();
@@ -94,7 +93,7 @@ final class TaskUtilsDbTest extends DatabaseTestCase
 
         // Fetch the test task
         $this->task = $this->em->getRepository(Task::class)->findOneBy(
-            array('chat_id' => '12345')
+            ['chat_id' => '12345']
         );
 
         $this->tu = new TaskUtils($this->em);
@@ -103,7 +102,7 @@ final class TaskUtilsDbTest extends DatabaseTestCase
     public function tearDown(): void
     {
         $connection = $this->em->getConnection();
-        $platform   = $connection->getDatabasePlatform();
+        $platform = $connection->getDatabasePlatform();
 
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
 
@@ -127,7 +126,7 @@ final class TaskUtilsDbTest extends DatabaseTestCase
      */
     public function getDataSet()
     {
-        return $this->createXmlDataSet($this->dataDir . 'taskSeed.xml');
+        return $this->createXmlDataSet($this->dataDir.'taskSeed.xml');
     }
 
     public function testModifyTaskDurationPositiveOffset()
@@ -146,8 +145,9 @@ final class TaskUtilsDbTest extends DatabaseTestCase
             FROM `task`'
         );
 
-        $expectedTable = $this->createFlatXmlDataSet($this->dataDir . 'expectedTaskPositiveOffset.xml')
-                                ->getTable('task');
+        $expectedTable = $this->createFlatXmlDataSet($this->dataDir.'expectedTaskPositiveOffset.xml')
+            ->getTable('task')
+        ;
 
         $this->assertTablesEqual($expectedTable, $queryTable);
         $this->assertSame(1, $this->connection->getRowCount('task'));
@@ -169,8 +169,9 @@ final class TaskUtilsDbTest extends DatabaseTestCase
             FROM `task`'
         );
 
-        $expectedTable = $this->createFlatXmlDataSet($this->dataDir . 'expectedTaskNegativeOffset.xml')
-                                ->getTable('task');
+        $expectedTable = $this->createFlatXmlDataSet($this->dataDir.'expectedTaskNegativeOffset.xml')
+            ->getTable('task')
+        ;
 
         $this->assertTablesEqual($expectedTable, $queryTable);
         $this->assertSame(1, $this->connection->getRowCount('task'));

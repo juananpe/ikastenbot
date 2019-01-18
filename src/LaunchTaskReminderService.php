@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use IkastenBot\Entity\DoctrineBootstrap;
 use IkastenBot\Service\MessageSenderService;
@@ -14,12 +14,12 @@ use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 // Define project root
-define('PROJECT_ROOT',  __DIR__ . '/..');
+define('PROJECT_ROOT', __DIR__.'/..');
 
 // Load environment variables
 if (!\array_key_exists('TBGP_ENV', $_SERVER)) {
     $dotenv = new Dotenv();
-    $dotenv->load(PROJECT_ROOT . '/.env');
+    $dotenv->load(PROJECT_ROOT.'/.env');
 }
 
 // Setup database
@@ -27,10 +27,10 @@ $db = new DoctrineBootstrap();
 $em = $db->getEntityManager();
 
 // Setup Twig
-$loader = new FilesystemLoader(PROJECT_ROOT . '/templates/');
-$twig = new Environment($loader, array(
-    'cache' => PROJECT_ROOT . '/var/cache/',
-));
+$loader = new FilesystemLoader(PROJECT_ROOT.'/templates/');
+$twig = new Environment($loader, [
+    'cache' => PROJECT_ROOT.'/var/cache/',
+]);
 
 // Setup message formatter utils
 $mf = new MessageFormatterUtils($twig);

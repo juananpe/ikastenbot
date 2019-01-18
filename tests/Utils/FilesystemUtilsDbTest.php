@@ -2,39 +2,42 @@
 
 declare(strict_types=1);
 
-use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
 use IkastenBot\Entity\GanttProject;
 use IkastenBot\Entity\Task;
 use IkastenBot\Tests\DatabaseTestCase;
 use IkastenBot\Tests\Fixtures\GanttProjectDataLoader;
-use IkastenBot\Tests\Fixtures\UserDataLoader;
 use IkastenBot\Tests\Fixtures\SingleTaskDataLoader;
+use IkastenBot\Tests\Fixtures\UserDataLoader;
 use IkastenBot\Utils\FilesystemUtils;
 use IkastenBot\Utils\XmlUtils;
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class FilesystemUtilsDbTest extends DatabaseTestCase
 {
-
     /**
-     * Entity manager
+     * Entity manager.
      *
      * @var EntityManager
      */
     private $em;
 
     /**
-     * Filesystem utils
+     * Filesystem utils.
      *
      * @var FilesystemUtils
      */
     private $fu;
 
     /**
-     * Test GanttProject
+     * Test GanttProject.
      *
      * @var GanttProject
      */
@@ -67,8 +70,8 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
 
         // Fetch the test GanttProject
         $this->ganttProject = $this
-                                ->em
-                                ->getRepository(GanttProject::class)->find(1);
+            ->em
+            ->getRepository(GanttProject::class)->find(1);
 
         // Create the Symfony Filesystem component
         $this->filesystem = new Filesystem();
@@ -83,7 +86,7 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
     public function tearDown(): void
     {
         $connection = $this->em->getConnection();
-        $platform   = $connection->getDatabasePlatform();
+        $platform = $connection->getDatabasePlatform();
 
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
 
@@ -106,7 +109,7 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
     {
         // Load a test XML file
         $xml = $this->xu->openXmlFile(
-            __DIR__ . '/../_data/task_data/gan/TwelveTasks.gan'
+            __DIR__.'/../_data/task_data/gan/TwelveTasks.gan'
         );
 
         $this->fu->saveToNewGanFile($xml, $this->ganttProject);
@@ -115,9 +118,9 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
         $newVersion = $this->ganttProject->getVersion() + 1;
 
         // Calculate the directory where the Gan file should be
-        $ganFilePath = DOWNLOAD_DIR . '/' .
-            $this->ganttProject->getUser()->getId() . '/' .
-            $newVersion . '/' .
+        $ganFilePath = DOWNLOAD_DIR.'/'.
+            $this->ganttProject->getUser()->getId().'/'.
+            $newVersion.'/'.
             $this->ganttProject->getFilename();
 
         // Load the target Gan file
@@ -131,8 +134,8 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
 
         // Check that the new GanttProject was properly created
         $newGanttProject = $this
-                            ->em
-                            ->getRepository(GanttProject::class)->find(2);
+            ->em
+            ->getRepository(GanttProject::class)->find(2);
 
         $this->assertEquals(
             $this->ganttProject->getFileName(),

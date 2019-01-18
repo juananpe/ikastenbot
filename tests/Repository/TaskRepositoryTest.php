@@ -2,41 +2,44 @@
 
 declare(strict_types=1);
 
-use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use IkastenBot\Entity\Task;
 use IkastenBot\Tests\DatabaseTestCase;
 use IkastenBot\Tests\Fixtures\GanttProjectDataLoader;
 use IkastenBot\Tests\Fixtures\TaskDataLoader;
 use IkastenBot\Tests\Fixtures\UserDataLoader;
-use IkastenBot\Utils\MessageFormatterUtils;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class TaskRepositoryTest extends DatabaseTestCase
 {
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PHPUnit\DbUnit\Database\Connection
      */
     private $connection;
 
     /**
-     * PDO object
+     * PDO object.
      *
      * @var PDO
      */
     private $pdo;
 
     /**
-     * Doctrine entity manager
+     * Doctrine entity manager.
      *
      * @var Doctrine\ORM\EntityManager
      */
     private $dem;
 
     /**
-     * Array containing the days to be checked for tasks
+     * Array containing the days to be checked for tasks.
      *
      * @var array
      */
@@ -63,22 +66,20 @@ class TaskRepositoryTest extends DatabaseTestCase
         $executor = new ORMExecutor($this->dem, $purger);
         $executor->execute($loader->getFixtures());
 
-        /**
-         * Intervals used in TaskDataLoader to create the tasks
-         */
+        // Intervals used in TaskDataLoader to create the tasks
         $this->plusDays = [
             'P3D',
             'P3D',
             'P15D',
             'P30D',
-            'P100D'
+            'P100D',
         ];
     }
 
     public function tearDown(): void
     {
         $connection = $this->dem->getConnection();
-        $platform   = $connection->getDatabasePlatform();
+        $platform = $connection->getDatabasePlatform();
 
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
 
@@ -108,7 +109,7 @@ class TaskRepositoryTest extends DatabaseTestCase
         $today = new \DateTime();
         $dateFormat = 'Y-m-d';
 
-        foreach ($tasks as $i=>$task) {
+        foreach ($tasks as $i => $task) {
             if (3 === $i) {
                 $this->assertSame('Milestone T', $task->getName());
             } else {
@@ -135,7 +136,7 @@ class TaskRepositoryTest extends DatabaseTestCase
             $today = new \DateTime();
             $today->add(new \DateInterval($futureDate));
             $expectedDates[] = $today->format('Y-m-d');
-        };
+        }
 
         // Check the name and the date of each of the task fetched
         foreach ($results as $row) {
@@ -155,9 +156,9 @@ class TaskRepositoryTest extends DatabaseTestCase
         $today = new \DateTime();
         $dateFormat = 'Y-m-d';
 
-        $taskName           = $tasks[0]->getName();
-        $taskDate           = $tasks[0]->getDate();
-        $taskIsMilestone    = $tasks[0]->getIsMilestone();
+        $taskName = $tasks[0]->getName();
+        $taskDate = $tasks[0]->getDate();
+        $taskIsMilestone = $tasks[0]->getIsMilestone();
 
         $this->assertSame('Milestone T', $taskName);
         $this->assertSame($today->format($dateFormat), $taskDate->format($dateFormat));
@@ -181,7 +182,7 @@ class TaskRepositoryTest extends DatabaseTestCase
             $today = new \DateTime();
             $today->add(new \DateInterval($futureDate));
             $expectedDates[] = $today->format('Y-m-d');
-        };
+        }
 
         // Check the name, date and milestone status of each of the milestone
         // fetched

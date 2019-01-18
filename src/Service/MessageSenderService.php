@@ -12,7 +12,7 @@ use Longman\TelegramBot\Request;
 class MessageSenderService
 {
     /**
-     * Message data
+     * Message data.
      *
      * @var array
      */
@@ -26,34 +26,32 @@ class MessageSenderService
      * Prepares the message data to be sent. A Longman\TelegramBot\Telegram
      * object must have been previously created for this function to work.
      *
-     * @param   int       $chat_id                  The chat id to send the message
-     * @param   string    $text                     The text to be sent
-     * @param   string    $parseMode                Parse mode for advanced formatting.
-     *                                              Telegram's API supports 'HTML' or
-     *                                              'Markdown' options
-     * @param   boolean   $selectiveReply           Enable or disable selective reply
-     * @param   array     $keyboard                 A keyboard to include to the message.
-     *                                              Overrides the $selectiveReply parameter.
-     *
-     * @return  void
+     * @param int    $chat_id        The chat id to send the message
+     * @param string $text           The text to be sent
+     * @param string $parseMode      Parse mode for advanced formatting.
+     *                               Telegram's API supports 'HTML' or
+     *                               'Markdown' options
+     * @param bool   $selectiveReply Enable or disable selective reply
+     * @param array  $keyboard       A keyboard to include to the message.
+     *                               Overrides the $selectiveReply parameter.
      */
     public function prepareMessage(int $chat_id, string $text, string $parseMode = null, bool $selectiveReply = null, InlineKeyboard $keyboard = null): void
     {
-        $data['chat_id']    = $chat_id;
-        $data['text']       = $text;
+        $data['chat_id'] = $chat_id;
+        $data['text'] = $text;
 
         if (
             !\is_null($parseMode) &&
             (
-                $parseMode === 'HTML' ||
-                $parseMode === 'Markdown'
+                'HTML' === $parseMode ||
+                'Markdown' === $parseMode
             )
         ) {
             $data['parse_mode'] = $parseMode;
         }
 
         if (\is_null($keyboard) && !\is_null($selectiveReply)) {
-            if($selectiveReply) {
+            if ($selectiveReply) {
                 $data['reply_markup'] = Keyboard::forceReply(['selective' => true]);
             } else {
                 $data['reply_markup'] = Keyboard::remove(['selective' => true]);
@@ -66,7 +64,7 @@ class MessageSenderService
     }
 
     /**
-     * Send the prepared message to Telegram
+     * Send the prepared message to Telegram.
      *
      * @return ServerResponse
      */
@@ -76,7 +74,7 @@ class MessageSenderService
     }
 
     /**
-     * Returns the stored data
+     * Returns the stored data.
      *
      * @return array
      */

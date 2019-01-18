@@ -13,7 +13,7 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 use Longman\TelegramBot\Commands\SystemCommand;
 
 /**
- * Chosen inline result command
+ * Chosen inline result command.
  *
  * Gets executed when an item from an inline query is selected.
  */
@@ -35,10 +35,11 @@ class ChoseninlineresultCommand extends SystemCommand
     protected $version = '1.1.1';
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function execute()
     {

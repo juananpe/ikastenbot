@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace IkastenBot\Entity;
 
-use IkastenBot\Entity\GanttProject;
-
 /**
- * Class that represents the tasks of a GanttProject project
+ * Class that represents the tasks of a GanttProject project.
  *
  * @Entity(repositoryClass="IkastenBot\Repository\TaskRepository")
  * @Table(name="task")
@@ -15,71 +13,79 @@ use IkastenBot\Entity\GanttProject;
 class Task
 {
     /**
-     * Id of the task
+     * Id of the task.
      *
      * @Id @Column(type="integer") @GeneratedValue
+     *
      * @var int
      */
     protected $id;
 
     /**
-     * The id of the task in the .gan file
+     * The id of the task in the .gan file.
      *
      * @Column(type="integer", name="gan_id")
+     *
      * @var int
      */
     protected $ganId;
 
     /**
-     * Id of the chat to which the task is associated
+     * Id of the chat to which the task is associated.
      *
      * @Column(type="bigint")
+     *
      * @var string
      */
     protected $chat_id;
 
     /**
-     * Name of the task
+     * Name of the task.
      *
      * @Column(type="string", name="task_name")
+     *
      * @var string
      */
     protected $name;
 
     /**
-     * Date of the task
+     * Date of the task.
      *
      * @Column(type="datetime", name="task_date")
+     *
      * @var \DateTime
      */
     protected $date;
 
     /**
-     * Is the task a milestone
+     * Is the task a milestone.
      *
      * @Column(type="boolean", name="task_isMilestone")
+     *
      * @var bool
      */
     protected $isMilestone;
 
     /**
-     * Duration of the task
+     * Duration of the task.
      *
      * @Column(type="integer", name="task_duration")
+     *
      * @var int
      */
     protected $duration;
 
     /**
-     * Should the user be notified about the task
+     * Should the user be notified about the task.
      *
      * @Column(type="boolean", name="notify")
+     *
      * @var bool
      */
     protected $notify;
 
     /**
-     * Associated Gantt Project
+     * Associated Gantt Project.
      *
      * @ManyToOne(targetEntity="GanttProject", inversedBy="tasks", cascade={"persist"})
      * @JoinColumn(name="ganttproject_id", referencedColumnName="id")
@@ -93,20 +99,21 @@ class Task
     }
 
     /**
-     * Delays date for the given amount of days
+     * Delays date for the given amount of days.
      *
-     * @param   integer $days The amount of days the date is to be delayed
-     * @return  self
+     * @param int $days The amount of days the date is to be delayed
+     *
+     * @return self
      */
     public function delayDate(int $days): self
     {
         /**
          * The following link explains why the object is cloned instead of
-         * using ->add directly with $this->date
+         * using ->add directly with $this->date.
          *
-         * @link https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/cookbook/working-with-datetime.html
+         * @see https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/cookbook/working-with-datetime.html
          */
-        $interval = 'P' . $days . 'D';
+        $interval = 'P'.$days.'D';
         $dateInterval = new \DateInterval($interval);
 
         $this->date = clone $this->date;
@@ -116,7 +123,7 @@ class Task
     }
 
     /**
-     * Get id of the task
+     * Get id of the task.
      *
      * @return int
      */
@@ -126,7 +133,7 @@ class Task
     }
 
     /**
-     * Set id of the task
+     * Set id of the task.
      *
      * @param int $id Id of the task
      *
@@ -140,7 +147,7 @@ class Task
     }
 
     /**
-     * Get the id of the task in the .gan file
+     * Get the id of the task in the .gan file.
      *
      * @return int
      */
@@ -150,7 +157,7 @@ class Task
     }
 
     /**
-     * Set the id of the task in the .gan file
+     * Set the id of the task in the .gan file.
      *
      * @param int $ganId The id of the task in the .gan file
      *
@@ -164,7 +171,7 @@ class Task
     }
 
     /**
-     * Get id of the chat to which the task is associated
+     * Get id of the chat to which the task is associated.
      *
      * @return string
      */
@@ -174,11 +181,11 @@ class Task
     }
 
     /**
-     * Set id of the chat to which the task is associated
+     * Set id of the chat to which the task is associated.
      *
-     * @param   string $chat_id  Id of the chat to which the task is associated
+     * @param string $chat_id Id of the chat to which the task is associated
      *
-     * @return  self
+     * @return self
      */
     public function setChat_id(string $chat_id)
     {
@@ -188,7 +195,7 @@ class Task
     }
 
     /**
-     * Get name of the task
+     * Get name of the task.
      *
      * @return string
      */
@@ -198,7 +205,7 @@ class Task
     }
 
     /**
-     * Set name of the task
+     * Set name of the task.
      *
      * @param string $name Name of the task
      *
@@ -212,7 +219,7 @@ class Task
     }
 
     /**
-     * Get date of the task
+     * Get date of the task.
      *
      * @return \DateTime
      */
@@ -222,11 +229,11 @@ class Task
     }
 
     /**
-     * Set date of the task
+     * Set date of the task.
      *
-     * @param  \DateTime  $date  Date of the task
+     * @param \DateTime $date Date of the task
      *
-     * @return  self
+     * @return self
      */
     public function setDate(\DateTime $date)
     {
@@ -236,7 +243,7 @@ class Task
     }
 
     /**
-     * Get is the task a milestone
+     * Get is the task a milestone.
      */
     public function getIsMilestone()
     {
@@ -244,9 +251,11 @@ class Task
     }
 
     /**
-     * Set is the task a milestone
+     * Set is the task a milestone.
      *
-     * @return  self
+     * @param mixed $isMilestone
+     *
+     * @return self
      */
     public function setIsMilestone($isMilestone)
     {
@@ -256,7 +265,7 @@ class Task
     }
 
     /**
-     * Get duration of the task
+     * Get duration of the task.
      *
      * @return int
      */
@@ -266,9 +275,9 @@ class Task
     }
 
     /**
-     * Set duration of the task
+     * Set duration of the task.
      *
-     * @param int $duration  Duration of the task
+     * @param int $duration Duration of the task
      *
      * @return self
      */
@@ -280,7 +289,7 @@ class Task
     }
 
     /**
-     * Get associated GanttProject
+     * Get associated GanttProject.
      *
      * @return GanttProject
      */
@@ -290,7 +299,7 @@ class Task
     }
 
     /**
-     * Set associated GanttProject
+     * Set associated GanttProject.
      *
      * @param GanttProject $ganttProject Associated GanttProject
      *
@@ -304,7 +313,7 @@ class Task
     }
 
     /**
-     * Get the notify flag
+     * Get the notify flag.
      *
      * @return bool
      */
@@ -314,7 +323,7 @@ class Task
     }
 
     /**
-     * Set the notify flag
+     * Set the notify flag.
      *
      * @param bool $notify Notify flag
      *

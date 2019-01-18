@@ -13,7 +13,7 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 use Longman\TelegramBot\Commands\SystemCommand;
 
 /**
- * Migrate to chat id command
+ * Migrate to chat id command.
  *
  * Gets executed when a chat gets migrated.
  */
@@ -35,10 +35,11 @@ class MigratetochatidCommand extends SystemCommand
     protected $version = '1.1.0';
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function execute()
     {

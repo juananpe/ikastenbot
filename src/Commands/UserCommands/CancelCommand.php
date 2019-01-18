@@ -16,7 +16,7 @@ use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Request;
 
 /**
- * User "/cancel" command
+ * User "/cancel" command.
  *
  * This command cancels the currently active conversation and
  * returns a message to let the user know which conversation it was.
@@ -50,10 +50,11 @@ class CancelCommand extends UserCommand
     protected $need_mysql = true;
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function execute()
     {
@@ -67,37 +68,39 @@ class CancelCommand extends UserCommand
 
         if ($conversation_command = $conversation->getCommand()) {
             $conversation->cancel();
-            $text = 'Conversation "' . $conversation_command . '" cancelled!';
+            $text = 'Conversation "'.$conversation_command.'" cancelled!';
         }
 
         return $this->removeKeyboard($text);
     }
 
     /**
-     * Remove the keyboard and output a text
+     * Command execute method if MySQL is required but not available.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
+     *
+     * @return \Longman\TelegramBot\Entities\ServerResponse
+     */
+    public function executeNoDb()
+    {
+        return $this->removeKeyboard('Nothing to cancel.');
+    }
+
+    /**
+     * Remove the keyboard and output a text.
      *
      * @param string $text
      *
-     * @return \Longman\TelegramBot\Entities\ServerResponse
      * @throws \Longman\TelegramBot\Exception\TelegramException
+     *
+     * @return \Longman\TelegramBot\Entities\ServerResponse
      */
     private function removeKeyboard($text)
     {
         return Request::sendMessage([
             'reply_markup' => Keyboard::remove(['selective' => true]),
-            'chat_id'      => $this->getMessage()->getChat()->getId(),
-            'text'         => $text,
+            'chat_id' => $this->getMessage()->getChat()->getId(),
+            'text' => $text,
         ]);
-    }
-
-    /**
-     * Command execute method if MySQL is required but not available
-     *
-     * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
-     */
-    public function executeNoDb()
-    {
-        return $this->removeKeyboard('Nothing to cancel.');
     }
 }

@@ -13,7 +13,7 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 use Longman\TelegramBot\Commands\SystemCommand;
 
 /**
- * Group chat created command
+ * Group chat created command.
  *
  * Gets executed when a group chat is created.
  */
@@ -35,10 +35,11 @@ class GroupchatcreatedCommand extends SystemCommand
     protected $version = '1.1.0';
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function execute()
     {

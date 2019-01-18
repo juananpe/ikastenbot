@@ -14,7 +14,7 @@ use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Request;
 
 /**
- * Generic command
+ * Generic command.
  *
  * Gets executed for generic commands, when no other appropriate one is found.
  */
@@ -36,10 +36,11 @@ class GenericCommand extends SystemCommand
     protected $version = '1.1.0';
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function execute()
     {
@@ -51,13 +52,13 @@ class GenericCommand extends SystemCommand
         $command = $message->getCommand();
 
         //If the user is an admin and the command is in the format "/whoisXYZ", call the /whois command
-        if (stripos($command, 'whois') === 0 && $this->telegram->isAdmin($user_id)) {
+        if (0 === stripos($command, 'whois') && $this->telegram->isAdmin($user_id)) {
             return $this->telegram->executeCommand('whois');
         }
 
         $data = [
             'chat_id' => $chat_id,
-            'text'    => 'Command /' . $command . ' not found.. :(',
+            'text' => 'Command /'.$command.' not found.. :(',
         ];
 
         return Request::sendMessage($data);

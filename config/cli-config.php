@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 // Load composer
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
-use IkastenBot\Entity\DoctrineBootstrap;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use IkastenBot\Entity\DoctrineBootstrap;
 use Symfony\Component\Dotenv\Dotenv;
 
-define('PROJECT_ROOT',  __DIR__ . '/..');
+define('PROJECT_ROOT', __DIR__.'/..');
 
 $dotenv = new Dotenv();
-$dotenv->load(PROJECT_ROOT . '/.env');
+$dotenv->load(PROJECT_ROOT.'/.env');
 
 $db = new DoctrineBootstrap();
 

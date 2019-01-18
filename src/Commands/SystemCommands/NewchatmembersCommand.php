@@ -14,7 +14,7 @@ use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Request;
 
 /**
- * New chat member command
+ * New chat member command.
  */
 class NewchatmembersCommand extends SystemCommand
 {
@@ -34,10 +34,11 @@ class NewchatmembersCommand extends SystemCommand
     protected $version = '1.2.0';
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function execute()
     {
@@ -53,12 +54,12 @@ class NewchatmembersCommand extends SystemCommand
             foreach ($members as $member) {
                 $member_names[] = $member->tryMention();
             }
-            $text = 'Hi ' . implode(', ', $member_names) . '!';
+            $text = 'Hi '.implode(', ', $member_names).'!';
         }
 
         $data = [
             'chat_id' => $chat_id,
-            'text'    => $text,
+            'text' => $text,
         ];
 
         return Request::sendMessage($data);

@@ -8,16 +8,20 @@ use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class MessageFormattrUtilsTest extends TestCase
 {
     /**
-     * Message formatter utils
+     * Message formatter utils.
      *
      * @var MessageFormatterUtils
      */
     private $mfu;
     /**
-     * Twig
+     * Twig.
      *
      * @var Environment
      */
@@ -25,10 +29,10 @@ final class MessageFormattrUtilsTest extends TestCase
 
     public function setUp()
     {
-        $loader = new FilesystemLoader(PROJECT_ROOT . '/templates/');
-        $this->twig = new Environment($loader, array(
-            'cache' => PROJECT_ROOT . '/var/cache/',
-        ));
+        $loader = new FilesystemLoader(PROJECT_ROOT.'/templates/');
+        $this->twig = new Environment($loader, [
+            'cache' => PROJECT_ROOT.'/var/cache/',
+        ]);
 
         $this->mfu = new MessageFormatterUtils();
     }
@@ -94,7 +98,7 @@ final class MessageFormattrUtilsTest extends TestCase
             'notifications/milestone/milestone.twig',
             [
                 'task' => $milestone,
-                'daysLeft'  => $daysLeft
+                'daysLeft' => $daysLeft,
             ]
         );
         $expectedText .= PHP_EOL;
@@ -124,7 +128,7 @@ final class MessageFormattrUtilsTest extends TestCase
             'notifications/milestone/milestone.twig',
             [
                 'task' => $milestone,
-                'daysLeft'  => $daysLeft
+                'daysLeft' => $daysLeft,
             ]
         );
         $expectedText .= PHP_EOL;
@@ -175,7 +179,7 @@ final class MessageFormattrUtilsTest extends TestCase
             'notifications/task/task.twig',
             [
                 'task' => $task,
-                'daysLeft'  => $daysLeft
+                'daysLeft' => $daysLeft,
             ]
         );
         $expectedText .= PHP_EOL;
@@ -204,7 +208,7 @@ final class MessageFormattrUtilsTest extends TestCase
             'notifications/task/task.twig',
             [
                 'task' => $task,
-                'daysLeft'  => $daysLeft
+                'daysLeft' => $daysLeft,
             ]
         );
         $expectedText .= PHP_EOL;
@@ -242,7 +246,7 @@ final class MessageFormattrUtilsTest extends TestCase
         $expectedText .= PHP_EOL;
 
         $parameters = [
-            'task' => $task
+            'task' => $task,
         ];
 
         $result = 'Lorem ipsum dolor sit amet';
@@ -259,6 +263,5 @@ final class MessageFormattrUtilsTest extends TestCase
         );
 
         $this->assertSame($expectedText, $result);
-
     }
 }

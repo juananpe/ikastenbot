@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace IkastenBot\Entity;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use IkastenBot\Entity\GanttProject;
+use Doctrine\Common\Collections\Collection;
 
 /**
- * Represents the User entity
+ * Represents the User entity.
  *
  * @Entity
  * @Table(name="user")
@@ -17,79 +16,88 @@ use IkastenBot\Entity\GanttProject;
 class User
 {
     /**
-     * The id of the user
+     * The id of the user.
      *
      * @Id @Column(type="integer")
+     *
      * @var int
      */
     protected $id;
 
     /**
-     * The user is a bot
+     * The user is a bot.
      *
      * @Column(type="boolean", name="is_bot")
+     *
      * @var bool
      */
     protected $bot;
 
     /**
-     * First name of the user
+     * First name of the user.
      *
      * @Column(type="string", name="first_name")
+     *
      * @var string
      */
     protected $firstName;
 
     /**
-     * Last name of the user
+     * Last name of the user.
      *
      * @Column(type="string", name="last_name")
+     *
      * @var string
      */
     protected $lastName;
 
     /**
-     * Username of the user
+     * Username of the user.
      *
      * @Column(type="string", name="username")
+     *
      * @var string
      */
     protected $username;
 
     /**
-     * Language code of the user's system
+     * Language code of the user's system.
      *
      * @Column(type="string", name="language_code")
+     *
      * @var string
      */
     protected $languageCode;
 
     /**
-     * The date the user entry was created
+     * The date the user entry was created.
      *
      * @Column(type="datetime", name="created_at")
+     *
      * @var DateTime
      */
     protected $createdAt;
 
     /**
-     * The date in which the user entry was updated
+     * The date in which the user entry was updated.
      *
      * @Column(type="datetime", name="updated_at")
+     *
      * @var DateTime
      */
     protected $updatedAt;
 
     /**
-     * Language the user wants to be contacted in
+     * Language the user wants to be contacted in.
      *
      * @Column(type="string", name="language")
+     *
      * @var string
      */
     protected $language;
 
     /**
-     * The associated GanttProjects
+     * The associated GanttProjects.
      *
      * @OneToMany(targetEntity="GanttProject", mappedBy="user", cascade={"persist"})
      *
@@ -103,7 +111,7 @@ class User
     }
 
     /**
-     * Get the id of the user
+     * Get the id of the user.
      *
      * @return int
      */
@@ -113,9 +121,9 @@ class User
     }
 
     /**
-     * Set the id of the user
+     * Set the id of the user.
      *
-     * @param int $id  The id of the user
+     * @param int $id The id of the user
      *
      * @return self
      */
@@ -137,9 +145,9 @@ class User
     }
 
     /**
-     * Set the user is a bot
+     * Set the user is a bot.
      *
-     * @param bool $bot  The user is a bot
+     * @param bool $bot The user is a bot
      *
      * @return self
      */
@@ -151,7 +159,7 @@ class User
     }
 
     /**
-     * Get first name of the user
+     * Get first name of the user.
      *
      * @return string
      */
@@ -161,9 +169,9 @@ class User
     }
 
     /**
-     * Set first name of the user
+     * Set first name of the user.
      *
-     * @param string $firstName  First name of the user
+     * @param string $firstName First name of the user
      *
      * @return self
      */
@@ -175,7 +183,7 @@ class User
     }
 
     /**
-     * Get last name of the user
+     * Get last name of the user.
      *
      * @return string
      */
@@ -185,9 +193,9 @@ class User
     }
 
     /**
-     * Set last name of the user
+     * Set last name of the user.
      *
-     * @param string $lastName  Last name of the user
+     * @param string $lastName Last name of the user
      *
      * @return self
      */
@@ -199,21 +207,21 @@ class User
     }
 
     /**
-     * Get username of the user
+     * Get username of the user.
      *
-     * @return  string
+     * @return string
      */
-    public function getUsername():string
+    public function getUsername(): string
     {
         return $this->username;
     }
 
     /**
-     * Set username of the user
+     * Set username of the user.
      *
-     * @param  string  $username  Username of the user
+     * @param string $username Username of the user
      *
-     * @return  self
+     * @return self
      */
     public function setUsername(string $username): self
     {
@@ -223,9 +231,9 @@ class User
     }
 
     /**
-     * Get language code of the user's system
+     * Get language code of the user's system.
      *
-     * @return  string
+     * @return string
      */
     public function getLanguageCode(): string
     {
@@ -233,7 +241,7 @@ class User
     }
 
     /**
-     * Set language code of the user's system
+     * Set language code of the user's system.
      *
      * @param string $languageCode Language code of the user's system
      *
@@ -247,7 +255,7 @@ class User
     }
 
     /**
-     * Get the date the user entry was created
+     * Get the date the user entry was created.
      *
      * @return DateTime
      */
@@ -257,9 +265,9 @@ class User
     }
 
     /**
-     * Set the date the user entry was created
+     * Set the date the user entry was created.
      *
-     * @param \DateTime $createdAt  The date the user entry was created
+     * @param \DateTime $createdAt The date the user entry was created
      *
      * @return self
      */
@@ -271,7 +279,7 @@ class User
     }
 
     /**
-     * Get the date in which the user entry was updated
+     * Get the date in which the user entry was updated.
      *
      * @return \DateTime
      */
@@ -281,7 +289,7 @@ class User
     }
 
     /**
-     * Set the date in which the user entry was updated
+     * Set the date in which the user entry was updated.
      *
      * @param \DateTime $updatedAt The date in which the user entry was updated
      *
@@ -295,7 +303,7 @@ class User
     }
 
     /**
-     * Get language the user wants to be contacted in
+     * Get language the user wants to be contacted in.
      *
      * @return string
      */
@@ -305,9 +313,9 @@ class User
     }
 
     /**
-     * Set language the user wants to be contacted in
+     * Set language the user wants to be contacted in.
      *
-     * @param string $language  Language the user wants to be contacted in
+     * @param string $language Language the user wants to be contacted in
      *
      * @return self
      */
@@ -319,7 +327,7 @@ class User
     }
 
     /**
-     * Get the associated Gantt projects
+     * Get the associated Gantt projects.
      *
      * @return Collection/GanttProject[]
      */
@@ -329,9 +337,10 @@ class User
     }
 
     /**
-     * Add a GanttProject
+     * Add a GanttProject.
      *
      * @param GanttProject $ganttProject
+     *
      * @return self
      */
     public function addGanttProject(GanttProject $ganttProject): self
@@ -357,7 +366,7 @@ class User
     }
 
     /**
-     * Set the associated Gantt project
+     * Set the associated Gantt project.
      *
      * @param GanttProject $ganttProject The associated Gantt project
      *

@@ -15,7 +15,7 @@ use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Request;
 
 /**
- * Generic message command
+ * Generic message command.
  *
  * Gets executed when any type of message is sent.
  */
@@ -42,10 +42,11 @@ class GenericmessageCommand extends SystemCommand
     protected $need_mysql = true;
 
     /**
-     * Command execute method if MySQL is required but not available
+     * Command execute method if MySQL is required but not available.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function executeNoDb()
     {
@@ -54,10 +55,11 @@ class GenericmessageCommand extends SystemCommand
     }
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function execute()
     {

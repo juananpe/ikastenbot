@@ -4,28 +4,31 @@ declare(strict_types=1);
 
 use Doctrine\ORM\EntityManager;
 use IkastenBot\Exception\IncorrectFileException;
-use IkastenBot\Exception\NoMilestonesException;
 use IkastenBot\Utils\XmlUtils;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class XmlUtilsTest extends TestCase
 {
     /**
-     * Directory path containing test files
+     * Directory path containing test files.
      *
      * @var string
      */
     private $dataDir;
 
     /**
-     * Directory containing Gan XML files to be imported
+     * Directory containing Gan XML files to be imported.
      *
      * @var string
      */
     private $ganDir;
 
     /**
-     * XML Utils
+     * XML Utils.
      *
      * @var XmlUtils
      */
@@ -33,8 +36,8 @@ final class XmlUtilsTest extends TestCase
 
     public function setUp()
     {
-        $this->dataDir     = __DIR__ . '/../_data/task_data';
-        $this->ganDir      = $this->dataDir . '/gan/';
+        $this->dataDir = __DIR__.'/../_data/task_data';
+        $this->ganDir = $this->dataDir.'/gan/';
 
         $em = $this->createMock(EntityManager::class);
         $this->xu = new XmlUtils($em);
@@ -43,7 +46,7 @@ final class XmlUtilsTest extends TestCase
     public function testExtractNoTasksGanFile()
     {
         $result = $this->xu->extractTasksFromGanFile(
-            $this->ganDir . 'NoTasks.gan',
+            $this->ganDir.'NoTasks.gan',
             12345
         );
 
@@ -53,7 +56,7 @@ final class XmlUtilsTest extends TestCase
     public function testExtractSevenTasksGanFile()
     {
         $result = $this->xu->extractTasksFromGanFile(
-            $this->ganDir . 'SevenTasks.gan',
+            $this->ganDir.'SevenTasks.gan',
             12345
         );
 
@@ -63,7 +66,7 @@ final class XmlUtilsTest extends TestCase
     public function testExtractTenTasksGanFile()
     {
         $result = $this->xu->extractTasksFromGanFile(
-            $this->ganDir . 'TenTasks.gan',
+            $this->ganDir.'TenTasks.gan',
             12345
         );
 
@@ -73,7 +76,7 @@ final class XmlUtilsTest extends TestCase
     public function testExtractTwelveTasksGanFile()
     {
         $result = $this->xu->extractTasksFromGanFile(
-            $this->ganDir . 'TwelveTasks.gan',
+            $this->ganDir.'TwelveTasks.gan',
             12345
         );
 
@@ -85,7 +88,7 @@ final class XmlUtilsTest extends TestCase
         $this->expectException(IncorrectFileException::class);
 
         $this->xu->extractTasksFromGanFile(
-            $this->ganDir . 'incorrectGan.gan',
+            $this->ganDir.'incorrectGan.gan',
             12345
         );
     }

@@ -13,7 +13,7 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 use Longman\TelegramBot\Commands\SystemCommand;
 
 /**
- * Delete chat photo command
+ * Delete chat photo command.
  *
  * Gets executed when the photo of a group or channel gets deleted.
  */
@@ -35,10 +35,11 @@ class DeletechatphotoCommand extends SystemCommand
     protected $version = '1.1.0';
 
     /**
-     * Command execute method
+     * Command execute method.
+     *
+     * @throws \Longman\TelegramBot\Exception\TelegramException
      *
      * @return \Longman\TelegramBot\Entities\ServerResponse
-     * @throws \Longman\TelegramBot\Exception\TelegramException
      */
     public function execute()
     {
