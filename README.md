@@ -1,72 +1,80 @@
 # Ikastenbot
 
-A take on importing and processing [GanttProject's][1] milestones with the goal
-of creating reminders for users.
+Ikastenbot is a Telegram bot that handles [GanttProject][1]s. The bot is able
+to import the tasks from a `.gan` file and send reminders whenever those tasks
+are close to be reached. The user can delay those tasks —the bot will take care
+of the dependant tasks— and turn on/off the notifications.
 
 # Configuration
-All the variables —like the database settings— are stored in environment 
-variables. When using `development` mode, these variables are read from the
-`.env` file, and in `production` mode, these will have to be set in the web
-server's configuration.
+## Variables
+All the variables —database settings, the API keys, file directories...— are
+stored in environment variables. When using `development` mode, these variables
+are read from the `.env` file, and in `production` mode, these will have to be
+set [in the web server's configuration][2].
 
-Also, `set.php` and `unset.php` files are now under `src/Misc` folder, as it
-doesn't make sense to expose them in the public directory of the web server.
-In order to use them, just execute the `PHP` interpreter like so:
-
-`php src/Misc/set.php` or `php src/Misc/unset.php`
-
-Finally, the `hook.php` file was renamed to `index.php` under the `public/`
-directory. This was done to follow the [front controller pattern][3].
+## Webhook
+In order to set or unset the web hook, run `php src/Misc/set.php` or
+`php src/Misc/unset.php`. The `php-telegram-bot`'s `hook.php` file has been
+renamed to `public/index.php`, following the [front controller pattern][3].
 
 ## For development
-1. Substitute the contents of `.env.dist` with your own data.
-2. Rename `.env.dist` to `.env`.
+1. Copy `.env.dist` to `.env` with `cp .env.dsit .env`.
+2. Fill the relevant data in the `.env` file.
 3. Import Longman's `.sql` file with
     `mysql -u USER -p DATABASE < vendor/longman/telegram-bot/structure.sql`.
 4. Import `structure.sql` file with
     `mysql -u USER -p DATABASE < structure.sql`.
 
 ## For production
-1. Set [environment variables][2] that match `.env.dist` file.
+1. Set [environment variables][2] that match the `.env.dist` file.
 2. Point the web server to the `public/` directory of this project.
 3. Repeat steps from `3.` and `4.` from the previous section in the production
     server.
-4. Generate Doctrine's proxy entities with `vendor/bin/doctriene orm:generate-proxies`.
+4. Generate Doctrine's proxy entities with
+    `vendor/bin/doctriene orm:generate-proxies`.
 
-## Setting up cron jobs to remind users about their milestones and tasks
-In order to notify users whenever their planned milestones and tasks are close,
-a cron job can be set to achieve this. `LaunchMilestoneReminderService.php`
-deals with obtaining the proper milestones from the database and sending
-reminders to the users, and therefore it just needs to be launched.
-`LaunchTaskReminderService.php` does the same things but with tasks instead.
+## Send reminders to users
+The bot will send notifications to the users whenever the tasks or milestones
+are close. You can use a `cron` job to schedule notification dispatching
+whenever you want to. There are two services,
+`LaunchMilestoneReminderService.php` and `LaunchTaskReminderService.php`, that
+send the reminders. The former will send the notifications about the milestones
+only, and the second one will send the reminders about every task the user has
+—including the milestones—.
 
-The example lines to put in a cron job would be the ones below, which trigger
-the checks at 2AM.
+The following example sets a `cron` job to dispatch the notifications every day
+at 2AM.
 
 * `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/src/LaunchMilestoneReminderService.php`
 * `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/src/LaunchTaskReminderService.php`
 
-Check [CronHowto][4] and [crontab.guru][5] to create proper cron jobs which can
-suit your needs.
+[CronHowto][4] and [crontab.guru][5] can help you create `cron` jobs that may
+suit your needs better.
 
-# Tests
+# Running the tests
+## Coding guidelines
+The code of this project follows the rules from the `@PhpCsFixer` rule set. In
+order to check whether the code you wrote follows the rules or not, you just
+have to:
+
+1. Install [PHP-CS-Fixer][6].
+2. Run the checker with
+    `php-cs-fixer fix --config=.php_cs.dist --dry-run --verbose --diff`
+
+## Code tests
 In order to run tests you have to make the following steps:
 
-1. Import Longman's `structure.sql` file, and this project's `setUpDatabase.sql`
-    and `ikastenbot.sql` files to the testing database.
-2. Copy `phpunit.xml.dist` to `phpunit.xml` as follows: `cp phpunit.xml.dist phpunit.xml`.
+1. Import Longman's `vendor/longman/telegram-bot/structure.sql` file, and this
+    project's `sql/structure.sql` into the testing database.
+2. Copy `phpunit.xml.dist` to `phpunit.xml` with `cp phpunit.xml.dist phpunit.xml`.
 3. Set the testing database parameters in the `phpunit.xml` file.
 4. Set the project root constant in the `phpunit.xml` file without the trailing
     `/`
 5. Run `phpunit` with `vendor/bin/phpunit` from the project root.
-
-# Notes
-* When using conversations, make sure the names don't contain spaces, as
-    php-telegram bot seems not to be able to keep up with the conversation if
-    such thing happens.
 
 [1]: https://www.ganttproject.biz/
 [2]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv
 [3]: https://en.wikipedia.org/wiki/Front_controller
 [4]: https://help.ubuntu.com/community/CronHowto
 [5]: https://crontab.guru/
+[6]: https://github.com/FriendsOfPHP/PHP-CS-Fixer#installation
