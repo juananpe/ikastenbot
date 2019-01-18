@@ -7,10 +7,10 @@ set -xe
 
 # Install git (the php image doesn't have it) which is required by composer
 apt-get update -yqq
-apt-get install git wget libzip-dev zip unzip mysql-client -yqq
+apt-get install git libzip-dev zip unzip mysql-client -yqq
 
 # Install Composer and the dependencies
-EXPECTED_SIGNATURE="$(wget -q -O - https://composer.github.io/installer.sig)"
+EXPECTED_SIGNATURE="$(curl -sS https://composer.github.io/installer.sig)"
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 ACTUAL_SIGNATURE="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
 
