@@ -9,10 +9,6 @@ set -xe
 apt-get update -yqq
 apt-get install git wget libzip-dev zip unzip mysql-client -yqq
 
-# Install phpunit, the tool that we will use for testing
-curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar
-chmod +x /usr/local/bin/phpunit
-
 # Install Composer and the dependencies
 EXPECTED_SIGNATURE="$(wget -q -O - https://composer.github.io/installer.sig)"
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
