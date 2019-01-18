@@ -31,7 +31,7 @@ final class MessageFormattrUtilsTest extends TestCase
     {
         $loader = new FilesystemLoader(PROJECT_ROOT.'/templates/');
         $this->twig = new Environment($loader, [
-            'cache' => PROJECT_ROOT.'/var/cache/',
+            'cache' => PROJECT_ROOT.'/var/cache/Twig',
         ]);
 
         $this->mfu = new MessageFormatterUtils();

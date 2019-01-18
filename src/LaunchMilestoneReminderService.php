@@ -29,7 +29,7 @@ $em = $db->getEntityManager();
 // Setup Twig
 $loader = new FilesystemLoader(PROJECT_ROOT.'/templates/');
 $twig = new Environment($loader, [
-    'cache' => PROJECT_ROOT.'/var/cache/',
+    'cache' => PROJECT_ROOT.'/var/cache/Twig',
 ]);
 
 // Setup message formatter utils

@@ -22,7 +22,7 @@ class MessageFormatterUtils
         if (\is_null($twig)) {
             $loader = new FilesystemLoader(PROJECT_ROOT.'/templates/');
             $this->twig = new Environment($loader, [
-                'cache' => PROJECT_ROOT.'/var/cache/',
+                'cache' => PROJECT_ROOT.'/var/cache/Twig',
             ]);
         } else {
             $this->twig = $twig;
