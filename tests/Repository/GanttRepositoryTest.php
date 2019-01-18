@@ -49,7 +49,7 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
         $fixedDate = new \DateTime('2021-01-01');
 
         $this->user = new User();
-        $this->user->setId(12345);
+        $this->user->setId('12345');
         $this->user->setBot(false);
         $this->user->setFirstName('Test');
         $this->user->setLastName('Test');
@@ -105,7 +105,7 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
     public function testNotFoundLatestGanttProject()
     {
         $user = new User();
-        $user->setId(1);
+        $user->setId('1');
 
         $gp = $this
             ->dem
