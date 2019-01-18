@@ -5,11 +5,14 @@
 
 set -xe
 
-# Install git (the php image doesn't have it) which is required by composer
+# Install required packages:
+# git for composer
+# libzip-dev zip unzip for docker-php-ext
+# mysql-client to import the schemas
 apt-get update -yqq
 apt-get install git libzip-dev zip unzip mysql-client -yqq
 
-# Install Composer and the dependencies
+# Install Composer and the project's dependencies
 EXPECTED_SIGNATURE="$(curl -sS https://composer.github.io/installer.sig)"
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 ACTUAL_SIGNATURE="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
@@ -27,8 +30,8 @@ mv composer.phar /usr/local/bin/composer
 chmod +x /usr/local/bin/composer
 composer install --dev
 
-# Install mysql driver
-# Here you can install any other extension that you need
+# Configure the PHP extension to use the installed libzip and install the MySQL
+# extension
 docker-php-ext-configure zip --with-libzip
 docker-php-ext-install pdo_mysql zip
 
