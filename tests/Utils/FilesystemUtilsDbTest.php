@@ -112,13 +112,19 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
             __DIR__.'/../_data/task_data/gan/TwelveTasks.gan'
         );
 
+        // Define the DOWNLOAD_DIR constant required by the FilesystemUtils
+        $downloadDir = __DIR__.'/../../files/download';
+        if (!\defined('DOWNLOAD_DIR')) {
+            define('DOWNLOAD_DIR', $downloadDir);
+        }
+
         $this->fu->saveToNewGanFile($xml, $this->ganttProject);
 
         // Calculate the new version of the Gan file
         $newVersion = $this->ganttProject->getVersion() + 1;
 
         // Calculate the directory where the Gan file should be
-        $ganFilePath = DOWNLOAD_DIR.'/'.
+        $ganFilePath = $downloadDir.'/'.
             $this->ganttProject->getUser()->getId().'/'.
             $newVersion.'/'.
             $this->ganttProject->getFilename();
@@ -130,7 +136,7 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
         $this->assertEquals($xml, $ganXml);
 
         // Remove the directory containing the test files
-        $this->filesystem->remove(DOWNLOAD_DIR);
+        $this->filesystem->remove($downloadDir);
 
         // Check that the new GanttProject was properly created
         $newGanttProject = $this

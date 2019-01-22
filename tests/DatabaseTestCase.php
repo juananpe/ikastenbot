@@ -55,13 +55,13 @@ abstract class DatabaseTestCase extends TestCase
 
             $config = new Configuration();
             $config->setMetadataCacheImpl($cache);
-            $driverImpl = $config->newDefaultAnnotationDriver([PROJECT_ROOT.'/src/Entity']);
+            $driverImpl = $config->newDefaultAnnotationDriver(['src/Entity']);
             $config->setMetadataDriverImpl($driverImpl);
             $config->setQueryCacheImpl($cache);
-            $config->setProxyDir(PROJECT_ROOT.'/var/cache/Doctrine/proxies');
+            $config->setProxyDir('var/cache/Doctrine/proxies');
             $config->setProxyNamespace('IkastenBot\Proxies');
             $config->setAutoGenerateProxyClasses(true);
-            $config = Setup::createAnnotationMetadataConfiguration([PROJECT_ROOT.'/src/Entity'], true);
+            $config = Setup::createAnnotationMetadataConfiguration(['src/Entity'], true);
 
             $connectionParams = [
                 'pdo' => self::$pdo,

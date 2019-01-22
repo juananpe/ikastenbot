@@ -6,9 +6,6 @@
         <var name="MYSQL_TEST_USER" value="root" />
         <var name="MYSQL_TEST_PASSWORD" value="testdb" />
         <var name="MYSQL_TEST_DATABASE_NAME" value="testdb" />
-		<const name="PROJECT_ROOT" value="/builds/ikastenbot/bot"/>
-		<const name="DOWNLOAD_DIR" value="/builds/ikastenbot/bot/files/download" />
-		<const name="UPLOAD_DIR" value="/builds/ikastenbot/bot/upload" />
     </php>
 	<testsuites>
 		<testsuite name="utils">

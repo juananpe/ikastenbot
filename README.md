@@ -70,9 +70,7 @@ In order to run tests you have to make the following steps:
     project's `sql/structure.sql` into the testing database.
 2. Copy `phpunit.xml.dist` to `phpunit.xml` with `cp phpunit.xml.dist phpunit.xml`.
 3. Set the testing database parameters in the `phpunit.xml` file.
-4. Set the project root constant in the `phpunit.xml` file without the trailing
-    `/`
-5. Run `phpunit` with `vendor/bin/phpunit` from the project root.
+4. Run `phpunit` with `vendor/bin/phpunit` from the project root.
 
 [1]: https://www.ganttproject.biz/
 [2]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv

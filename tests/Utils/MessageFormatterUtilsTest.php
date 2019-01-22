@@ -29,9 +29,17 @@ final class MessageFormattrUtilsTest extends TestCase
 
     public function setUp()
     {
-        $loader = new FilesystemLoader(PROJECT_ROOT.'/templates/');
+        /*
+         * Define the DOWNLOAD_DIR constant required by the
+         * MessageFormatterUtils
+         */
+        if (!\defined('PROJECT_ROOT')) {
+            define('PROJECT_ROOT', __DIR__.'/../../');
+        }
+
+        $loader = new FilesystemLoader('templates/');
         $this->twig = new Environment($loader, [
-            'cache' => PROJECT_ROOT.'/var/cache/Twig',
+            'cache' => 'var/cache/Twig',
         ]);
 
         $this->mfu = new MessageFormatterUtils();
