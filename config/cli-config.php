@@ -26,4 +26,11 @@ $entityManager
     ->registerDoctrineTypeMapping('enum', 'string')
 ;
 
+// @see https://www.doctrine-project.org/projects/doctrine-migrations-bundle/en/2.0/index.html#manual-tables
+$entityManager
+    ->getConnection()
+    ->getConfiguration()
+    ->setFilterSchemaAssetsExpression('/^(ganttproject|task|user)$/')
+;
+
 return ConsoleRunner::createHelperSet($entityManager);

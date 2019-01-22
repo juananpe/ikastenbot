@@ -15,9 +15,11 @@ cache:
     - vendor/
 
 before_script:
+  - mv .env.test .env
   - bash ci/docker_install.sh > /dev/null
 
 test:
   script:
+    - vendor/bin/doctrine orm:validate
     - vendor/bin/php-cs-fixer fix --config=.php_cs.dist --dry-run --verbose
     - vendor/bin/phpunit --configuration ci/phpunit-ci.xml

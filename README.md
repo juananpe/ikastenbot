@@ -24,12 +24,19 @@ renamed to `public/index.php`, following the [front controller pattern][3].
     `mysql -u USER -p DATABASE < vendor/longman/telegram-bot/structure.sql`.
 4. Import `structure.sql` file with
     `mysql -u USER -p DATABASE < structure.sql`.
+5. Perform `Doctrine`'s migrations with
+    `vendor/bin/doctrine-migrations migrations:migrate`
+
+Regarding the database: the step \#3 imports Longman's `.sql` file and creates
+the base tables. The step \#4 imports the legacy database's additions plus the
+required rows for the bot to work with the legacy commands. Finally, the step
+\#5 loads the model of this application —`src/Entity`— into the database.
 
 ## For production
 1. Set [environment variables][2] that match the `.env.dist` file.
 2. Set an environment variable `TBGP_ENV` to any value.
 3. Point the web server to the `public/` directory of this project.
-4. Repeat steps from `3.` and `4.` from the previous section in the production
+4. Repeat steps `3.` to `5.` from the previous section in the production
     server.
 5. Generate Doctrine's proxy entities with
     `vendor/bin/doctriene orm:generate-proxies`.
