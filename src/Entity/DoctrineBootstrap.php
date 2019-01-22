@@ -66,6 +66,7 @@ class DoctrineBootstrap
                 'user' => getenv('MYSQL_USERNAME'),
                 'password' => getenv('MYSQL_USER_PASSWORD'),
                 'dbname' => getenv('MYSQL_DATABASE_NAME'),
+                'host' => getenv('MYSQL_HOST'),
             ];
         } else {
             $connectionParams = [

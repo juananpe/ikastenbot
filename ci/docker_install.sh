@@ -38,3 +38,4 @@ docker-php-ext-install pdo_mysql zip
 # Import the database schemas
 mysql -h mysql -u root -p${MYSQL_ROOT_PASSWORD} 'testdb' < vendor/longman/telegram-bot/structure.sql
 mysql -h mysql -u root -p${MYSQL_ROOT_PASSWORD} 'testdb' < sql/structure.sql
+vendor/bin/doctrine-migrations migrations:migrate --no-interaction

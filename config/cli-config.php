@@ -19,4 +19,18 @@ $db = new DoctrineBootstrap();
 // replace with mechanism to retrieve EntityManager in your app
 $entityManager = $db->getEntityManager();
 
+// @see https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/cookbook/mysql-enums.html
+$entityManager
+    ->getConnection()
+    ->getDatabasePlatform()
+    ->registerDoctrineTypeMapping('enum', 'string')
+;
+
+// @see https://www.doctrine-project.org/projects/doctrine-migrations-bundle/en/2.0/index.html#manual-tables
+$entityManager
+    ->getConnection()
+    ->getConfiguration()
+    ->setFilterSchemaAssetsExpression('/^(ganttproject|task|user)$/')
+;
+
 return ConsoleRunner::createHelperSet($entityManager);

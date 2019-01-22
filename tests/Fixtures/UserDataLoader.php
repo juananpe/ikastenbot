@@ -18,7 +18,7 @@ class UserDataLoader extends AbstractFixture implements OrderedFixtureInterface
         $fixedDate = new \DateTime('2021-01-01');
 
         $user = new User();
-        $user->setId(12345);
+        $user->setId('12345');
         $user->setBot(false);
         $user->setFirstName('Test');
         $user->setLastName('User');
