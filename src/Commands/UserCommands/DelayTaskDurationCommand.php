@@ -225,7 +225,9 @@ class DelayTaskCommand extends UserCommand
                 // Save the new Gan file
                 $fs = new Filesystem();
                 $fsUtils = new FilesystemUtils($em, $fs);
-                $fsUtils->saveToNewGanFile($newGanXml, $task->getGanttProject());
+                $newGanFilePath = $fsUtils
+                    ->saveToNewGanFile($newGanXml, $task->getGanttProject())
+                ;
 
                 // Prepare the success message to be sent and send it
                 $parameters = [
@@ -240,11 +242,21 @@ class DelayTaskCommand extends UserCommand
                 );
 
                 $ms->prepareMessage($chat_id, $responseMessage, 'HTML');
+                $returnResult = $ms->sendMessage();
+
+                Request::sendDocument([
+                    'caption' => \sprintf(
+                        'GanttProject version %s',
+                        $task->getGanttProject()->getVersion() + 1
+                    ),
+                    'chat_id' => $chat_id,
+                    'document' => Request::encodeFile($newGanFilePath),
+                ]);
 
                 // Stop the conversation
                 $this->conversation->stop();
 
-                return $ms->sendMessage();
+                return $returnResult;
         }
     }
 }
