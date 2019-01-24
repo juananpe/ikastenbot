@@ -38,8 +38,10 @@ class FilesystemUtils
      * @param GanttProject      $ganttProject The GanttProject from which
      *                                        information will be extracted
      *                                        for directory and file creation
+     *
+     * @return string The path to the new Gan file
      */
-    public function saveToNewGanFile(\SimpleXmlElement $xml, GanttProject $ganttProject): void
+    public function saveToNewGanFile(\SimpleXmlElement $xml, GanttProject $ganttProject): string
     {
         // Create a new GanttProject from the previous one, updating the version
         $newGanttProject = new GanttProject();
@@ -87,6 +89,10 @@ class FilesystemUtils
             $userDir.'/'.$newGanttProject->getVersion()
         );
 
-        $xml->asXml($newVersionDir.'/'.$newGanttProject->getFileName());
+        $newVersionGanFile = $newVersionDir.'/'.$newGanttProject->getFileName();
+
+        $xml->asXml($newVersionGanFile);
+
+        return $newVersionGanFile;
     }
 }
