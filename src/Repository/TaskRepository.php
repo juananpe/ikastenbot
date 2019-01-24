@@ -54,9 +54,7 @@ class TaskRepository extends EntityRepository
 
         $qb->select('t', self::DATEDIFFFUNCTION)
             ->from(Task::class, 't')
-            ->where(self::DATEDIFFFUNCTION.' = 30')
-            ->orWhere(self::DATEDIFFFUNCTION.' = 15')
-            ->orWhere(self::DATEDIFFFUNCTION.' BETWEEN 1 AND 3')
+            ->where(self::DATEDIFFFUNCTION.' IN (1, 2, 3, 15, 30)')
             ->andWhere('t.notify = 1')
             ->orderBy(self::DATEDIFFFUNCTION)
         ;
