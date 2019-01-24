@@ -96,7 +96,7 @@ class EnableNotificationsCommand extends UserCommand
          * owner of the task.
          */
         $taskOwner = $task->getGanttProject()->getUser()->getId();
-        $authorized = $taskOwner === $user_id;
+        $authorized = $taskOwner == $user_id;
 
         if (!$authorized) {
             $authorized = \preg_match(
