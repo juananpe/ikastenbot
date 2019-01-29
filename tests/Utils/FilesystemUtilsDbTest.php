@@ -46,16 +46,17 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
     public function setUp(): void
     {
         // Get the entity manager
-        $this->connection = $this->getConnection();
-        $this->pdo = $this->connection->getConnection();
         $this->em = $this->getDoctrineEntityManager();
 
         // Clear the tables just in case any test didn't truncate the tables
         $this->tearDown();
 
+        // Get pdo
+        $pdo = $this->em->getConnection()->getWrappedConnection();
+
         // Insert a test chat to avoid the foreign key constraints
         $insert_test_chat = 'INSERT INTO chat (id) VALUES (12345)';
-        $statement = $this->pdo->prepare($insert_test_chat);
+        $statement = $pdo->prepare($insert_test_chat);
         $statement->execute();
 
         // Load fixtures into the database for the tests

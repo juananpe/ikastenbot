@@ -1,0 +1,84 @@
+-
+    gan_id: 14
+    chat_id: "12345"
+    task_name: "First task"
+    task_date: "2021-05-11"
+    task_isMilestone: 0
+    task_duration: 8
+-
+    gan_id: 0
+    chat_id: "12345"
+    task_name: "First milestone"
+    task_date: "2021-05-21"
+    task_isMilestone: 1
+    task_duration: 0
+-
+    gan_id: 15
+    chat_id: "12345"
+    task_name: "Second task"
+    task_date: "2021-05-13"
+    task_isMilestone: 0
+    task_duration: 5
+-
+    gan_id: 2
+    chat_id: "12345"
+    task_name: "Second milestone"
+    task_date: "2021-05-19"
+    task_isMilestone: 1
+    task_duration: 0
+-
+    gan_id: 4
+    chat_id: "12345"
+    task_name: "Project"
+    task_date: "2021-05-20"
+    task_isMilestone: 0
+    task_duration: 3
+-
+    gan_id: 7
+    chat_id: "12345"
+    task_name: "Task group"
+    task_date: "2021-05-20"
+    task_isMilestone: 0
+    task_duration: 3
+-
+    gan_id: 24
+    chat_id: "12345"
+    task_name: "Third task"
+    task_date: "2021-05-20"
+    task_isMilestone: 0
+    task_duration: 3
+-
+    gan_id: 8
+    chat_id: "12345"
+    task_name: "Third milestone"
+    task_date: "2021-05-21"
+    task_isMilestone: 1
+    task_duration: 0
+-
+    gan_id: 17
+    chat_id: "12345"
+    task_name: "Fourth task"
+    task_date: "2021-05-21"
+    task_isMilestone: 0
+    task_duration: 3
+-
+    gan_id: 25
+    chat_id: "12345"
+    task_name: "Fourth milestone"
+    task_date: "2021-05-24"
+    task_isMilestone: 1
+    task_duration: 0
+-
+    gan_id: 16
+    chat_id: "12345"
+    task_name: "Fifth task"
+    task_date: "2021-05-25"
+    task_isMilestone: 0
+    task_duration: 3
+-
+    gan_id: 27
+    chat_id: "12345"
+    task_name: Fifth milestone
+    task_date: "2021-05-28"
+    task_isMilestone: 1
+    task_duration: 0

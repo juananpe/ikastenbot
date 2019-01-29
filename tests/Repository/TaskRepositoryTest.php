@@ -18,25 +18,11 @@ use IkastenBot\Tests\Fixtures\UserDataLoader;
 class TaskRepositoryTest extends DatabaseTestCase
 {
     /**
-     * Database connection.
-     *
-     * @var PHPUnit\DbUnit\Database\Connection
-     */
-    private $connection;
-
-    /**
-     * PDO object.
-     *
-     * @var PDO
-     */
-    private $pdo;
-
-    /**
      * Doctrine entity manager.
      *
      * @var Doctrine\ORM\EntityManager
      */
-    private $dem;
+    private $em;
 
     /**
      * Array containing the days to be checked for tasks.
@@ -47,13 +33,15 @@ class TaskRepositoryTest extends DatabaseTestCase
 
     public function setUp(): void
     {
-        $this->connection = $this->getConnection();
-        $this->pdo = $this->connection->getConnection();
-        $this->dem = $this->getDoctrineEntityManager();
+        // Get entity manager
+        $this->em = $this->getDoctrineEntityManager();
+
+        // Get pdo
+        $pdo = $this->em->getConnection()->getWrappedConnection();
 
         // Insert test chat to avoid triggering foreign key constraints
         $insert_test_chat = 'INSERT INTO `chat` (id) VALUES (12345)';
-        $statement = $this->pdo->prepare($insert_test_chat);
+        $statement = $pdo->prepare($insert_test_chat);
         $statement->execute();
 
         // Load fixtures into the database for the tests
@@ -63,7 +51,7 @@ class TaskRepositoryTest extends DatabaseTestCase
         $loader->addFixture(new TaskDataLoader());
 
         $purger = new ORMPurger();
-        $executor = new ORMExecutor($this->dem, $purger);
+        $executor = new ORMExecutor($this->em, $purger);
         $executor->execute($loader->getFixtures());
 
         // Intervals used in TaskDataLoader to create the tasks
@@ -78,7 +66,7 @@ class TaskRepositoryTest extends DatabaseTestCase
 
     public function tearDown(): void
     {
-        $connection = $this->dem->getConnection();
+        $connection = $this->em->getConnection();
         $platform = $connection->getDatabasePlatform();
 
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
@@ -100,7 +88,7 @@ class TaskRepositoryTest extends DatabaseTestCase
 
     public function testFindTodayTasks()
     {
-        $tasks = $this->dem->getRepository(Task::class)->findTasksReachToday();
+        $tasks = $this->em->getRepository(Task::class)->findTasksReachToday();
 
         // Check that only three tasks have been fetched
         $this->assertSame(4, \count($tasks));
@@ -121,7 +109,7 @@ class TaskRepositoryTest extends DatabaseTestCase
 
     public function testFindTasksNotifyAbout()
     {
-        $results = $this->dem->getRepository(Task::class)->findTasksToNotifyAbout();
+        $results = $this->em->getRepository(Task::class)->findTasksToNotifyAbout();
 
         // Check that only the correct amount of tasks have been fetched
         $this->assertSame(16, \count($results));
@@ -147,7 +135,7 @@ class TaskRepositoryTest extends DatabaseTestCase
 
     public function testFindTodayTasksRestrictToMilestones()
     {
-        $tasks = $this->dem->getRepository(Task::class)->findTasksReachToday(true);
+        $tasks = $this->em->getRepository(Task::class)->findTasksReachToday(true);
 
         // Check that only one milestone has been fetched
         $this->assertSame(1, \count($tasks));
@@ -167,7 +155,7 @@ class TaskRepositoryTest extends DatabaseTestCase
 
     public function testFindTasksNotifyAboutRestrictToMilestones()
     {
-        $results = $this->dem->getRepository(Task::class)->findTasksToNotifyAbout(true);
+        $results = $this->em->getRepository(Task::class)->findTasksToNotifyAbout(true);
 
         // Check that only four milestones have been fetched
         $this->assertSame(4, \count($results));
