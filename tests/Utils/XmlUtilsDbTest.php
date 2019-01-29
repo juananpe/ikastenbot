@@ -16,6 +16,7 @@ use IkastenBot\Tests\Fixtures\GanttProjectDataLoader;
 use IkastenBot\Tests\Fixtures\UserDataLoader;
 use IkastenBot\Utils\XmlUtils;
 use Longman\TelegramBot\Telegram;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * @internal
@@ -23,11 +24,6 @@ use Longman\TelegramBot\Telegram;
  */
 final class XmlUtilsDbTest extends DatabaseTestCase
 {
-    /**
-     * @var \UnitTester
-     */
-    protected $tester;
-
     /**
      * Entity manager.
      *
@@ -70,13 +66,6 @@ final class XmlUtilsDbTest extends DatabaseTestCase
     private $xu;
 
     /**
-     * Database connection.
-     *
-     * @var PHPUnit\DbUnit\Database\Connection
-     */
-    private $connection;
-
-    /**
      * PDO object.
      *
      * @var PDO
@@ -88,8 +77,11 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $this->dataDir = __DIR__.'/../_data/task_data/';
         $this->ganDir = $this->dataDir.'gan/';
 
-        $this->connection = $this->getConnection();
-        $this->pdo = $this->connection->getConnection();
+        // Get entity manager
+        $this->em = $this->getDoctrineEntityManager();
+
+        // Get pdo
+        $this->pdo = $this->em->getConnection()->getWrappedConnection();
 
         $insert_test_chat = 'INSERT INTO chat (id) VALUES (12345)';
         $statement = $this->pdo->prepare($insert_test_chat);
@@ -152,17 +144,20 @@ final class XmlUtilsDbTest extends DatabaseTestCase
             $this->ganttProject
         );
 
-        $queryTable = $this->connection->createQueryTable(
-            'task',
-            'SELECT gan_id, chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
-        );
+        // Get all the tasks and check if there are a correct amount of them
+        $tasks = $this->em->getRepository(Task::class)->findAll();
+        $this->assertSame(12, \count($tasks));
 
-        $expectedTable = $this->createFlatXmlDataSet(dirname(__FILE__).'/../_data/task_data/expectedTasks.xml')
-            ->getTable('task')
-        ;
-
-        $this->assertTablesEqual($expectedTable, $queryTable);
-        $this->assertSame(12, $this->connection->getRowCount('task'));
+        // Load the expected tasks and compare them with the database tasks
+        $expectedTasks = Yaml::parseFile($this->dataDir.'expectedTasks.yaml');
+        foreach ($tasks as $i => $task) {
+            $this->assertEquals($expectedTasks[$i]['gan_id'], $task->getGanId());
+            $this->assertEquals($expectedTasks[$i]['chat_id'], $task->getChat_id());
+            $this->assertEquals($expectedTasks[$i]['task_name'], $task->getName());
+            $this->assertEquals($expectedTasks[$i]['task_date'], $task->getDate()->format('Y-m-d'));
+            $this->assertEquals($expectedTasks[$i]['task_isMilestone'], $task->getIsMilestone());
+            $this->assertEquals($expectedTasks[$i]['task_duration'], $task->getDuration());
+        }
     }
 
     public function testInsertTwelveTasksWithNoNameDb()
@@ -176,17 +171,20 @@ final class XmlUtilsDbTest extends DatabaseTestCase
             $this->ganttProject
         );
 
-        $queryTable = $this->connection->createQueryTable(
-            'task',
-            'SELECT gan_id, chat_id, task_name, task_date, task_isMilestone, task_duration FROM task'
-        );
+        // Get all the tasks and check if there are a correct amount of them
+        $tasks = $this->em->getRepository(Task::class)->findAll();
+        $this->assertSame(12, \count($tasks));
 
-        $expectedTable = $this->createXmlDataSet(dirname(__FILE__).'/../_data/task_data/expectedTasksWithNoName.xml')
-            ->getTable('task')
-        ;
-
-        $this->assertTablesEqual($expectedTable, $queryTable);
-        $this->assertSame(12, $this->connection->getRowCount('task'));
+        // Load the expected tasks and compare them with the database tasks
+        $expectedTasks = Yaml::parseFile($this->dataDir.'expectedTasks.yaml');
+        foreach ($tasks as $i => $task) {
+            $this->assertEquals($expectedTasks[$i]['gan_id'], $task->getGanId());
+            $this->assertEquals($expectedTasks[$i]['chat_id'], $task->getChat_id());
+            $this->assertEquals('', $task->getName());
+            $this->assertEquals($expectedTasks[$i]['task_date'], $task->getDate()->format('Y-m-d'));
+            $this->assertEquals($expectedTasks[$i]['task_isMilestone'], $task->getIsMilestone());
+            $this->assertEquals($expectedTasks[$i]['task_duration'], $task->getDuration());
+        }
     }
 
     public function testExtractTasksEmptyException()
@@ -345,24 +343,20 @@ final class XmlUtilsDbTest extends DatabaseTestCase
             3
         );
 
-        // Check that the database holds the updated objects
-        $queryTable = $this->connection->createQueryTable(
-            'task',
-            'SELECT
-                gan_id,
-                chat_id,
-                task_name,
-                task_date,
-                task_isMilestone,
-                task_duration
-            FROM task'
-        );
+        // Get all the tasks and check if there are a correct amount of them
+        $tasks = $this->em->getRepository(Task::class)->findAll();
+        $this->assertSame(12, \count($tasks));
 
-        $expectedTable = $this->createXmlDataSet(
-           $this->dataDir.'/expectedTasksWithModifiedDateOneDependency.xml'
-        )->getTable('task');
-
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        // Load the expected tasks and compare them with the database tasks
+        $expectedTasks = Yaml::parseFile($this->dataDir.'expectedTasksWithModifiedDateOneDependency.yaml');
+        foreach ($tasks as $i => $task) {
+            $this->assertEquals($expectedTasks[$i]['gan_id'], $task->getGanId());
+            $this->assertEquals($expectedTasks[$i]['chat_id'], $task->getChat_id());
+            $this->assertEquals($expectedTasks[$i]['task_name'], $task->getName());
+            $this->assertEquals($expectedTasks[$i]['task_date'], $task->getDate()->format('Y-m-d'));
+            $this->assertEquals($expectedTasks[$i]['task_isMilestone'], $task->getIsMilestone());
+            $this->assertEquals($expectedTasks[$i]['task_duration'], $task->getDuration());
+        }
 
         // Check that the XML was properly udpated
         $xmlTask = $resultingXml->xpath('//task[@id="14"]')[0];
@@ -395,24 +389,20 @@ final class XmlUtilsDbTest extends DatabaseTestCase
             3
         );
 
-        // Check that the database holds the updated objects
-        $queryTable = $this->connection->createQueryTable(
-            'task',
-            'SELECT
-                gan_id,
-                chat_id,
-                task_name,
-                task_date,
-                task_isMilestone,
-                task_duration
-            FROM task'
-        );
+        // Get all the tasks and check if there are a correct amount of them
+        $tasks = $this->em->getRepository(Task::class)->findAll();
+        $this->assertSame(12, \count($tasks));
 
-        $expectedTable = $this->createXmlDataSet(
-            $this->dataDir.'/expectedTasksWithModifiedDateManyDependencies.xml'
-        )->getTable('task');
-
-        $this->assertTablesEqual($expectedTable, $queryTable);
+        // Load the expected tasks and compare them with the database tasks
+        $expectedTasks = Yaml::parseFile($this->dataDir.'expectedTasksWithModifiedDateManyDependencies.yaml');
+        foreach ($tasks as $i => $task) {
+            $this->assertEquals($expectedTasks[$i]['gan_id'], $task->getGanId());
+            $this->assertEquals($expectedTasks[$i]['chat_id'], $task->getChat_id());
+            $this->assertEquals($expectedTasks[$i]['task_name'], $task->getName());
+            $this->assertEquals($expectedTasks[$i]['task_date'], $task->getDate()->format('Y-m-d'));
+            $this->assertEquals($expectedTasks[$i]['task_isMilestone'], $task->getIsMilestone());
+            $this->assertEquals($expectedTasks[$i]['task_duration'], $task->getDuration());
+        }
 
         // Check that the XML was properly udpated
         $xmlTask = $resultingXml->xpath('//task[@id="4"]')[0];

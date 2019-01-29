@@ -7,41 +7,12 @@ namespace IkastenBot\Tests;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Setup;
-use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
 
 abstract class DatabaseTestCase extends TestCase
 {
-    use TestCaseTrait;
-
-    // only instantiate pdo once for test clean-up/fixture load
-    private static $pdo = null;
-
-    // only instantiate PHPUnit\DbUnit\Database\Connection once per test
-    private $conn;
-
     // only instantiate doctrine once for test clean-up/fixture load
-    private static $em = null;
-
-    /**
-     * @return PHPUnit\DbUnit\Database\Connection
-     */
-    public function getConnection()
-    {
-        if (null === $this->conn) {
-            if (null == self::$pdo) {
-                self::$pdo = new \PDO(
-                    'mysql:dbname='.$GLOBALS['MYSQL_TEST_DATABASE_NAME'].';host='.$GLOBALS['MYSQL_TEST_HOST'],
-                    $GLOBALS['MYSQL_TEST_USER'],
-                    $GLOBALS['MYSQL_TEST_PASSWORD']
-                    );
-            }
-            $this->conn = $this->createDefaultDBConnection(self::$pdo, ':memory:');
-        }
-
-        return $this->conn;
-    }
+    private $em;
 
     /**
      * Check the link for the configuration reference.
@@ -50,7 +21,7 @@ abstract class DatabaseTestCase extends TestCase
      */
     public function getDoctrineEntityManager()
     {
-        if (null === self::$em) {
+        if (null === $this->em) {
             $cache = new ArrayCache();
 
             $config = new Configuration();
@@ -61,19 +32,18 @@ abstract class DatabaseTestCase extends TestCase
             $config->setProxyDir('var/cache/Doctrine/proxies');
             $config->setProxyNamespace('IkastenBot\Proxies');
             $config->setAutoGenerateProxyClasses(true);
-            $config = Setup::createAnnotationMetadataConfiguration(['src/Entity'], true);
 
             $connectionParams = [
-                'pdo' => self::$pdo,
+                'driver' => 'pdo_mysql',
+                'user' => $GLOBALS['MYSQL_TEST_USER'],
+                'password' => $GLOBALS['MYSQL_TEST_PASSWORD'],
+                'dbname' => $GLOBALS['MYSQL_TEST_DATABASE_NAME'],
+                'host' => $GLOBALS['MYSQL_TEST_HOST'],
             ];
 
-            self::$em = EntityManager::create($connectionParams, $config);
+            $this->em = EntityManager::create($connectionParams, $config);
         }
 
-        return self::$em;
-    }
-
-    public function getDataSet()
-    {
+        return $this->em;
     }
 }

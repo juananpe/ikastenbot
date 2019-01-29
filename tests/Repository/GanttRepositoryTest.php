@@ -13,20 +13,6 @@ use IkastenBot\Tests\DatabaseTestCase;
 class GanttProjectRepositoryTest extends DatabaseTestCase
 {
     /**
-     * Database connection.
-     *
-     * @var PHPUnit\DbUnit\Database\Connection
-     */
-    private $connection;
-
-    /**
-     * PDO object.
-     *
-     * @var PDO
-     */
-    private $pdo;
-
-    /**
      * Doctrine entity manager.
      *
      * @var Doctrine\ORM\EntityManager
@@ -42,8 +28,6 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
 
     public function setUp(): void
     {
-        $this->connection = $this->getConnection();
-        $this->pdo = $this->connection->getConnection();
         $this->dem = $this->getDoctrineEntityManager();
 
         $fixedDate = new \DateTime('2021-01-01');
