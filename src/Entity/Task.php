@@ -2,20 +2,22 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Entity;
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class that represents the tasks of a GanttProject project.
  *
- * @Entity(repositoryClass="IkastenBot\Repository\TaskRepository")
- * @Table(name="task")
+ * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
+ * @ORM\Table(name="task")
  */
 class Task
 {
     /**
      * Id of the task.
      *
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      *
      * @var int
      */
@@ -24,7 +26,7 @@ class Task
     /**
      * The id of the task in the .gan file.
      *
-     * @Column(type="integer", name="gan_id")
+     * @ORM\Column(type="integer", name="gan_id")
      *
      * @var int
      */
@@ -33,7 +35,7 @@ class Task
     /**
      * Id of the chat to which the task is associated.
      *
-     * @Column(type="bigint")
+     * @ORM\Column(type="bigint")
      *
      * @var string
      */
@@ -42,7 +44,7 @@ class Task
     /**
      * Name of the task.
      *
-     * @Column(type="string", name="task_name")
+     * @ORM\Column(type="string", name="task_name")
      *
      * @var string
      */
@@ -51,7 +53,7 @@ class Task
     /**
      * Date of the task.
      *
-     * @Column(type="datetime", name="task_date")
+     * @ORM\Column(type="datetime", name="task_date")
      *
      * @var \DateTime
      */
@@ -60,7 +62,7 @@ class Task
     /**
      * Is the task a milestone.
      *
-     * @Column(type="boolean", name="task_isMilestone")
+     * @ORM\Column(type="boolean", name="task_isMilestone")
      *
      * @var bool
      */
@@ -69,7 +71,7 @@ class Task
     /**
      * Duration of the task.
      *
-     * @Column(type="integer", name="task_duration")
+     * @ORM\Column(type="integer", name="task_duration")
      *
      * @var int
      */
@@ -78,7 +80,7 @@ class Task
     /**
      * Should the user be notified about the task.
      *
-     * @Column(type="boolean", name="notify")
+     * @ORM\Column(type="boolean", name="notify")
      *
      * @var bool
      */
@@ -87,8 +89,8 @@ class Task
     /**
      * Associated Gantt Project.
      *
-     * @ManyToOne(targetEntity="GanttProject", inversedBy="tasks", cascade={"persist"})
-     * @JoinColumn(name="ganttproject_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="GanttProject", inversedBy="tasks", cascade={"persist"})
+     * @ORM\JoinColumn(name="ganttproject_id", referencedColumnName="id")
      *
      * @var GanttProject
      */

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Repository;
+namespace App\Repository;
 
+use App\Entity\Task;
 use Doctrine\ORM\EntityRepository;
-use IkastenBot\Entity\Task;
 
 class TaskRepository extends EntityRepository
 {

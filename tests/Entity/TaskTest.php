@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Tests\Entity;
+namespace App\Tests\Entity;
 
-use IkastenBot\Entity\Task;
+use App\Entity\Task;
 use PHPUnit\Framework\TestCase;
 
 /**
+ * @covers \App\Entity\Task
+ *
  * @internal
- * @coversNothing
  */
 final class TaskTest extends TestCase
 {
@@ -26,6 +27,9 @@ final class TaskTest extends TestCase
         $this->task->setDate(new \DateTime('2021-01-01'));
     }
 
+    /**
+     * @covers \App\Entity\Task::delayDate()
+     */
     public function testDelayDateFiveDays()
     {
         $this->task->delayDate(5);
@@ -33,6 +37,9 @@ final class TaskTest extends TestCase
         $this->assertSame('2021-01-06', $this->task->getDate()->format('Y-m-d'));
     }
 
+    /**
+     * @covers \App\Entity\Task::delayDate()
+     */
     public function testDelayDateOneMonthTenDays()
     {
         $this->task->delayDate(41);
@@ -40,6 +47,9 @@ final class TaskTest extends TestCase
         $this->assertSame('2021-02-11', $this->task->getDate()->format('Y-m-d'));
     }
 
+    /**
+     * @covers \App\Entity\Task::delayDate()
+     */
     public function testDelayDatePlusOneYear()
     {
         $this->task->delayDate(365);

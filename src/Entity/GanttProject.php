@@ -2,23 +2,24 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Entity;
+namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Represents a GanttProject entity.
  *
- * @Entity(repositoryClass="IkastenBot\Repository\GanttProjectRepository")
- * @Table(name="ganttproject")
+ * @ORM\Entity(repositoryClass="App\Repository\GanttProjectRepository")
+ * @ORM\Table(name="ganttproject")
  */
 class GanttProject
 {
     /**
      * The ID of the Gant project.
      *
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      *
      * @var int
      */
@@ -27,7 +28,7 @@ class GanttProject
     /**
      * The file name associated to the Gantt project.
      *
-     * @Column(type="string", name="file_name")
+     * @ORM\Column(type="string", name="file_name")
      *
      * @var string
      */
@@ -36,7 +37,7 @@ class GanttProject
     /**
      * The latest version of the Gantt project.
      *
-     * @Column(type="integer", name="version")
+     * @ORM\Column(type="integer", name="version")
      *
      * @var int
      */
@@ -45,7 +46,7 @@ class GanttProject
     /**
      * The related tasks of the Gantt project.
      *
-     * @OneToMany(targetEntity="Task", mappedBy="ganttProject")
+     * @ORM\OneToMany(targetEntity="Task", mappedBy="ganttProject")
      *
      * @var Collection
      */
@@ -54,7 +55,7 @@ class GanttProject
     /**
      * The owner of the Gantt project.
      *
-     * @ManyToOne(targetEntity="User", inversedBy="ganttProjects", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="ganttProjects", cascade={"persist"})
      *
      * @var User
      */

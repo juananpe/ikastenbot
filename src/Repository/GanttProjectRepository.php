@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Repository;
+namespace App\Repository;
 
+use App\Entity\GanttProject;
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
-use IkastenBot\Entity\GanttProject;
-use IkastenBot\Entity\User;
 
 class GanttProjectRepository extends EntityRepository
 {

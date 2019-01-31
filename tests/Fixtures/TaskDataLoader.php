@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Tests\Fixtures;
+namespace App\Tests\Fixtures;
 
+use App\Entity\Task;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use IkastenBot\Entity\Task;
 
 class TaskDataLoader extends AbstractFixture implements OrderedFixtureInterface
 {

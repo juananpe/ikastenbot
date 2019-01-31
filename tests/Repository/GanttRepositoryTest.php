@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
-use IkastenBot\Entity\GanttProject;
-use IkastenBot\Entity\User;
-use IkastenBot\Tests\DatabaseTestCase;
+namespace App\Tests\Repository;
+
+use App\Entity\GanttProject;
+use App\Entity\User;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
+ * @covers \App\Repository\GanttProjectRepository
+ *
  * @internal
- * @coversNothing
  */
-class GanttProjectRepositoryTest extends DatabaseTestCase
+class GanttProjectRepositoryTest extends KernelTestCase
 {
     /**
      * Doctrine entity manager.
@@ -28,7 +31,12 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
 
     public function setUp(): void
     {
-        $this->dem = $this->getDoctrineEntityManager();
+        $kernel = self::bootKernel();
+
+        $this->dem = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager()
+        ;
 
         $fixedDate = new \DateTime('2021-01-01');
 
@@ -72,8 +80,14 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
         $connection->executeUpdate($truncate);
 
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+
+        $this->dem->close();
+        $this->dem = null; // avoid memory leaks
     }
 
+    /**
+     * @covers \App\Repository\GanttProjectRepository::findLatestGanttProject()
+     */
     public function testFindLatestGanttProject()
     {
         $gp = $this
@@ -86,6 +100,9 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
         $this->assertSame(3, $gp->getVersion());
     }
 
+    /**
+     * @covers \App\Repository\GanttProjectRepository::findLatestGanttProject()
+     */
     public function testNotFoundLatestGanttProject()
     {
         $user = new User();

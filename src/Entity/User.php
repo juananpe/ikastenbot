@@ -2,23 +2,24 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Entity;
+namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Represents the User entity.
  *
- * @Entity
- * @Table(name="user", indexes={@Index(name="username", columns={"username"})})
+ * @ORM\Entity
+ * @ORM\Table(name="user", indexes={@ORM\Index(name="username", columns={"username"})})
  */
 class User
 {
     /**
      * The id of the user.
      *
-     * @Id @Column(type="bigint", options={"comment":"Unique user identifier"})
+     * @ORM\Id @ORM\Column(type="bigint", options={"comment":"Unique user identifier"})
      *
      * @var string
      */
@@ -27,7 +28,7 @@ class User
     /**
      * The user is a bot.
      *
-     * @Column(type="boolean", name="is_bot", nullable=true, options={"comment":"True if this user is a bot", "default": 0})
+     * @ORM\Column(type="boolean", name="is_bot", nullable=true, options={"comment":"True if this user is a bot", "default": 0})
      *
      * @var bool
      */
@@ -36,7 +37,7 @@ class User
     /**
      * First name of the user.
      *
-     * @Column(type="string", name="first_name", length=255, nullable=false, options={"comment": "User's first name", "default": "",  "fixed": true})
+     * @ORM\Column(type="string", name="first_name", length=255, nullable=false, options={"comment": "User's first name", "default": "",  "fixed": true})
      *
      * @var string
      */
@@ -45,7 +46,7 @@ class User
     /**
      * Last name of the user.
      *
-     * @Column(type="string", name="last_name", length=255, nullable=true, options={"comment": "User's last name", "default": null, "fixed": true})
+     * @ORM\Column(type="string", name="last_name", length=255, nullable=true, options={"comment": "User's last name", "default": null, "fixed": true})
      *
      * @var string
      */
@@ -54,7 +55,7 @@ class User
     /**
      * Username of the user.
      *
-     * @Column(type="string", name="username", length=191, nullable=true, options={"comment": "User's username", "default": null, "fixed": true})
+     * @ORM\Column(type="string", name="username", length=191, nullable=true, options={"comment": "User's username", "default": null, "fixed": true})
      *
      * @var string
      */
@@ -63,7 +64,7 @@ class User
     /**
      * Language code of the user's system.
      *
-     * @Column(type="string", name="language_code", length=10, nullable=true, options={"comment": "User's system language", "default": null, "fixed": true})
+     * @ORM\Column(type="string", name="language_code", length=10, nullable=true, options={"comment": "User's system language", "default": null, "fixed": true})
      *
      * @var string
      */
@@ -72,7 +73,7 @@ class User
     /**
      * The date the user entry was created.
      *
-     * @Column(type="datetime", name="created_at", nullable=true, options={"comment": "Entry date creation"})
+     * @ORM\Column(type="datetime", name="created_at", nullable=true, options={"comment": "Entry date creation"})
      *
      * @var DateTime
      */
@@ -81,7 +82,7 @@ class User
     /**
      * The date in which the user entry was updated.
      *
-     * @Column(type="datetime", name="updated_at", nullable=true, options={"comment": "Entry date update"})
+     * @ORM\Column(type="datetime", name="updated_at", nullable=true, options={"comment": "Entry date update"})
      *
      * @var DateTime
      */
@@ -90,7 +91,7 @@ class User
     /**
      * Language the user wants to be contacted in.
      *
-     * @Column(type="string", name="language", nullable=true, length=10, options={"default": "es", "fixed": true})
+     * @ORM\Column(type="string", name="language", nullable=true, length=10, options={"default": "es", "fixed": true})
      *
      * @var string
      */
@@ -99,7 +100,7 @@ class User
     /**
      * The associated GanttProjects.
      *
-     * @OneToMany(targetEntity="GanttProject", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="GanttProject", mappedBy="user", cascade={"persist"})
      *
      * @var GanttProject
      */

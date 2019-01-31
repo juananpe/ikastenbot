@@ -2,20 +2,23 @@
 
 declare(strict_types=1);
 
+namespace App\Tests\Repository;
+
+use App\Entity\Task;
+use App\Tests\Fixtures\GanttProjectDataLoader;
+use App\Tests\Fixtures\TaskDataLoader;
+use App\Tests\Fixtures\UserDataLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use IkastenBot\Entity\Task;
-use IkastenBot\Tests\DatabaseTestCase;
-use IkastenBot\Tests\Fixtures\GanttProjectDataLoader;
-use IkastenBot\Tests\Fixtures\TaskDataLoader;
-use IkastenBot\Tests\Fixtures\UserDataLoader;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
+ * @covers \App\Repository\GanttProjectRepository
+ *
  * @internal
- * @coversNothing
  */
-class TaskRepositoryTest extends DatabaseTestCase
+class TaskRepositoryTest extends KernelTestCase
 {
     /**
      * Doctrine entity manager.
@@ -34,7 +37,12 @@ class TaskRepositoryTest extends DatabaseTestCase
     public function setUp(): void
     {
         // Get entity manager
-        $this->em = $this->getDoctrineEntityManager();
+        $kernel = self::bootKernel();
+
+        $this->em = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager()
+        ;
 
         // Get pdo
         $pdo = $this->em->getConnection()->getWrappedConnection();
@@ -84,8 +92,14 @@ class TaskRepositoryTest extends DatabaseTestCase
         $connection->executeUpdate($truncate);
 
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+
+        $this->em->close();
+        $this->em = null; // avoid memory leaks
     }
 
+    /**
+     * @covers \App\Repository\TaskRepository::findTasksReachToday()
+     */
     public function testFindTodayTasks()
     {
         $tasks = $this->em->getRepository(Task::class)->findTasksReachToday();
@@ -107,6 +121,9 @@ class TaskRepositoryTest extends DatabaseTestCase
         }
     }
 
+    /**
+     * @covers \App\Repository\TaskRepository::findTasksToNotifyAbout()
+     */
     public function testFindTasksNotifyAbout()
     {
         $results = $this->em->getRepository(Task::class)->findTasksToNotifyAbout();
@@ -133,6 +150,9 @@ class TaskRepositoryTest extends DatabaseTestCase
         }
     }
 
+    /**
+     * @covers \App\Repository\TaskRepository::findTasksReachToday()
+     */
     public function testFindTodayTasksRestrictToMilestones()
     {
         $tasks = $this->em->getRepository(Task::class)->findTasksReachToday(true);
@@ -153,6 +173,9 @@ class TaskRepositoryTest extends DatabaseTestCase
         $this->assertSame(true, $taskIsMilestone);
     }
 
+    /**
+     * @covers \App\Repository\TaskRepository::findTasksToNotifyAbout()
+     */
     public function testFindTasksNotifyAboutRestrictToMilestones()
     {
         $results = $this->em->getRepository(Task::class)->findTasksToNotifyAbout(true);
