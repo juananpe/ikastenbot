@@ -2,25 +2,28 @@
 
 declare(strict_types=1);
 
+namespace App\Tests\Service;
+
+use App\Entity\GanttProject;
+use App\Entity\Task;
+use App\Service\FilesystemUtilsService;
+use App\Service\XmlUtilsService;
+use App\Tests\Fixtures\GanttProjectDataLoader;
+use App\Tests\Fixtures\SingleTaskDataLoader;
+use App\Tests\Fixtures\UserDataLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
-use IkastenBot\Entity\GanttProject;
-use IkastenBot\Entity\Task;
-use IkastenBot\Tests\DatabaseTestCase;
-use IkastenBot\Tests\Fixtures\GanttProjectDataLoader;
-use IkastenBot\Tests\Fixtures\SingleTaskDataLoader;
-use IkastenBot\Tests\Fixtures\UserDataLoader;
-use IkastenBot\Utils\FilesystemUtils;
-use IkastenBot\Utils\XmlUtils;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
+ * @covers \App\Service\FilesystemUtilsService
+ *
  * @internal
- * @coversNothing
  */
-final class FilesystemUtilsDbTest extends DatabaseTestCase
+final class FilesystemUtilsServiceDbTest extends KernelTestCase
 {
     /**
      * Entity manager.
@@ -46,10 +49,12 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
     public function setUp(): void
     {
         // Get the entity manager
-        $this->em = $this->getDoctrineEntityManager();
+        $kernel = self::bootKernel();
 
-        // Clear the tables just in case any test didn't truncate the tables
-        $this->tearDown();
+        $this->em = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager()
+        ;
 
         // Get pdo
         $pdo = $this->em->getConnection()->getWrappedConnection();
@@ -78,10 +83,10 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
         $this->filesystem = new Filesystem();
 
         // Create the filesystem utils
-        $this->fu = new FilesystemUtils($this->em, $this->filesystem);
+        $this->fu = new FilesystemUtilsService($this->em, $this->filesystem);
 
         // Create the XML utils
-        $this->xu = new XmlUtils($this->em);
+        $this->xu = new XmlUtilsService($this->em);
     }
 
     public function tearDown(): void
@@ -104,8 +109,14 @@ final class FilesystemUtilsDbTest extends DatabaseTestCase
         $connection->executeUpdate($truncate);
 
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+
+        $this->em->close();
+        $this->em = null; // avoid memory leaks
     }
 
+    /**
+     * @covers  \App\Service\FilesystemUtilsService::saveToNewGanFile()
+     */
     public function testCreateNewGanFileVersion()
     {
         // Load a test XML file

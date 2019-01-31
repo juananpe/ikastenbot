@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Utils;
+namespace App\Service;
 
+use App\Entity\GanttProject;
+use App\Entity\Task;
 use Doctrine\ORM\EntityManager;
-use IkastenBot\Entity\GanttProject;
-use IkastenBot\Entity\Task;
 use Symfony\Component\Filesystem\Filesystem;
 
-class FilesystemUtils
+class FilesystemUtilsService
 {
     /**
      * Entity manager.
