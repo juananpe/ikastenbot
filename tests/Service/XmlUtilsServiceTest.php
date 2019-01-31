@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+namespace App\Tests\Service;
+
+use App\Exception\IncorrectFileException;
+use App\Service\XmlUtilsService;
 use Doctrine\ORM\EntityManager;
-use IkastenBot\Exception\IncorrectFileException;
-use IkastenBot\Utils\XmlUtils;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -40,7 +42,7 @@ final class XmlUtilsTest extends TestCase
         $this->ganDir = $this->dataDir.'/gan/';
 
         $em = $this->createMock(EntityManager::class);
-        $this->xu = new XmlUtils($em);
+        $this->xu = new XmlUtilsService($em);
     }
 
     public function testExtractNoTasksGanFile()

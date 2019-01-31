@@ -2,27 +2,28 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Tests\Utils;
+namespace App\Tests\Service;
 
+use App\Entity\GanttProject;
+use App\Entity\Task;
+use App\Entity\User;
+use App\Exception\NoTasksException;
+use App\Service\XmlUtilsService;
+use App\Tests\Fixtures\GanttProjectDataLoader;
+use App\Tests\Fixtures\UserDataLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use IkastenBot\Entity\GanttProject;
-use IkastenBot\Entity\Task;
-use IkastenBot\Entity\User;
-use IkastenBot\Exception\NoTasksException;
-use IkastenBot\Tests\DatabaseTestCase;
-use IkastenBot\Tests\Fixtures\GanttProjectDataLoader;
-use IkastenBot\Tests\Fixtures\UserDataLoader;
-use IkastenBot\Utils\XmlUtils;
 use Longman\TelegramBot\Telegram;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Yaml\Yaml;
 
 /**
+ * @covers \App\Service\XmlUtilsService
+ *
  * @internal
- * @coversNothing
  */
-final class XmlUtilsDbTest extends DatabaseTestCase
+final class XmlUtilsDbTest extends KernelTestCase
 {
     /**
      * Entity manager.
@@ -61,7 +62,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
     /**
      * XML Utils.
      *
-     * @var XmlUtils
+     * @var XmlUtilsService
      */
     private $xu;
 
@@ -78,7 +79,12 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $this->ganDir = $this->dataDir.'gan/';
 
         // Get entity manager
-        $this->em = $this->getDoctrineEntityManager();
+        $kernel = self::bootKernel();
+
+        $this->em = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager()
+        ;
 
         // Get pdo
         $this->pdo = $this->em->getConnection()->getWrappedConnection();
@@ -88,8 +94,7 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $statement->execute();
 
         // Load fixtures into the database for the tests
-        $this->em = $this->getDoctrineEntityManager();
-        $this->xu = new XmlUtils($this->em);
+        $this->xu = new XmlUtilsService($this->em);
 
         $loader = new Loader();
         $loader->addFixture(new UserDataLoader());
@@ -123,16 +128,14 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $connection->executeUpdate($truncate);
 
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
+
+        $this->em->close();
+        $this->em = null; // avoid memory leaks
     }
 
     /**
-     * @return PHPUnit\DbUnit\DataSet\IDataSet
+     * @covers \App\Service\XmlUtilsService::extractStoreTasks()
      */
-    public function getDataSet()
-    {
-        return $this->createXmlDataSet($this->ganDir.'milestoneSeed.xml');
-    }
-
     public function testInsertTwelveTasksDb()
     {
         $telegram = new Telegram('123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'TestO');
@@ -160,6 +163,9 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         }
     }
 
+    /**
+     * @covers \App\Service\XmlUtilsService::extractStoreTasks()
+     */
     public function testInsertTwelveTasksWithNoNameDb()
     {
         $telegram = new Telegram('123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'TestO');
@@ -187,6 +193,9 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         }
     }
 
+    /**
+     * @covers \App\Service\XmlUtilsService::extractStoreTasks()
+     */
     public function testExtractTasksEmptyException()
     {
         $this->expectException(NoTasksException::class);
@@ -198,7 +207,10 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         );
     }
 
-    public function testfindOneNestedTask()
+    /**
+     * @covers \App\Service\XmlUtilsService::findNestedTaskOrDepend()
+     */
+    public function testFindOneNestedTask()
     {
         // Load the fixtures
         $this->xu->extractStoreTasks(
@@ -226,7 +238,10 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $this->assertEquals(3, $task->getDuration());
     }
 
-    public function testfindTwoNestedTasks()
+    /**
+     * @covers \App\Service\XmlUtilsService::findNestedTaskOrDepend()
+     */
+    public function testFindTwoNestedTasks()
     {
         // Load the fixtures
         $this->xu->extractStoreTasks(
@@ -292,7 +307,10 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $this->assertEquals(0, $task->getDuration());
     }
 
-    public function testfindNestedDepend()
+    /**
+     * @covers \App\Service\XmlUtilsService::findNestedTaskOrDepend()
+     */
+    public function testFindNestedDepend()
     {
         // Load the fixtures
         $this->xu->extractStoreTasks(
@@ -321,6 +339,9 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $this->assertSame($this->ganttProject, $task->getGanttProject());
     }
 
+    /**
+     * @covers \App\Service\XmlUtilsService::delayTaskAndDependants()
+     */
     public function testModifyDurationTaskOneDependency()
     {
         // Load the fixtures
@@ -367,6 +388,9 @@ final class XmlUtilsDbTest extends DatabaseTestCase
         $this->assertEquals('2021-05-21', $xmlTask->attributes()->start);
     }
 
+    /**
+     * @covers \App\Service\XmlUtilsService::delayTaskAndDependants()
+     */
     public function testModifyDurationTaskAndDependenciesManyDependencies()
     {
         // Load the fixtures

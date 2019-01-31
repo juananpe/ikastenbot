@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Exception;
+namespace App\Exception;
 
 class IncorrectFileException extends \Exception
 {

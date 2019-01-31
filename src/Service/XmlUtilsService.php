@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Utils;
+namespace App\Service;
 
+use App\Entity\GanttProject;
+use App\Entity\Task;
+use App\Exception\IncorrectFileException;
+use App\Exception\NoTasksException;
 use Doctrine\ORM\EntityManager;
-use IkastenBot\Entity\GanttProject;
-use IkastenBot\Entity\Task;
-use IkastenBot\Exception\IncorrectFileException;
-use IkastenBot\Exception\NoTasksException;
 
-class XmlUtils
+class XmlUtilsService
 {
     /**
      * Entity manager.
