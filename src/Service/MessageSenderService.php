@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Service;
+namespace App\Service;
 
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\Keyboard;

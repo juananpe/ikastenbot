@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-use IkastenBot\Service\MessageSenderService;
+namespace App\Tests\Service;
+
+use App\Service\MessageSenderService;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\Keyboard;
 use PHPUnit\Framework\TestCase;
 
 /**
+ * @covers \App\Service\MessageSenderService
+ *
  * @internal
- * @coversNothing
  */
 class MessageSenderServiceTest extends TestCase
 {
@@ -25,6 +28,9 @@ class MessageSenderServiceTest extends TestCase
         $this->mss = new MessageSenderService();
     }
 
+    /**
+     * @covers \App\Service\MessageSenderService::prepareMessage()
+     */
     public function testSimpleMessage()
     {
         $this->mss->prepareMessage(12345, 'Test text');
@@ -40,6 +46,9 @@ class MessageSenderServiceTest extends TestCase
         }
     }
 
+    /**
+     * @covers \App\Service\MessageSenderService::prepareMessage()
+     */
     public function testParseModeHtml()
     {
         $this->mss->prepareMessage(12345, '<b>Test</b> text', 'HTML');
@@ -56,6 +65,9 @@ class MessageSenderServiceTest extends TestCase
         }
     }
 
+    /**
+     * @covers \App\Service\MessageSenderService::prepareMessage()
+     */
     public function testParseModeMarkdown()
     {
         $this->mss->prepareMessage(12345, '**Test** text', 'Markdown');
@@ -72,6 +84,9 @@ class MessageSenderServiceTest extends TestCase
         }
     }
 
+    /**
+     * @covers \App\Service\MessageSenderService::prepareMessage()
+     */
     public function testEnableSelectiveReply()
     {
         $this->mss->prepareMessage(12345, '**Test** text', 'Markdown', true);
@@ -89,6 +104,9 @@ class MessageSenderServiceTest extends TestCase
         }
     }
 
+    /**
+     * @covers \App\Service\MessageSenderService::prepareMessage()
+     */
     public function testRemoveSelectiveReply()
     {
         $this->mss->prepareMessage(12345, '<b>Test</b> text', 'HTML', false);
@@ -106,6 +124,9 @@ class MessageSenderServiceTest extends TestCase
         }
     }
 
+    /**
+     * @covers \App\Service\MessageSenderService::prepareMessage()
+     */
     public function testAddKeyboard()
     {
         $keyboard = new InlineKeyboard([
