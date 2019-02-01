@@ -8,7 +8,7 @@
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
-use IkastenBot\Misc\DBikastenbot;
+use App\Legacy\DBikastenbot;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\Keyboard;

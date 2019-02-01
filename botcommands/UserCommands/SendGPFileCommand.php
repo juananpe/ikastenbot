@@ -6,14 +6,14 @@ declare(strict_types=1);
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
-use IkastenBot\Entity\DoctrineBootstrap;
-use IkastenBot\Entity\GanttProject;
-use IkastenBot\Entity\User;
-use IkastenBot\Exception\IncorrectFileException;
-use IkastenBot\Exception\NoTasksException;
-use IkastenBot\Service\MessageSenderService;
-use IkastenBot\Utils\MessageFormatterUtils;
-use IkastenBot\Utils\XmlUtils;
+use App\Entity\DoctrineBootstrap;
+use App\Entity\GanttProject;
+use App\Entity\User;
+use App\Exception\IncorrectFileException;
+use App\Exception\NoTasksException;
+use App\Service\MessageFormatterUtilsService;
+use App\Service\MessageSenderService;
+use App\Service\XmlUtilsService;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Request;
@@ -138,7 +138,7 @@ class SendGpFileCommand extends UserCommand
         $em->flush();
 
         // Extract the tasks and store them in the database
-        $xmlManCon = new XmlUtils($em);
+        $xmlManCon = new XmlUtilsService($em);
 
         try {
             $tasks = $xmlManCon->extractStoreTasks($ganFilePath, $chat->getId(), $gt);
@@ -166,13 +166,13 @@ class SendGpFileCommand extends UserCommand
     /**
      * Prepare a formatted message with the tasks to be reminded of.
      *
-     * @param IkastenBot\Entity\Task[] $tasks Array of Task objects
+     * @param App\Entity\Task[] $tasks Array of Task objects
      *
      * @return string Formatted message in HTML
      */
     private function prepareFormattedMessage(array $tasks): string
     {
-        $mf = new MessageFormatterUtils();
+        $mf = new MessageFormatterUtilsService();
 
         $text = 'You will be reminded of the following tasks:';
         $text .= PHP_EOL.PHP_EOL;

@@ -6,12 +6,12 @@ declare(strict_types=1);
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
-use IkastenBot\Entity\DoctrineBootstrap;
-use IkastenBot\Entity\Task;
-use IkastenBot\Service\MessageSenderService;
-use IkastenBot\Utils\FilesystemUtils;
-use IkastenBot\Utils\MessageFormatterUtils;
-use IkastenBot\Utils\XmlUtils;
+use App\Entity\DoctrineBootstrap;
+use App\Entity\Task;
+use App\Service\FilesystemUtilsService;
+use App\Service\MessageFormatterUtilsService;
+use App\Service\MessageSenderService;
+use App\Service\XmlUtilsService;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Request;
@@ -48,7 +48,7 @@ class DelayTaskCommand extends UserCommand
 
     public function execute()
     {
-        $messageFormatterUtils = new MessageFormatterUtils();
+        $messageFormatterUtils = new MessageFormatterUtilsService();
 
         $message = $this->getMessage();
         $callbackQuery = $this->getUpdate()->getCallbackQuery();
@@ -217,7 +217,7 @@ class DelayTaskCommand extends UserCommand
                 $ganFilePath .= '/'.$ganttProject->getFileName();
 
                 // Delay the task and its dependants
-                $xmlUtils = new XmlUtils($em);
+                $xmlUtils = new XmlUtilsService($em);
                 $newGanXml = $xmlUtils->delayTaskAndDependants(
                                                                 $ganFilePath,
                                                                 $task,
@@ -226,7 +226,7 @@ class DelayTaskCommand extends UserCommand
 
                 // Save the new Gan file
                 $fs = new Filesystem();
-                $fsUtils = new FilesystemUtils($em, $fs);
+                $fsUtils = new FilesystemUtilsService($em, $fs);
                 $newGanFilePath = $fsUtils
                     ->saveToNewGanFile($newGanXml, $task->getGanttProject())
                 ;

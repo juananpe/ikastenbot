@@ -6,10 +6,10 @@ declare(strict_types=1);
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
-use IkastenBot\Entity\DoctrineBootstrap;
-use IkastenBot\Entity\Task;
-use IkastenBot\Service\MessageSenderService;
-use IkastenBot\Utils\MessageFormatterUtils;
+use App\Entity\DoctrineBootstrap;
+use App\Entity\Task;
+use App\Service\MessageFormatterUtilsService;
+use App\Service\MessageSenderService;
 use Longman\TelegramBot\Commands\UserCommand;
 
 class EnableNotificationsCommand extends UserCommand
@@ -46,7 +46,7 @@ class EnableNotificationsCommand extends UserCommand
 
     public function execute()
     {
-        $messageFormatterUtils = new MessageFormatterUtils();
+        $messageFormatterUtils = new MessageFormatterUtilsService();
 
         $chat = $this->getMessage()->getChat();
         $chat_id = $chat->getId();

@@ -10,8 +10,8 @@
 
 namespace Longman\TelegramBot\Commands\SystemCommands;
 
-use IkastenBot\Misc\DBikastenbot;
-use IkastenBot\Utils\MessageFormatterUtils;
+use App\Legacy\DBikastenbot;
+use App\Service\MessageFormatterUtilsService;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Request;
@@ -55,7 +55,7 @@ class CallbackqueryCommand extends SystemCommand
             // Prepare the message to send it
             $message = $callback_query->getMessage();
 
-            $mfu = new MessageFormatterUtils();
+            $mfu = new MessageFormatterUtilsService();
 
             $editedText = $message->getText();
             $editedText .= PHP_EOL.PHP_EOL;

@@ -8,8 +8,8 @@
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
+use App\Legacy\DBikastenbot;
 use finfo;
-use IkastenBot\Misc\DBikastenbot;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\File;

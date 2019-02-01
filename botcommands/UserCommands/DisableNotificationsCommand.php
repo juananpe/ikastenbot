@@ -6,10 +6,10 @@ declare(strict_types=1);
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
-use IkastenBot\Entity\DoctrineBootstrap;
-use IkastenBot\Entity\Task;
-use IkastenBot\Service\MessageSenderService;
-use IkastenBot\Utils\MessageFormatterUtils;
+use App\Entity\DoctrineBootstrap;
+use App\Entity\Task;
+use App\Service\MessageFormatterUtilsService;
+use App\Service\MessageSenderService;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Request;
 
@@ -47,7 +47,7 @@ class DisableNotificationsCommand extends UserCommand
 
     public function execute()
     {
-        $mfu = new MessageFormatterUtils();
+        $mfu = new MessageFormatterUtilsService();
 
         $message = $this->getMessage();
         $callbackQuery = $this->getUpdate()->getCallbackQuery();
