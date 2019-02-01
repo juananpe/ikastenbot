@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
-use IkastenBot\Entity\Task;
-use IkastenBot\Utils\MessageFormatterUtils;
+namespace App\Tests\Service;
+
+use App\Entity\Task;
+use App\Service\MessageFormatterUtilsService;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 /**
+ * @covers \App\Service\MessageFormatterUtilsService
+ *
  * @internal
- * @coversNothing
  */
-final class MessageFormattrUtilsTest extends TestCase
+final class MessageFormatterUtilsServiceTest extends TestCase
 {
     /**
      * Message formatter utils.
@@ -42,24 +45,33 @@ final class MessageFormattrUtilsTest extends TestCase
             'cache' => 'var/cache/Twig',
         ]);
 
-        $this->mfu = new MessageFormatterUtils();
+        $this->mfu = new MessageFormatterUtilsService();
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::__construct()
+     */
     public function testConstructorTwigNull()
     {
-        $mfu = new MessageFormatterUtils();
+        $mfu = new MessageFormatterUtilsService();
 
         $this->assertTrue(true);
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::__construct()
+     */
     public function testConstructorGiveTwig()
     {
         $twigMock = $this->createMock(Environment::class);
-        $mfu = new MessageFormatterUtils($twigMock);
+        $mfu = new MessageFormatterUtilsService($twigMock);
 
         $this->assertTrue(true);
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::appendTwigFile()
+     */
     public function testAppendTwigFile()
     {
         $expectedText = '';
@@ -72,6 +84,9 @@ final class MessageFormattrUtilsTest extends TestCase
         $this->assertSame($expectedText, $result);
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::appendTask()
+     */
     public function testAppendTaskMilestone()
     {
         $milestone = new Task();
@@ -92,6 +107,9 @@ final class MessageFormattrUtilsTest extends TestCase
         $this->assertSame($expectedText, $result);
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::appendTask()
+     */
     public function testAppendTaskWithDaysLeftMilestone()
     {
         $milestone = new Task();
@@ -117,6 +135,10 @@ final class MessageFormattrUtilsTest extends TestCase
         $this->assertSame($expectedText, $result);
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::appendTask()
+     * @covers \App\Service\MessageFormatterUtilsService::appendTwigFile()
+     */
     public function testAppendTaskMultipleThingsMilestone()
     {
         $milestone = new Task();
@@ -155,6 +177,9 @@ final class MessageFormattrUtilsTest extends TestCase
         $this->assertSame($expectedText, $result);
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::appendTask()
+     */
     public function testAppendTask()
     {
         $task = new Task();
@@ -174,6 +199,9 @@ final class MessageFormattrUtilsTest extends TestCase
         $this->assertSame($expectedText, $result);
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::appendTask()
+     */
     public function testAppendTaskWithDaysLeft()
     {
         $task = new Task();
@@ -198,6 +226,10 @@ final class MessageFormattrUtilsTest extends TestCase
         $this->assertSame($expectedText, $result);
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::appendTask()
+     * @covers \App\Service\MessageFormatterUtilsService::appendTwigFile()
+     */
     public function testAppendMultipleThingsWithTasks()
     {
         $task = new Task();
@@ -235,6 +267,9 @@ final class MessageFormattrUtilsTest extends TestCase
         $this->assertSame($expectedText, $result);
     }
 
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::appendTwigFileWithParameters()
+     */
     public function testAppendWithParameters()
     {
         $task = new Task();

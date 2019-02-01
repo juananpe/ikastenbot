@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Utils;
+namespace App\Service;
 
-use IkastenBot\Entity\Task;
+use App\Entity\Task;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
-class MessageFormatterUtils
+class MessageFormatterUtilsService
 {
     /**
      * Twig templating engine.
