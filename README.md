@@ -39,7 +39,7 @@ required rows for the bot to work with the legacy commands. Finally, the step
 4. Repeat steps `3.` to `5.` from the previous section in the production
     server.
 5. Generate Doctrine's proxy entities with
-    `vendor/bin/doctriene orm:generate-proxies`.
+    `vendor/bin/doctrine orm:generate-proxies`.
 
 Step number 2 makes the application read the environment variables from the
 server, instead of the `.env` file.
