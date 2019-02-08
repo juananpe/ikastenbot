@@ -18,7 +18,7 @@ In order to set or unset the web hook, run `php src/Misc/set.php` or
 renamed to `public/index.php`, following the [front controller pattern][3].
 
 ## For development
-1. Copy `.env.dist` to `.env` with `cp .env.dsit .env`.
+1. Copy `.env.dist` to `.env` with `cp .env.dist .env`.
 2. Fill the relevant data in the `.env` file.
 3. Import Longman's `.sql` file with
     `mysql -u USER -p DATABASE < vendor/longman/telegram-bot/structure.sql`.
