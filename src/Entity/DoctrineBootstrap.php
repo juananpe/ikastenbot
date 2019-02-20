@@ -1,6 +1,6 @@
 <?php
 
-namespace IkastenBot\Entity;
+namespace App\Entity;
 
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
@@ -42,7 +42,7 @@ class DoctrineBootstrap
      */
     private function createEntityManager(): void
     {
-        $devMode = !\array_key_exists('TBGP_ENV', $_SERVER);
+        $devMode = $_SERVER['APP_DEBUG'];
 
         if ($devMode) {
             $cache = new ArrayCache();
@@ -52,11 +52,11 @@ class DoctrineBootstrap
 
         $config = new Configuration();
         $config->setMetadataCacheImpl($cache);
-        $driverImpl = $config->newDefaultAnnotationDriver(PROJECT_ROOT.'/src/Entity');
+        $driverImpl = $config->newDefaultAnnotationDriver(PROJECT_ROOT.'/src/Entity', false);
         $config->setMetadataDriverImpl($driverImpl);
         $config->setQueryCacheImpl($cache);
         $config->setProxyDir(PROJECT_ROOT.'/var/cache/Doctrine/proxies');
-        $config->setProxyNamespace('IkastenBot\Proxies');
+        $config->setProxyNamespace('App\Proxies');
         $config->setAutoGenerateProxyClasses($devMode);
 
         $activePdo = DB::getPdo();
