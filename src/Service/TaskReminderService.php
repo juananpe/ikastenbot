@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace IkastenBot\Service;
+namespace App\Service;
 
-use Doctrine\ORM\EntityManager;
-use IkastenBot\Entity\Task;
-use IkastenBot\Utils\MessageFormatterUtils;
+use App\Entity\Task;
+use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 
 class TaskReminderService
@@ -34,11 +33,11 @@ class TaskReminderService
     /**
      * Construct TaskReminderService object.
      *
-     * @param EntityManager         $em  Doctrine entity manager
-     * @param MessageFormatterUtils $mfu Message formatter utils
-     * @param MessageSenderService  $mss Message sender service
+     * @param EntityManagerInterface       $em  Doctrine entity manager
+     * @param MessageFormatterUtilsService $mfu Message formatter utils
+     * @param MessageSenderService         $mss Message sender service
      */
-    public function __construct(EntityManager $em, MessageFormatterUtils $mfu, MessageSenderService $mss)
+    public function __construct(EntityManagerInterface $em, MessageFormatterUtilsService $mfu, MessageSenderService $mss)
     {
         $this->em = $em;
         $this->mf = $mfu;
