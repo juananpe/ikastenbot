@@ -11,8 +11,6 @@
         <ini name="error_reporting" value="-1" />
         <env name="APP_ENV" value="test" />
         <env name="SHELL_VERBOSITY" value="-1" />
-        <env name="TELEGRAM_BOT_API_KEY" value="12345:test" />
-        <env name="TELEGRAM_BOT_USERNAME" value="Test" />
     </php>
 
     <testsuites>

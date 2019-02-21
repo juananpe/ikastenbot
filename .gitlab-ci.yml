@@ -20,6 +20,6 @@ before_script:
 
 test:
   script:
-    - vendor/bin/doctrine orm:validate
+    - php bin/console doctrine:schema:validate
     - vendor/bin/php-cs-fixer fix --config=.php_cs.dist --dry-run --verbose
-    - vendor/bin/phpunit --configuration ci/phpunit-ci.xml
+    - ./bin/phpunit
