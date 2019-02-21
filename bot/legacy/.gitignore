@@ -1,9 +1,0 @@
-# Files
-.env
-.php_cs.cache
-phpunit.xml
-
-# Directories
-files/
-var/
-vendor/
