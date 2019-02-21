@@ -15,8 +15,9 @@ cache:
     - vendor/
 
 before_script:
+  - cd bot
   - mv .env.test .env
-  - bash ci/docker_install.sh > /dev/null
+  - bash ../ci/docker_install.sh > /dev/null
 
 test:
   script:
