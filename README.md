@@ -1,63 +1,77 @@
 # Ikastenbot
 
-Ikastenbot is a Telegram bot that handles [GanttProject][1]s. The bot is able
+Ikastenbot is a Telegram bot that handles [GanttProjects][1]. The bot is able
 to import the tasks from a `.gan` file and send reminders whenever those tasks
 are close to be reached. The user can delay those tasks —the bot will take care
 of the dependant tasks— and turn on/off the notifications.
 
 # Configuration
+## Note
+All the commands and paths are considered to be run inside the `bot` directory,
+and therefore you might have to do `cd bot` before running them.
+
 ## Variables
 All the variables —database settings, the API keys, file directories...— are
 stored in environment variables. When using `development` mode, these variables
-are read from the `.env` file, and in `production` mode, these will have to be
+are read from the `.env` files, and in `production` mode, these will have to be
 set [in the web server's configuration][2].
 
-## Webhook
-In order to set or unset the web hook, run `php src/Misc/set.php` or
-`php src/Misc/unset.php`. The `php-telegram-bot`'s `hook.php` file has been
-renamed to `public/index.php`, following the [front controller pattern][3].
+## Installing dependencies
+In order to install the project's dependencies, you must issue the following
+command:
 
-## For development
-1. Copy `.env.dist` to `.env` with `cp .env.dist .env`.
-2. Fill the relevant data in the `.env` file.
+`composer install`
+
+## Webhook
+In order to set or unset the web hook follow these steps:
+
+* Run `php bin/console app:webhook --set` to set the webhook.
+* Run `php bin/console app:webhook --unset` to unset the webhook.
+
+All the requests coming from `Telegram` go through the [front controller][3]
+located in `public/index.php`, and skip the `Symfony` framework entirely. Any
+other request is processed by `Symfony`.
+
+## Setting up the variables for development —database, paths, etc.—
+1. Copy `.env` to `.env.local` with `cp .env .env.local`.
+2. Fill the relevant data in the `.env.local` file.
 3. Import Longman's `.sql` file with
     `mysql -u USER -p DATABASE < vendor/longman/telegram-bot/structure.sql`.
 4. Import `structure.sql` file with
-    `mysql -u USER -p DATABASE < structure.sql`.
+    `mysql -u USER -p DATABASE < bot/src/Migrations/structure.sql`.
 5. Perform `Doctrine`'s migrations with
-    `vendor/bin/doctrine-migrations migrations:migrate`
+    `php bin/console doctrine:migrations:migrate --no-interaction`
 
 Regarding the database: the step \#3 imports Longman's `.sql` file and creates
 the base tables. The step \#4 imports the legacy database's additions plus the
 required rows for the bot to work with the legacy commands. Finally, the step
 \#5 loads the model of this application —`src/Entity`— into the database.
 
-## For production
-1. Set [environment variables][2] that match the `.env.dist` file.
-2. Set an environment variable `TBGP_ENV` to any value.
-3. Point the web server to the `public/` directory of this project.
-4. Repeat steps `3.` to `5.` from the previous section in the production
+## Setting up the variables for production
+1. Set [environment variables][2] that match the `.env` file.
+2. Point the web server to the `public/` directory of this project.
+3. Repeat steps `3.` to `5.` from the previous section in the production
     server.
-5. Generate Doctrine's proxy entities with
-    `vendor/bin/doctrine orm:generate-proxies`.
 
-Step number 2 makes the application read the environment variables from the
+Step number 1 makes the application read the environment variables from the
 server, instead of the `.env` file.
 
-## Send reminders to users
-The bot will send notifications to the users whenever the tasks or milestones
-are close. You can use a `cron` job to schedule notification dispatching
-whenever you want to. There are two services,
-`LaunchMilestoneReminderService.php` and `LaunchTaskReminderService.php`, that
-send the reminders. The former will send the notifications about the milestones
-only, and the second one will send the reminders about every task the user has
-—including the milestones—.
+# Sending reminders to users
+The bot has a command that allows sending notifications to the users whenever
+their tasks' or milestones' deadlines are close. That can be done issuing the
+following command:
 
-The following example sets a `cron` job to dispatch the notifications every day
-at 2AM.
+`php bin/console app:mt-send-reminders`
 
-* `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/src/LaunchMilestoneReminderService.php`
-* `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/src/LaunchTaskReminderService.php`
+The command can accept the `--milestones`, `--today` and `--task` options.
+Check what each of those options do by issuing the command with the `--help`
+option.
+
+In order to automate the notification dispatching, you can use a `cron` job for
+the job. The following example sets a `cron` job to dispatch the notifications
+every day at 2AM.
+
+* `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/bot/bin/console app:mt-send-reminders`
 
 [CronHowto][4] and [crontab.guru][5] can help you create `cron` jobs that may
 suit your needs better.
@@ -75,13 +89,13 @@ In order to run tests you have to make the following steps:
 
 1. Import Longman's `vendor/longman/telegram-bot/structure.sql` file, and this
     project's `sql/structure.sql` into the testing database.
-2. Copy `phpunit.xml.dist` to `phpunit.xml` with `cp phpunit.xml.dist phpunit.xml`.
-3. Set the testing database parameters in the `phpunit.xml` file.
-4. Run `phpunit` with `vendor/bin/phpunit` from the project root.
+2. Copy `.env.test` to `.env.test.local` with `cp .env.test .env.test.local`.
+3. Set the testing database parameters in the `.env.test.local` file.
+4. Run `phpunit` by issuing the following command from the project root:
+    `bin/phpunit`
 
 [1]: https://www.ganttproject.biz/
 [2]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv
 [3]: https://en.wikipedia.org/wiki/Front_controller
 [4]: https://help.ubuntu.com/community/CronHowto
 [5]: https://crontab.guru/
-[6]: https://github.com/FriendsOfPHP/PHP-CS-Fixer#installation
