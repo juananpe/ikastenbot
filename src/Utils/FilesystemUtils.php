@@ -87,7 +87,13 @@ class FilesystemUtils
         // Create directory and save the gan file
         $this->filesystem->mkdir(
             $userDir.'/'.$newGanttProject->getVersion()
+    	);
+
+	// FIXME
+        $this->filesystem->chmod(
+            $userDir.'/'.$newGanttProject->getVersion(), 0777
         );
+
 
         $newVersionGanFile = $newVersionDir.'/'.$newGanttProject->getFileName();
 
