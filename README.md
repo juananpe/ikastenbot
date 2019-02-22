@@ -52,11 +52,6 @@ required rows for the bot to work with the legacy commands. Finally, the step
 2. Point the web server to the `public/` directory of this project.
 3. Repeat steps `3.` to `5.` from the previous section in the production
     server.
-<<<<<<< HEAD
-5. Generate Doctrine's proxy entities with
-    `vendor/bin/doctrine orm:generate-proxies`.
-=======
->>>>>>> Chore: update README file
 
 Step number 1 makes the application read the environment variables from the
 server, instead of the `.env` file.
