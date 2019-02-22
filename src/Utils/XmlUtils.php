@@ -41,16 +41,11 @@ class XmlUtils
 
         $xml = simplexml_load_file($xmlFilePath);
 
-	if (count(\libxml_get_errors())) {
-
-		foreach( libxml_get_errors( ) as $error) {
-			echo $error->message;
-		}
+        if (count(\libxml_get_errors())) {
             libxml_clear_errors();
             \libxml_use_internal_errors(false);
 
-
-            throw new IncorrectFileException('The provided file contains invalid XML' . $xmlFilePath);
+            throw new IncorrectFileException('The provided file contains invalid XML');
         }
 
         return $xml;
