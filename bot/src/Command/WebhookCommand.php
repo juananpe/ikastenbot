@@ -66,7 +66,7 @@ class WebhookCommand extends Command
         try {
             $response = '';
             if ($set) {
-                $response = $telegram->setWebhook(getenv('TELEGRAM_BOT_HOOK_URL'));
+                $response = $telegram->setWebhook(getenv('TELEGRAM_BOT_HOOK_URL').'webhook');
             }
 
             if ($unset) {
