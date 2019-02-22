@@ -100,8 +100,9 @@ class SendGpFileCommand extends UserCommand
         }
 
         $filesystem = new Filesystem();
-	$filesystem->mkdir($specificDownloadPath);
-	// FIXME
+        $filesystem->mkdir($specificDownloadPath);
+
+        // FIXME
         $filesystem->chmod($specificDownloadPath, 0777);
 
         // Set the library's download path to the generated path temporarily
