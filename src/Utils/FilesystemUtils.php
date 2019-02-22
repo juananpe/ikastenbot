@@ -89,6 +89,12 @@ class FilesystemUtils
             $userDir.'/'.$newGanttProject->getVersion()
         );
 
+        // FIXME
+        $this->filesystem->chmod(
+            $userDir.'/'.$newGanttProject->getVersion(),
+            0777
+        );
+
         $newVersionGanFile = $newVersionDir.'/'.$newGanttProject->getFileName();
 
         $xml->asXml($newVersionGanFile);

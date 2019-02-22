@@ -16,6 +16,8 @@ use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Request;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class DelayTaskCommand extends UserCommand
 {
@@ -251,6 +253,24 @@ class DelayTaskCommand extends UserCommand
                     ),
                     'chat_id' => $chat_id,
                     'document' => Request::encodeFile($newGanFilePath),
+                ]);
+
+                $cmd = 'sudo -u juanan /usr/local/bin/docker exec gp xvfb-run -a /ganttproject-2.8.10-r2364/ganttproject -export png -o $FOLDER/$FILE.png $FOLDER/$FILE.gan';
+                $process = \method_exists(Process::class, 'fromShellCommandline') ? Process::fromShellCommandline($cmd) : new Process($cmd);
+                $process->run(null, [
+                    'FILE' => basename($newGanFilePath, '.gan'),
+                    'FOLDER' => dirname($newGanFilePath),
+                ]);
+
+                if (!$process->isSuccessful()) {
+                    $this->conversation->stop();
+
+                    throw new ProcessFailedException($process);
+                }
+
+                Request::sendDocument([
+                    'chat_id' => $chat_id,
+                    'document' => Request::encodeFile(dirname($newGanFilePath).'/'.basename($newGanFilePath, '.gan').'.png'),
                 ]);
 
                 // Stop the conversation
