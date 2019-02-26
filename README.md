@@ -47,11 +47,45 @@ the base tables. The step \#4 imports the legacy database's additions plus the
 required rows for the bot to work with the legacy commands. Finally, the step
 \#5 loads the model of this application —`src/Entity`— into the database.
 
-## Setting up the variables for production
+## Setting up the application in production
+### Generic configuration
 1. Set [environment variables][2] that match the `.env` file.
 2. Point the web server to the `public/` directory of this project.
 3. Repeat steps `3.` to `5.` from the previous section in the production
     server.
+
+### Apache
+If you use `Apache` as the web server, the following configuration is
+recommended —taken from [Symfony docs][4]—:
+```
+<VirtualHost *:80>
+    ServerName domain.tld
+    ServerAlias www.domain.tld
+
+    DocumentRoot /var/www/project/public
+    <Directory /var/www/project/public>
+        AllowOverride None
+        Order Allow,Deny
+        Allow from All
+
+        FallbackResource /index.php
+    </Directory>
+
+    # optionally disable the fallback resource for the asset directories
+    # which will allow Apache to return a 404 error when files are
+    # not found instead of passing the request to Symfony
+    <Directory /var/www/project/public/bundles>
+        FallbackResource disabled
+    </Directory>
+    ErrorLog /var/log/apache2/project_error.log
+    CustomLog /var/log/apache2/project_access.log combined
+
+    # optionally set the value of the environment variables used in the application
+    #SetEnv APP_ENV prod
+    #SetEnv APP_SECRET <app-secret-id>
+    #SetEnv ...
+</VirtualHost>
+```
 
 Step number 1 makes the application read the environment variables from the
 server, instead of the `.env` file.
@@ -73,7 +107,7 @@ every day at 2AM.
 
 * `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/bot/bin/console app:mt-send-reminders`
 
-[CronHowto][4] and [crontab.guru][5] can help you create `cron` jobs that may
+[CronHowto][5] and [crontab.guru][6] can help you create `cron` jobs that may
 suit your needs better.
 
 # Running the tests
@@ -97,5 +131,6 @@ In order to run tests you have to make the following steps:
 [1]: https://www.ganttproject.biz/
 [2]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv
 [3]: https://en.wikipedia.org/wiki/Front_controller
-[4]: https://help.ubuntu.com/community/CronHowto
-[5]: https://crontab.guru/
+[4]: https://symfony.com/doc/current/setup/web_server_configuration.html#apache-with-mod-php-php-cgi
+[5]: https://help.ubuntu.com/community/CronHowto
+[6]: https://crontab.guru/
