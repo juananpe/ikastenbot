@@ -1,9 +1,10 @@
 # Ikastenbot
 
-Ikastenbot is a Telegram bot that handles [GanttProjects][1]. The bot is able
-to import the tasks from a `.gan` file and send reminders whenever those tasks
-are close to be reached. The user can delay those tasks —the bot will take care
-of the dependant tasks— and turn on/off the notifications.
+Ikastenbot is a Telegram bot that handles [GanttProjects][gantt-project-page].
+The bot is able to import the tasks from a `.gan` file and send reminders
+whenever those tasks are close to be reached. The user can delay those tasks
+—the bot will take care of the dependant tasks— and turn on/off the
+notifications.
 
 # Configuration
 ## Note
@@ -14,7 +15,7 @@ and therefore you might have to do `cd bot` before running them.
 All the variables —database settings, the API keys, file directories...— are
 stored in environment variables. When using `development` mode, these variables
 are read from the `.env` files, and in `production` mode, these will have to be
-set [in the web server's configuration][2].
+set [in the web server's configuration][apache-docs-env].
 
 ## Installing dependencies
 In order to install the project's dependencies, you must issue the following
@@ -28,9 +29,10 @@ In order to set or unset the web hook follow these steps:
 * Run `php bin/console app:webhook --set` to set the webhook.
 * Run `php bin/console app:webhook --unset` to unset the webhook.
 
-All the requests coming from `Telegram` go through the [front controller][3]
-located in `public/index.php`, and skip the `Symfony` framework entirely. Any
-other request is processed by `Symfony`.
+All the requests coming from `Telegram` go through the
+[front controller][wiki-front-controller] located in `public/index.php`, and
+skip the `Symfony` framework entirely. Any other request is processed by
+`Symfony`.
 
 ## Setting up the variables for development —database, paths, etc.—
 1. Copy `.env` to `.env.local` with `cp .env .env.local`.
@@ -49,14 +51,14 @@ required rows for the bot to work with the legacy commands. Finally, the step
 
 ## Setting up the application in production
 ### Generic configuration
-1. Set [environment variables][2] that match the `.env` file.
+1. Set [environment variables][apache-docs-env] that match the `.env` file.
 2. Point the web server to the `public/` directory of this project.
 3. Repeat steps `3.` to `5.` from the previous section in the production
     server.
 
 ### Apache
 If you use `Apache` as the web server, the following configuration is
-recommended —taken from [Symfony docs][4]—:
+recommended —taken from [Symfony docs][symfony-docs-apache-prod]—:
 ```
 <VirtualHost *:80>
     ServerName domain.tld
@@ -107,8 +109,8 @@ every day at 2AM.
 
 * `0 2 * * * /usr/bin/php {PATH_TO_THE_PROJECT}/bot/bin/console app:mt-send-reminders`
 
-[CronHowto][5] and [crontab.guru][6] can help you create `cron` jobs that may
-suit your needs better.
+[CronHowto][ubuntu-docs-cron-howto] and [crontab.guru][crontab-guru-page] can
+help you create `cron` jobs that may suit your needs better.
 
 # Running the tests
 ## Coding guidelines
@@ -128,9 +130,9 @@ In order to run tests you have to make the following steps:
 4. Run `phpunit` by issuing the following command from the project root:
     `bin/phpunit`
 
-[1]: https://www.ganttproject.biz/
-[2]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv
-[3]: https://en.wikipedia.org/wiki/Front_controller
-[4]: https://symfony.com/doc/current/setup/web_server_configuration.html#apache-with-mod-php-php-cgi
-[5]: https://help.ubuntu.com/community/CronHowto
-[6]: https://crontab.guru/
+[gantt-project-page]: https://www.ganttproject.biz/
+[apache-docs-env]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv
+[wiki-front-controller]: https://en.wikipedia.org/wiki/Front_controller
+[symfony-docs-apache-prod]: https://symfony.com/doc/current/setup/web_server_configuration.html#apache-with-mod-php-php-cgi
+[ubuntu-docs-cron-howto]: https://help.ubuntu.com/community/CronHowto
+[crontab-guru-page]: https://crontab.guru/
