@@ -28,7 +28,10 @@ php composer-setup.php --quiet
 rm composer-setup.php
 mv composer.phar /usr/local/bin/composer
 chmod +x /usr/local/bin/composer
-composer install --dev
+
+# https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
+export COMPOSER_ALLOW_SUPERUSER=1
+composer install
 
 # Configure the PHP extension to use the installed libzip and install the MySQL
 # extension
