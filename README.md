@@ -55,6 +55,11 @@ required rows for the bot to work with the legacy commands. Finally, the step
 2. Point the web server to the `public/` directory of this project.
 3. Repeat steps `3.` to `5.` from the previous section in the production
     server.
+4. Make sure `www-data` has writing permissions for the `var/` directory.
+
+Step number \#4 is needed as `cache` is stored in `var`, as well as `gan`
+files. Without the proper permissions the application will complain and fail
+to work properly.
 
 ### Apache
 If you use `Apache` as the web server, the following configuration is
