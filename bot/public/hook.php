@@ -49,25 +49,21 @@ try {
         $telegram->enableMySql($mysqlCredentials);
     }
 
-    // Set custom Upload and Download paths
+    // Set download and upload paths
     $downloadDirectory = getenv('TELEGRAM_DOWNLOAD_DIRECTORY');
     $uploadDirectory = getenv('TELEGRAM_UPLOAD_DIRECTORY');
 
-    if (!(empty($downloadDirectory) || empty($uploadDirectory))) {
-        if ('files/download' === $downloadDirectory) {
-            $downloadDirectory = PROJECT_ROOT.'/'.$downloadDirectory;
-        }
-
-        if ('files/upload' === $uploadDirectory) {
-            $uploadDirectory = PROJECT_ROOT.'/'.$uploadDirectory;
-        }
-
-        define('DOWNLOAD_DIR', $downloadDirectory);
-        define('UPLOAD_DIR', $uploadDirectory);
-
-        $telegram->setDownloadPath($downloadDirectory);
-        $telegram->setUploadPath($uploadDirectory);
+    if (empty($downloadDirectory)) {
+        $downloadDirectory = PROJECT_ROOT.'/var/ganfiles/download';
     }
+    define('DOWNLOAD_DIR', $downloadDirectory);
+    $telegram->setDownloadPath($downloadDirectory);
+
+    if (empty($uploadDirectory)) {
+        $uploadDirectory = PROJECT_ROOT.'/var/ganfiles/upload';
+    }
+    define('UPLOAD_DIR', $uploadDirectory);
+    $telegram->setUploadPath($uploadDirectory);
 
     unset($downloadDirectory, $uploadDirectory);
 
