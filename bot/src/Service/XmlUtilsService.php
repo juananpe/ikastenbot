@@ -111,9 +111,10 @@ class XmlUtilsService
             );
         }
 
+        $today = new \DateTimeImmutable();
         foreach ($tasks as $task) {
             $task->setChat_id((string) $chat_id);
-            $task->setNotify(true);
+            $task->setNotify($task->getDate() > $today);
             $task->setGanttProject($ganttProject);
 
             $this->em->persist($task);

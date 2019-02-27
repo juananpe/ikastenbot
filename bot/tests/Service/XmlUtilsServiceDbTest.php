@@ -208,6 +208,39 @@ final class XmlUtilsDbTest extends KernelTestCase
     }
 
     /**
+     * @covers \App\Service\XmlUtilsService::extractStoreTasks()
+     */
+    public function testExtractStoreTasksNotifyPastTasksOff()
+    {
+        $telegram = new Telegram('123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'TestO');
+        $telegram->enableExternalMySql($this->pdo);
+
+        $this->xu->extractStoreTasks(
+            $this->ganDir.'TwelveTasksWithPastTasks.gan',
+            12345,
+            $this->ganttProject
+        );
+
+        /* Get all the tasks and check if there are a correct amount of them.
+         * It should fetch 15, 12 regular tasks to be notified of and 3 past
+         * tasks.
+         */
+        $tasks = $this->em->getRepository(Task::class)->findAll();
+        $this->assertSame(15, \count($tasks));
+
+        // Load the expected tasks and compare them with the database tasks
+        $expectedTasks = Yaml::parseFile($this->dataDir.'expectedTasksWithPastTasks.yaml');
+        foreach ($tasks as $i => $task) {
+            $this->assertEquals($expectedTasks[$i]['gan_id'], $task->getGanId());
+            $this->assertEquals($expectedTasks[$i]['chat_id'], $task->getChat_id());
+            $this->assertEquals($expectedTasks[$i]['task_name'], $task->getName());
+            $this->assertEquals($expectedTasks[$i]['task_date'], $task->getDate()->format('Y-m-d'));
+            $this->assertEquals($expectedTasks[$i]['task_isMilestone'], $task->getIsMilestone());
+            $this->assertEquals($expectedTasks[$i]['task_duration'], $task->getDuration());
+        }
+    }
+
+    /**
      * @covers \App\Service\XmlUtilsService::findNestedTaskOrDepend()
      */
     public function testFindOneNestedTask()
