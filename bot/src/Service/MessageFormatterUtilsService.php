@@ -93,6 +93,7 @@ class MessageFormatterUtilsService
      *
      * @param int  $elementId   The id of the element
      * @param bool $isMilestone Is the element a milestone?
+     *
      * @return InlineKeyboard
      */
     public function createThreeOptionInlineKeyboard($elementId, $isMilestone): InlineKeyboard
