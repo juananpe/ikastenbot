@@ -6,6 +6,7 @@ namespace App\Tests\Service;
 
 use App\Entity\Task;
 use App\Service\MessageFormatterUtilsService;
+use Longman\TelegramBot\Entities\InlineKeyboard;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -306,5 +307,63 @@ final class MessageFormatterUtilsServiceTest extends TestCase
         );
 
         $this->assertSame($expectedText, $result);
+    }
+
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::createThreeOptionInlineKeyboard()
+     */
+    public function testCreateThreeOptionKeyboardTask()
+    {
+        $keyboard = $this->mfu->createThreeOptionInlineKeyboard(1, false);
+
+        $expectedInlineKeyboard = new InlineKeyboard(
+            [
+                [
+                    'text' => '💪 Yes',
+                    'callback_data' => 'affirmative_noop',
+                ],
+                [
+                    'text' => '🥵 No, let\'s delay it',
+                    'callback_data' => '/delaytask 1',
+                ],
+            ],
+            [
+                [
+                    'text' => '💤 Disable this task\'s notifications',
+                    'callback_data' => '/disablenotifications 1',
+                ],
+            ]
+        );
+
+        $this->assertEquals($expectedInlineKeyboard, $keyboard);
+    }
+
+    /**
+     * @covers \App\Service\MessageFormatterUtilsService::createThreeOptionInlineKeyboard()
+     */
+    public function testCreateThreeOptionKeyboardMilestone()
+    {
+        $keyboard = $this->mfu->createThreeOptionInlineKeyboard(5, true);
+
+        $expectedInlineKeyboard = new InlineKeyboard(
+            [
+                [
+                    'text' => '💪 Yes',
+                    'callback_data' => 'affirmative_noop',
+                ],
+                [
+                    'text' => '🥵 No, let\'s delay it',
+                    'callback_data' => '/delaytask 5',
+                ],
+            ],
+            [
+                [
+                    'text' => '💤 Disable this milestone\'s notifications',
+                    'callback_data' => '/disablenotifications 5',
+                ],
+            ]
+        );
+
+        $this->assertEquals($expectedInlineKeyboard, $keyboard);
     }
 }

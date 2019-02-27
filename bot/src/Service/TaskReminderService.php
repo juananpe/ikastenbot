@@ -6,7 +6,6 @@ namespace App\Service;
 
 use App\Entity\Task;
 use Doctrine\ORM\EntityManagerInterface;
-use Longman\TelegramBot\Entities\InlineKeyboard;
 
 class TaskReminderService
 {
@@ -57,13 +56,9 @@ class TaskReminderService
             $this->mf->appendTwigFile($text, 'notifications/task/taskTodayText.twig');
             $this->mf->appendTask($text, $task);
 
-            $keyboard = new InlineKeyboard(
-                [
-                    [
-                        'text' => 'Delay task',
-                        'callback_data' => '/delaytask '.$task->getId(),
-                    ],
-                ]
+            $keyboard = $this->mf->createThreeOptionInlineKeyboard(
+                $task->getId(),
+                false
             );
 
             $this->mss->prepareMessage((int) $task->getChat_id(), $text, 'HTML', null, $keyboard);
@@ -94,29 +89,9 @@ class TaskReminderService
                 $parameters
             );
 
-            // Modify the text if the task is a milestone
-            $milestoneOrTask = 'task';
-            if ($row[0]->getIsMilestone()) {
-                $milestoneOrTask = 'milestone';
-            }
-
-            $keyboard = new InlineKeyboard(
-                [
-                    [
-                        'text' => '💪 Yes',
-                        'callback_data' => 'affirmative_noop',
-                    ],
-                    [
-                        'text' => '🥵 No, let\'s delay it',
-                        'callback_data' => '/delaytask '.$row[0]->getId(),
-                    ],
-                ],
-                [
-                    [
-                        'text' => '💤 Disable this '.$milestoneOrTask.'\'s notifications',
-                        'callback_data' => '/disablenotifications '.$row[0]->getId(),
-                    ],
-                ]
+            $keyboard = $this->mf->createThreeOptionInlineKeyboard(
+                $row[0]->getId(),
+                $row[0]->getIsMilestone()
             );
 
             $this->mss->prepareMessage((int) $row[0]->getChat_id(), $text, 'HTML', null, $keyboard);
@@ -137,13 +112,9 @@ class TaskReminderService
             $this->mf->appendTwigFile($text, 'notifications/milestone/milestoneTodayText.twig');
             $this->mf->appendTask($text, $milestone, null, $milestone->getIsMilestone());
 
-            $keyboard = new InlineKeyboard(
-                [
-                    [
-                        'text' => 'Delay task',
-                        'callback_data' => '/delaytask '.$milestone->getId(),
-                    ],
-                ]
+            $keyboard = $this->mf->createThreeOptionInlineKeyboard(
+                $milestone->getId(),
+                true
             );
 
             $this->mss->prepareMessage((int) $milestone->getChat_id(), $text, 'HTML', null, $keyboard);
@@ -173,23 +144,9 @@ class TaskReminderService
                 $parameters
             );
 
-            $keyboard = new InlineKeyboard(
-                [
-                    [
-                        'text' => '💪 Yes',
-                        'callback_data' => 'affirmative_noop',
-                    ],
-                    [
-                        'text' => '🥵 No, let\'s delay it',
-                        'callback_data' => '/delaytask '.$row[0]->getId(),
-                    ],
-                ],
-                [
-                    [
-                        'text' => '💤 Disable this milestone\'s notifications',
-                        'callback_data' => '/disablenotifications '.$row[0]->getId(),
-                    ],
-                ]
+            $keyboard = $this->mf->createThreeOptionInlineKeyboard(
+                $row[0]->getId(),
+                $row[0]->getIsMilestone()
             );
 
             $this->mss->prepareMessage((int) $row[0]->getChat_id(), $text, 'HTML', null, $keyboard);

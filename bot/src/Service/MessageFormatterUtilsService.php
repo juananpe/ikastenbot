@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Task;
+use Longman\TelegramBot\Entities\InlineKeyboard;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -82,5 +83,40 @@ class MessageFormatterUtilsService
         }
 
         $text .= PHP_EOL;
+    }
+
+    /**
+     * Creates an inline keyboard with three buttons: 'Yes', 'No, let's delay
+     * it' and 'Disable this <element>'s notifications'. The <element> is
+     * replaced with the string 'milestone' or 'task' depending on the passed
+     * flag.
+     *
+     * @param int  $elementId   The id of the element
+     * @param bool $isMilestone Is the element a milestone?
+     *
+     * @return InlineKeyboard
+     */
+    public function createThreeOptionInlineKeyboard($elementId, $isMilestone): InlineKeyboard
+    {
+        $element = ($isMilestone) ? 'milestone' : 'task';
+
+        return new InlineKeyboard(
+            [
+                [
+                    'text' => '💪 Yes',
+                    'callback_data' => 'affirmative_noop',
+                ],
+                [
+                    'text' => '🥵 No, let\'s delay it',
+                    'callback_data' => '/delaytask '.$elementId,
+                ],
+            ],
+            [
+                [
+                    'text' => '💤 Disable this '.$element.'\'s notifications',
+                    'callback_data' => '/disablenotifications '.$elementId,
+                ],
+            ]
+        );
     }
 }
