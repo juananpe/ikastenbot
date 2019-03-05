@@ -190,6 +190,13 @@ class SendGpFileCommand extends UserCommand
         return $result;
     }
 
+    /**
+     * Detects whether a list of tasks contains a milestone.
+     *
+     * @param array $tasks the list of tasks
+     *
+     * @return bool True if at least one of the tasks is a milestone. False otherwise.
+     */
     private function hasMilestones(array $tasks): bool
     {
         foreach ($tasks as $task) {
@@ -201,6 +208,14 @@ class SendGpFileCommand extends UserCommand
         return false;
     }
 
+    /**
+     * Detects whether a list of tasks contains task related to tracking meetings.
+     * For this, a number of key words are searched within the tasks's names.
+     *
+     * @param array $tasks the list of tasks
+     *
+     * @return bool True if at least one of the tasks is related to tracking meetings. False otherwise.
+     */
     private function hasTrackingMeetings(array $tasks): bool
     {
         $keywords = ['meeting', 'reunión', 'reunion', 'tracking', 'seguimiento'];
