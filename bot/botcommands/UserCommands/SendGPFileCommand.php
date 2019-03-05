@@ -223,7 +223,7 @@ class SendGpFileCommand extends UserCommand
             foreach ($keywords as $string) {
                 // look for tasks containing any of the keywords
                 // that are milestones or have duration 1
-                if (false !== strpos(strtolower($task->getName()), $string) and (1 === $task->getDuration() or $task->getIsMilestone())) {
+                if (false !== strpos(strtolower($task->getName()), $string)) {
                     return true;
                 }
             }
