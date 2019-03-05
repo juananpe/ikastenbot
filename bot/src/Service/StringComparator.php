@@ -102,6 +102,126 @@ class StringComparator
     }
 
     /**
+     * Returns the similarity index between two string using the
+     * Optimal Alignment edit distance.
+     *
+     * @param string $s1 First string
+     * @param string $s2 Second string
+     *
+     * @return float Similarity index between the strings
+     */
+    public function similarityOA($s1, $s2): float
+    {
+        $distance = $this->distanceOA($s1, $s2);
+
+        return $this->similarityEdit($s1, $s2, $distance);
+    }
+
+    /**
+     * Returns the similarity index between two string using the
+     * Levenshtein edit distance.
+     *
+     * @param string $s1 First string
+     * @param string $s2 Second string
+     *
+     * @return float Similarity index between the strings
+     */
+    public function similarityLevenshtein($s1, $s2): float
+    {
+        $distance = $this->distanceLevenshtein($s1, $s2);
+
+        return $this->similarityEdit($s1, $s2, $distance);
+    }
+
+    /**
+     * Returns the similarity index between two string using the
+     * Damerau-Levenshtein edit distance.
+     *
+     * @param string $s1 First string
+     * @param string $s2 Second string
+     *
+     * @return float Similarity index between the strings
+     */
+    public function similarityDamLev($s1, $s2): float
+    {
+        $distance = $this->distanceDamLev($s1, $s2);
+
+        return $this->similarityEdit($s1, $s2, $distance);
+    }
+
+    /**
+     * Returns the similarity index between two string using the
+     * Jaccard index and the string chunking strategy set via
+     * the setStrategy*() methods.
+     *
+     * @param string $s1 First string
+     * @param string $s2 Second string
+     *
+     * @throws NoStrategySetException
+     *
+     * @return float Similarity index between the strings
+     */
+    public function similarityJaccard($s1, $s2): float
+    {
+        $set1 = $this->chunkString($s1);
+        $set2 = $this->chunkString($s2);
+        var_dump($set1);
+        echo '<br>';
+        var_dump($set2);
+        echo '<br>';
+
+        return $this->jaccardIndex($set1, $set2);
+    }
+
+    /**
+     * Returns the similarity index between two string using the
+     * Dice index and the string chunking strategy set via
+     * the setStrategy*() methods.
+     *
+     * @param string $s1 First string
+     * @param string $s2 Second string
+     *
+     * @throws NoStrategySetException
+     *
+     * @return float Similarity index between the strings
+     */
+    public function similarityDice($s1, $s2): float
+    {
+        $set1 = $this->chunkString($s1);
+        $set2 = $this->chunkString($s2);
+        var_dump($set1);
+        echo '<br>';
+        var_dump($set2);
+        echo '<br>';
+
+        return $this->diceIndex($set1, $set2);
+    }
+
+    /**
+     * Returns the similarity index between two string using the
+     * Overlap index and the string chunking strategy set via
+     * the setStrategy*() methods.
+     *
+     * @param string $s1 First string
+     * @param string $s2 Second string
+     *
+     * @throws NoStrategySetException
+     *
+     * @return float Similarity index between the strings
+     */
+    public function similarityOverlap($s1, $s2): float
+    {
+        $set1 = $this->chunkString($s1);
+        $set2 = $this->chunkString($s2);
+        var_dump($set1);
+        echo '<br>';
+        var_dump($set2);
+        echo '<br>';
+
+        return $this->OverlapIndex($set1, $set2);
+    }
+
+    /**
      * Unify all the whitespace characters (spaces, tabs, etc.) in the string
      * by turning them into a single whitespace. Also removes leading and
      * trailing whitespaces.
@@ -146,7 +266,7 @@ class StringComparator
      * characters, ignoring whitespaces.
      *
      * @param string $string The string to divide in n-grams
-     * @param int $n The number of characters of each n-gram
+     * @param int    $n      The number of characters of each n-gram
      *
      * @return array Array of n-grams obtained from the string
      */
@@ -163,7 +283,7 @@ class StringComparator
      * tokens separated by whitespaces.
      *
      * @param string $string The string to divide in n-shingles
-     * @param int $n The number of tokens of each n-shingle
+     * @param int    $n      The number of tokens of each n-shingle
      *
      * @return array Array of n-shingles obtained from the string
      */
@@ -176,7 +296,7 @@ class StringComparator
         $indexShingles = 0;
         while ($indexTokens < sizeof($tokens)) {
             if (array_key_exists($indexShingles, $shingles)) {
-                $shingles[$indexShingles] .= ' ' . $tokens[$indexTokens];
+                $shingles[$indexShingles] .= ' '.$tokens[$indexTokens];
             } else {
                 array_push($shingles, $tokens[$indexTokens]);
             }
@@ -193,9 +313,9 @@ class StringComparator
      *
      * @param string $string The string to be divided
      *
-     * @return array Array containing the substrings
-     *
      * @throws NoStrategySetException
+     *
+     * @return array Array containing the substrings
      */
     private function chunkString($string): array
     {
@@ -215,31 +335,17 @@ class StringComparator
      * Calculates a similarity index (min 0, max 1) for the strings $s1 and $s2
      * given their edit distance to each other.
      *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     * @param int $distance Edit distance between the strings
+     * @param string $s1       First string
+     * @param string $s2       Second string
+     * @param int    $distance Edit distance between the strings
      *
      * @return float Similarity index between the strings
      */
     private function similarityEdit($s1, $s2, $distance): float
     {
         $maxLen = max(strlen($s1), strlen($s2));
-        return ($maxLen - $distance) / $maxLen;
-    }
 
-    /**
-     * Returns the similarity index between two string using the
-     * Optimal Alignment edit distance.
-     *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     *
-     * @return float Similarity index between the strings
-     */
-    public function similarityOA($s1, $s2): float
-    {
-        $distance = $this->distanceOA($s1, $s2);
-        return $this->similarityEdit($s1, $s2, $distance);
+        return ($maxLen - $distance) / $maxLen;
     }
 
     /**
@@ -256,21 +362,6 @@ class StringComparator
     }
 
     /**
-     * Returns the similarity index between two string using the
-     * Levenshtein edit distance.
-     *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     *
-     * @return float Similarity index between the strings
-     */
-    public function similarityLevenshtein($s1, $s2): float
-    {
-        $distance = $this->distanceLevenshtein($s1, $s2);
-        return $this->similarityEdit($s1, $s2, $distance);
-    }
-
-    /**
      * Returns the Levenshtein edit distance between two strings.
      *
      * @param string $s1 First string
@@ -281,21 +372,6 @@ class StringComparator
     private function distanceLevenshtein($s1, $s2): int
     {
         return $this->editDistance($s1, $s2, true, false);
-    }
-
-    /**
-     * Returns the similarity index between two string using the
-     * Damerau-Levenshtein edit distance.
-     *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     *
-     * @return float Similarity index between the strings
-     */
-    public function similarityDamLev($s1, $s2): float
-    {
-        $distance = $this->distanceDamLev($s1, $s2);
-        return $this->similarityEdit($s1, $s2, $distance);
     }
 
     /**
@@ -317,10 +393,10 @@ class StringComparator
      * Character substitution and transposition of adjacent characters depend
      * on the parameters.
      *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     * @param boolean $substitutions Allow/Disallow substitution of characters
-     * @param boolean $transposition Allow/Disallow transposition of adjacent characters
+     * @param string $s1            First string
+     * @param string $s2            Second string
+     * @param bool   $substitutions Allow/Disallow substitution of characters
+     * @param bool   $transposition Allow/Disallow transposition of adjacent characters
      *
      * @return int edit distance between the strings using the permitted operations
      */
@@ -369,29 +445,6 @@ class StringComparator
     }
 
     /**
-     * Returns the similarity index between two string using the
-     * Jaccard index and the string chunking strategy set via
-     * the setStrategy*() methods.
-     *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     *
-     * @return float Similarity index between the strings
-     *
-     * @throws NoStrategySetException
-     */
-    public function similarityJaccard($s1, $s2): float
-    {
-        $set1 = $this->chunkString($s1);
-        $set2 = $this->chunkString($s2);
-        var_dump($set1);
-        echo "<br>";
-        var_dump($set2);
-        echo "<br>";
-        return $this->jaccardIndex($set1, $set2);
-    }
-
-    /**
      * Returns the value of the Jaccard index for two given sets
      * in the form of arrays.
      *
@@ -406,29 +459,6 @@ class StringComparator
     }
 
     /**
-     * Returns the similarity index between two string using the
-     * Dice index and the string chunking strategy set via
-     * the setStrategy*() methods.
-     *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     *
-     * @return float Similarity index between the strings
-     *
-     * @throws NoStrategySetException
-     */
-    public function similarityDice($s1, $s2): float
-    {
-        $set1 = $this->chunkString($s1);
-        $set2 = $this->chunkString($s2);
-        var_dump($set1);
-        echo "<br>";
-        var_dump($set2);
-        echo "<br>";
-        return $this->diceIndex($set1, $set2);
-    }
-
-    /**
      * Returns the value of the Dice index for two given sets
      * in the form of arrays.
      *
@@ -440,30 +470,6 @@ class StringComparator
     private function diceIndex($set1, $set2): float
     {
         return 2 * count($this->getIntersection($set1, $set2)) / (count($set1) + count($set2));
-    }
-
-
-    /**
-     * Returns the similarity index between two string using the
-     * Overlap index and the string chunking strategy set via
-     * the setStrategy*() methods.
-     *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     *
-     * @return float Similarity index between the strings
-     *
-     * @throws NoStrategySetException
-     */
-    public function similarityOverlap($s1, $s2): float
-    {
-        $set1 = $this->chunkString($s1);
-        $set2 = $this->chunkString($s2);
-        var_dump($set1);
-        echo "<br>";
-        var_dump($set2);
-        echo "<br>";
-        return $this->OverlapIndex($set1, $set2);
     }
 
     /**
