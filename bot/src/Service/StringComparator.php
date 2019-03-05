@@ -26,36 +26,6 @@ class StringComparator
      */
     private $n;
 
-    /**
-     * @var string
-     */
-    private $lastInputS1;
-
-    /**
-     * @var string
-     */
-    private $lastInputS2;
-
-    /**
-     * @var string
-     */
-    private $lastStrat;
-
-    /**
-     * @var string
-     */
-    private $lastN;
-
-    /**
-     * @var array
-     */
-    private $lastS1Chunks;
-
-    /**
-     * @var array
-     */
-    private $lastS2Chunks;
-
     public function __construct()
     {
     }
