@@ -15,6 +15,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "longman/telegram-bot": "0.54.1",
+        "spatie/pdf-to-text": "^1.1",
         "symfony/console": "4.2.*",
         "symfony/dotenv": "4.2.*",
         "symfony/flex": "^1.1",
