@@ -135,10 +135,6 @@ class StringComparator
     {
         $set1 = $this->chunkString($s1);
         $set2 = $this->chunkString($s2);
-        var_dump($set1);
-        echo '<br>';
-        var_dump($set2);
-        echo '<br>';
 
         return $this->jaccardIndex($set1, $set2);
     }
@@ -159,10 +155,6 @@ class StringComparator
     {
         $set1 = $this->chunkString($s1);
         $set2 = $this->chunkString($s2);
-        var_dump($set1);
-        echo '<br>';
-        var_dump($set2);
-        echo '<br>';
 
         return $this->diceIndex($set1, $set2);
     }
@@ -183,10 +175,6 @@ class StringComparator
     {
         $set1 = $this->chunkString($s1);
         $set2 = $this->chunkString($s2);
-        var_dump($set1);
-        echo '<br>';
-        var_dump($set2);
-        echo '<br>';
 
         return $this->OverlapIndex($set1, $set2);
     }
@@ -245,6 +233,7 @@ class StringComparator
         $clean_string = $this->removeWhitespaces($string);
 
         // este método da problemas con characteres multi-byte
+        // TODO buscar alternativa
         return str_split($clean_string, $n);
     }
 
