@@ -2,23 +2,51 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\ORM\Configuration;
+use App\Kernel;
 use Doctrine\ORM\EntityManager;
-use Longman\TelegramBot\DB;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Helper for managing the database connections and Doctrine's entity manager.
+ * Singleton that keeps a unique entity manager created and ready to use. Some
+ * of the code bits have been taken from https://stackoverflow.com/questions/203336/creating-the-singleton-design-pattern-in-php5.
  */
-class DoctrineBootstrap
+final class DoctrineBootstrap
 {
     /**
      * Entity Manager.
      *
      * @var EntityManager
      */
-    protected $em;
+    private $em;
+
+    /**
+     * Make constructor private, so nobody can create a new object.
+     */
+    private function __construct()
+    {
+    }
+
+    /**
+     * Make clone magic method private, so nobody can clone the instance.
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * Make sleep magic method private, so nobody can serialize the instance.
+     */
+    private function __sleep()
+    {
+    }
+
+    /**
+     * Make wakeup magic method private, so nobody can unserialize the instance.
+     */
+    private function __wakeup()
+    {
+    }
 
     /**
      * Return the entity manager.
@@ -34,47 +62,33 @@ class DoctrineBootstrap
         return $this->em;
     }
 
+    public static function instance()
+    {
+        static $instance = false;
+        if (!$instance) {
+            $instance = new self();
+        }
+
+        return $instance;
+    }
+
     /**
-     * Create an entity manager. If there is an active PDO connection then it
-     * creates it from there. Check the link for the configuration reference.
+     * Pull an entity manager from the Symfony container.
      *
-     * @see https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/reference/advanced-configuration.html#advanced-configuration
+     * The kernel is booted and the container compiled, which takes into
+     * account the parameters defined in the Symfony configuration files. When
+     * an entity manager is pulled from the container, the instance will have
+     * been configured as defined in the aforementioned parameters.
+     *
+     * One of the advantages is that the configuration will be consistent even
+     * if for some reason, for example, the cache directory paths are changed.
      */
     private function createEntityManager(): void
     {
-        $devMode = $_SERVER['APP_DEBUG'];
-
-        if ($devMode) {
-            $cache = new ArrayCache();
-        } else {
-            $cache = new ApcCache();
-        }
-
-        $config = new Configuration();
-        $config->setMetadataCacheImpl($cache);
-        $driverImpl = $config->newDefaultAnnotationDriver(PROJECT_ROOT.'/src/Entity', false);
-        $config->setMetadataDriverImpl($driverImpl);
-        $config->setQueryCacheImpl($cache);
-        $config->setProxyDir(PROJECT_ROOT.'/var/cache/Doctrine/proxies');
-        $config->setProxyNamespace('App\Proxies');
-        $config->setAutoGenerateProxyClasses($devMode);
-
-        $activePdo = DB::getPdo();
-        if (\is_null($activePdo)) {
-            $connectionParams = [
-                'driver' => 'pdo_mysql',
-                'user' => getenv('MYSQL_USERNAME'),
-                'password' => getenv('MYSQL_USER_PASSWORD'),
-                'dbname' => getenv('MYSQL_DATABASE_NAME'),
-                'host' => getenv('MYSQL_HOST'),
-            ];
-        } else {
-            $connectionParams = [
-                'driver' => 'pdo_mysql',
-                'pdo' => DB::getPdo(),
-            ];
-        }
-
-        $this->em = EntityManager::create($connectionParams, $config);
+        $kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+        $kernel->boot();
+        $container = $kernel->getContainer();
+        $this->em = $container->get('doctrine.orm.default_entity_manager');
+        $kernel->terminate(new Request(), new Response());
     }
 }
