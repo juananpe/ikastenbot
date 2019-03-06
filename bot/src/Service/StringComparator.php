@@ -232,9 +232,7 @@ class StringComparator
     {
         $clean_string = $this->removeWhitespaces($string);
 
-        // este método da problemas con characteres multi-byte
-        // TODO buscar alternativa
-        return str_split($clean_string, $n);
+        return $this->mb_split($clean_string, $n);
     }
 
     /**
@@ -288,6 +286,28 @@ class StringComparator
             default:
                 throw new NoStrategySetException();
         }
+    }
+
+    /**
+     * Splits a given string into an array of substring of the
+     * specified size.
+     *
+     * @param string $string String to split
+     * @param int    $size   Length of each substring
+     *
+     * @return array Array with the substrings obtained from the split
+     */
+    private function mb_split($string, $size): array
+    {
+        $res = [];
+        $length = mb_strlen($string, 'utf-8');
+        $index = 0;
+        for ($i = 0; $i < $length; $i += $size) {
+            $res[$index] = mb_substr($string, $i, $size, 'utf-8');
+            ++$index;
+        }
+
+        return $res;
     }
 
     /**
