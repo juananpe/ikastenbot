@@ -127,7 +127,7 @@ class DisableNotificationsCommand extends UserCommand
         // Fetch the task from the database
         $taskId = $text;
 
-        $db = new DoctrineBootstrap();
+        $db = DoctrineBootstrap::instance();
         $em = $db->getEntityManager();
         $task = $em->getRepository(Task::class)->find($taskId);
 

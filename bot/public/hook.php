@@ -8,29 +8,12 @@ declare(strict_types=1);
  * of cleanness.
  */
 
+use App\Entity\DoctrineBootstrap;
 use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\TelegramLog;
 
 define('PROJECT_ROOT', __DIR__.'/..');
-
-$mysqlHost = getenv('MYSQL_HOST');
-$mysqlDatabase = getenv('MYSQL_DATABASE_NAME');
-$mysqlUser = getenv('MYSQL_USERNAME');
-$mysqlUserPassword = getenv('MYSQL_USER_PASSWORD');
-
-$isMysqlEnabled = !(empty($mysqlHost) || empty($mysqlDatabase) || empty($mysqlUser) || empty($mysqlUserPassword));
-
-if ($isMysqlEnabled) {
-    $mysqlCredentials = [
-        'host' => $mysqlHost,
-        'user' => $mysqlUser,
-        'password' => $mysqlUserPassword,
-        'database' => $mysqlDatabase,
-    ];
-}
-
-unset($mysqlHost, $mysqlDatabase, $mysqlUser, $mysqlUserPassword);
 
 try {
     // Create Telegram API object
@@ -44,10 +27,11 @@ try {
         PROJECT_ROOT.'/botcommands/',
     ]);
 
-    // Enable MySQL
-    if ($isMysqlEnabled) {
-        $telegram->enableMySql($mysqlCredentials);
-    }
+    // Enable MySQL for the bot.
+    $doctrineBootstrap = DoctrineBootstrap::instance();
+    $entityManager = $doctrineBootstrap->getEntityManager();
+
+    $telegram->enableMySql($entityManager->getConnection()->getWrappedConnection());
 
     // Set download and upload paths
     $downloadDirectory = getenv('TELEGRAM_DOWNLOAD_DIRECTORY');
