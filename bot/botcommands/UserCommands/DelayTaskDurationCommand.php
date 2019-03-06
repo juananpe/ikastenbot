@@ -112,7 +112,7 @@ class DelayTaskCommand extends UserCommand
         }
 
         $ms = new MessageSenderService();
-        $db = new DoctrineBootstrap();
+        $db = DoctrineBootstrap::instance();
         $em = $db->getEntityManager();
 
         switch ($state) {

@@ -82,7 +82,7 @@ class SendGpFileCommand extends UserCommand
         }
 
         // Fetch the user from the database and the corresponding GanttProject
-        $db = new DoctrineBootstrap();
+        $db = DoctrineBootstrap::instance();
         $em = $db->getEntityManager();
         $user = $em->getRepository(User::class)->find($user_id);
         $ganttProject = $em->getRepository(GanttProject::class)->findLatestGanttProject($user);
