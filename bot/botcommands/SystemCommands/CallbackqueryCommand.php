@@ -51,7 +51,7 @@ class CallbackqueryCommand extends SystemCommand
          * If the message is a callback noop response, edit the original message
          * and disable the keyboard
          */
-        if (\preg_match('/^affirmative_noop+$/', $callback_data)) {
+        if (\preg_match('/^affirmative_noop$/', $callback_data)) {
             // Prepare the message to send it
             $message = $callback_query->getMessage();
 
