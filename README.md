@@ -37,24 +37,14 @@ skip the `Symfony` framework entirely. Any other request is processed by
 ## Setting up the variables for development —database, paths, etc.—
 1. Copy `.env` to `.env.local` with `cp .env .env.local`.
 2. Fill the relevant data in the `.env.local` file.
-3. Import Longman's `.sql` file with
-    `mysql -u USER -p DATABASE < vendor/longman/telegram-bot/structure.sql`.
-4. Import `structure.sql` file with
-    `mysql -u USER -p DATABASE < bot/src/Migrations/structure.sql`.
-5. Perform `Doctrine`'s migrations with
+3. Import database schema and content with
     `php bin/console doctrine:migrations:migrate --no-interaction`
-
-Regarding the database: the step \#3 imports Longman's `.sql` file and creates
-the base tables. The step \#4 imports the legacy database's additions plus the
-required rows for the bot to work with the legacy commands. Finally, the step
-\#5 loads the model of this application —`src/Entity`— into the database.
 
 ## Setting up the application in production
 ### Generic configuration
 1. Set [environment variables][apache-docs-env] that match the `.env` file.
 2. Point the web server to the `public/` directory of this project.
-3. Repeat steps `3.` to `5.` from the previous section in the production
-    server.
+3. Repeat step `3.` from the previous section in the production server.
 4. Make sure `www-data` has writing permissions for the `var/` directory.
 
 Step number \#4 is needed as `cache` is stored in `var`, as well as `gan`
