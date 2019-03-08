@@ -22,32 +22,67 @@ class StringComparator
     private $currentStrategy;
 
     /**
-     * @var string
+     * @var int
      */
     private $n;
 
+    /**
+     * @return string The string identifier for the string-chunking strategy currently set
+     */
     public function getCurrentStrategy(): string
     {
         return $this->currentStrategy;
     }
 
-    public function getN(): string
+    /**
+     * @return int The parameter n set for the current strategy or null if not applicable
+     */
+    public function getN(): int
     {
         return $this->n;
     }
 
+    /**
+     * Set the string-chunking strategy to tokens.
+     *
+     * After having all of their whitespaces, tabs, etc. unified into single whitespaces,
+     * Strings will be divided into tokens: substrings separated by whitespaces.
+     *
+     * e.g.: "ab     cd efg   hi j" -> ["ab", "cd", "efg", "hi", "j"]
+     */
     public function setStrategyTokens()
     {
         $this->currentStrategy = self::STRAT_TOKENS;
         $this->n = null;
     }
 
+    /**
+     * Set the string-chunking strategy to n-grams with n equals $n.
+     *
+     * After having all of their whitespaces, tabs, etc. removed,
+     * Strings will be divided into n-grams: substrings of n adjacent characters.
+     *
+     * e.g.: "ab     cd efg   hi j" -> (n = 3) ["abc", "def", "ghi", "j"]
+     *
+     * @param $n Value for the parameter n
+     */
     public function setStrategyNGrams($n)
     {
         $this->currentStrategy = self::STRAT_N_GRAMS;
         $this->n = $n;
     }
 
+    /**
+     * Set the string-chunking strategy to n-shingles with n equals $n.
+     *
+     * After having all of their whitespaces, tabs, etc. unified into single whitespaces,
+     * Strings will be divided into n-shingles: substrings formed by n adjacent tokens
+     * joined by whitespaces.
+     *
+     * e.g.: "ab     cd efg   hi j" -> (n = 2) ["ab cd", "efg hi", "j"]
+     *
+     * @param $n Value for the parameter n
+     */
     public function setStrategyNShingles($n)
     {
         $this->currentStrategy = self::STRAT_N_SHINGLES;
