@@ -12,9 +12,9 @@ use App\Exception\NoStrategySetException;
 
 class StringComparator
 {
-    const STRAT_TOKENS = 'strat_tokens';
-    const STRAT_N_GRAMS = 'strat_n_grams';
-    const STRAT_N_SHINGLES = 'strat_n_shingles';
+    const STRATEGY_TOKENS = 'strategy_tokens';
+    const STRATEGY_N_GRAMS = 'strategy_n_grams';
+    const STRATEGY_N_SHINGLES = 'strategy_n_shingles';
 
     /**
      * @var string
@@ -52,7 +52,7 @@ class StringComparator
      */
     public function setStrategyTokens()
     {
-        $this->currentStrategy = self::STRAT_TOKENS;
+        $this->currentStrategy = self::STRATEGY_TOKENS;
         $this->n = null;
     }
 
@@ -68,7 +68,7 @@ class StringComparator
      */
     public function setStrategyNGrams($n)
     {
-        $this->currentStrategy = self::STRAT_N_GRAMS;
+        $this->currentStrategy = self::STRATEGY_N_GRAMS;
         $this->n = $n;
     }
 
@@ -85,7 +85,7 @@ class StringComparator
      */
     public function setStrategyNShingles($n)
     {
-        $this->currentStrategy = self::STRAT_N_SHINGLES;
+        $this->currentStrategy = self::STRATEGY_N_SHINGLES;
         $this->n = $n;
     }
 
@@ -311,11 +311,11 @@ class StringComparator
     private function chunkString($string): array
     {
         switch ($this->currentStrategy) {
-            case self::STRAT_TOKENS:
+            case self::STRATEGY_TOKENS:
                 return $this->chunkToTokens($string);
-            case self::STRAT_N_GRAMS:
+            case self::STRATEGY_N_GRAMS:
                 return $this->chunkToNGrams($string, $this->n);
-            case self::STRAT_N_SHINGLES:
+            case self::STRATEGY_N_SHINGLES:
                 return $this->chunkToNShingles($string, $this->n);
             default:
                 throw new NoStrategySetException();
