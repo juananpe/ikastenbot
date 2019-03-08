@@ -64,7 +64,7 @@ class StringComparator
      *
      * e.g.: "ab     cd efg   hi j" -> (n = 3) ["abc", "def", "ghi", "j"]
      *
-     * @param $n Value for the parameter n
+     * @param int $n Value for the parameter n
      */
     public function setStrategyNGrams($n)
     {
@@ -81,7 +81,7 @@ class StringComparator
      *
      * e.g.: "ab     cd efg   hi j" -> (n = 2) ["ab cd", "efg hi", "j"]
      *
-     * @param $n Value for the parameter n
+     * @param int $n Value for the parameter n
      */
     public function setStrategyNShingles($n)
     {
