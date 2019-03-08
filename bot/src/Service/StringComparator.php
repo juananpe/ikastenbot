@@ -429,7 +429,9 @@ class StringComparator
      */
     private function jaccardIndex($set1, $set2): float
     {
-        return count($this->getIntersection($set1, $set2)) / count($this->getUnion($set1, $set2));
+        $setUnion = array_unique(array_merge($set1, $set2));
+
+        return count(array_intersect($set1, $set2)($set1, $set2)) / count($setUnion);
     }
 
     /**
@@ -443,7 +445,7 @@ class StringComparator
      */
     private function diceIndex($set1, $set2): float
     {
-        return 2 * count($this->getIntersection($set1, $set2)) / (count($set1) + count($set2));
+        return 2 * count(array_intersect($set1, $set2)($set1, $set2)) / (count($set1) + count($set2));
     }
 
     /**
@@ -457,34 +459,6 @@ class StringComparator
      */
     private function overlapIndex($set1, $set2): float
     {
-        return count($this->getIntersection($set1, $set2)) / min(count($set1), count($set2));
-    }
-
-    /**
-     * Return the intersection of two given sets
-     * in the form of arrays.
-     *
-     * @param array $set1 First set
-     * @param array $set2 Second set
-     *
-     * @return array Intersection of the two sets
-     */
-    private function getIntersection($set1, $set2): array
-    {
-        return array_intersect($set1, $set2);
-    }
-
-    /**
-     * Return the union of two given sets
-     * in the form of arrays.
-     *
-     * @param array $set1 First set
-     * @param array $set2 Second set
-     *
-     * @return array Union of the two sets
-     */
-    private function getUnion($set1, $set2): array
-    {
-        return array_unique(array_merge($set1, $set2));
+        return count(array_intersect($set1, $set2)($set1, $set2)) / min(count($set1), count($set2));
     }
 }
