@@ -113,7 +113,8 @@ class StringComparator
      */
     public function similarityOA($s1, $s2): float
     {
-        $distance = $this->distanceOA($s1, $s2);
+        // calculate the Optimal Alignment edit distance between the two strings
+        $distance = $this->editDistance($s1, $s2, false, false);
 
         return $this->similarityEdit($s1, $s2, $distance);
     }
@@ -129,7 +130,8 @@ class StringComparator
      */
     public function similarityLevenshtein($s1, $s2): float
     {
-        $distance = $this->distanceLevenshtein($s1, $s2);
+        // calculate the Optimal Alignment edit distance between the two strings
+        $distance = $this->editDistance($s1, $s2, true, false);
 
         return $this->similarityEdit($s1, $s2, $distance);
     }
@@ -145,7 +147,8 @@ class StringComparator
      */
     public function similarityDamLev($s1, $s2): float
     {
-        $distance = $this->distanceDamLev($s1, $s2);
+        // calculatethe Levenshtein edit distance between the two strings
+        $distance = $this->editDistance($s1, $s2, true, true);
 
         return $this->similarityEdit($s1, $s2, $distance);
     }
@@ -356,45 +359,6 @@ class StringComparator
         $maxLen = max(strlen($s1), strlen($s2));
 
         return ($maxLen - $distance) / $maxLen;
-    }
-
-    /**
-     * Returns the Optimal Alignment edit distance between two strings.
-     *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     *
-     * @return int Optimal Alignment edit distance between the strings
-     */
-    private function distanceOA($s1, $s2): int
-    {
-        return $this->editDistance($s1, $s2, false, false);
-    }
-
-    /**
-     * Returns the Levenshtein edit distance between two strings.
-     *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     *
-     * @return int Levenshtein edit distance between the strings
-     */
-    private function distanceLevenshtein($s1, $s2): int
-    {
-        return $this->editDistance($s1, $s2, true, false);
-    }
-
-    /**
-     * Returns the Damerau-Levenshtein edit distance between two strings.
-     *
-     * @param string $s1 First string
-     * @param string $s2 Second string
-     *
-     * @return int Damerau-Levenshtein edit distance between the strings
-     */
-    private function distanceDamLev($s1, $s2): int
-    {
-        return $this->editDistance($s1, $s2, true, true);
     }
 
     /**
