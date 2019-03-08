@@ -118,8 +118,8 @@ have to run:
 ## Code tests
 In order to run tests you have to make the following steps:
 
-1. Import Longman's `vendor/longman/telegram-bot/structure.sql` file, and this
-    project's `sql/structure.sql` into the testing database.
+1. Prepare the database with
+    `php bin/console doctrine:migrations:migrate --no-interaction`
 2. Copy `.env.test` to `.env.test.local` with `cp .env.test .env.test.local`.
 3. Set the testing database parameters in the `.env.test.local` file.
 4. Run `phpunit` by issuing the following command from the project root:
