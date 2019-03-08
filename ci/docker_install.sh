@@ -8,7 +8,6 @@ set -xe
 # Install required packages:
 # git for composer
 # libzip-dev zip unzip for docker-php-ext
-# mysql-client to import the schemas
 apt-get update -yqq
 apt-get install git libzip-dev zip unzip -yqq
 
