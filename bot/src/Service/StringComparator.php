@@ -19,16 +19,16 @@ class StringComparator
     /**
      * @var string
      */
-    private $strat;
+    private $currentStrategy;
 
     /**
      * @var string
      */
     private $n;
 
-    public function getStrat(): string
+    public function getCurrentStrategy(): string
     {
-        return $this->strat;
+        return $this->currentStrategy;
     }
 
     public function getN(): string
@@ -38,19 +38,19 @@ class StringComparator
 
     public function setStrategyTokens()
     {
-        $this->strat = self::STRAT_TOKENS;
+        $this->currentStrategy = self::STRAT_TOKENS;
         $this->n = null;
     }
 
     public function setStrategyNGrams($n)
     {
-        $this->strat = self::STRAT_N_GRAMS;
+        $this->currentStrategy = self::STRAT_N_GRAMS;
         $this->n = $n;
     }
 
     public function setStrategyNShingles($n)
     {
-        $this->strat = self::STRAT_N_SHINGLES;
+        $this->currentStrategy = self::STRAT_N_SHINGLES;
         $this->n = $n;
     }
 
@@ -272,7 +272,7 @@ class StringComparator
      */
     private function chunkString($string): array
     {
-        switch ($this->strat) {
+        switch ($this->currentStrategy) {
             case self::STRAT_TOKENS:
                 return $this->chunkToTokens($string);
             case self::STRAT_N_GRAMS:
