@@ -26,10 +26,6 @@ class StringComparator
      */
     private $n;
 
-    public function __construct()
-    {
-    }
-
     public function getStrat(): string
     {
         return $this->strat;
