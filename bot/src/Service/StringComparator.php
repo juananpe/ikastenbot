@@ -431,7 +431,7 @@ class StringComparator
     {
         $setUnion = array_unique(array_merge($set1, $set2));
 
-        return count(array_intersect($set1, $set2)($set1, $set2)) / count($setUnion);
+        return count(array_intersect($set1, $set2)) / count($setUnion);
     }
 
     /**
@@ -445,7 +445,7 @@ class StringComparator
      */
     private function diceIndex($set1, $set2): float
     {
-        return 2 * count(array_intersect($set1, $set2)($set1, $set2)) / (count($set1) + count($set2));
+        return 2 * count(array_intersect($set1, $set2)) / (count($set1) + count($set2));
     }
 
     /**
@@ -459,6 +459,6 @@ class StringComparator
      */
     private function overlapIndex($set1, $set2): float
     {
-        return count(array_intersect($set1, $set2)($set1, $set2)) / min(count($set1), count($set2));
+        return count(array_intersect($set1, $set2)) / min(count($set1), count($set2));
     }
 }
