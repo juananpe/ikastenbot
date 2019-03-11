@@ -130,7 +130,7 @@ class StringComparator
      */
     public function similarityLevenshtein($s1, $s2): float
     {
-        // calculate the Optimal Alignment edit distance between the two strings
+        // calculate the Levenshtein edit distance between the two strings
         $distance = $this->editDistance($s1, $s2, true, false);
 
         return $this->similarityEdit($s1, $s2, $distance);
@@ -147,7 +147,7 @@ class StringComparator
      */
     public function similarityDamLev($s1, $s2): float
     {
-        // calculatethe Levenshtein edit distance between the two strings
+        // calculatethe Damerau-Levenshtein edit distance between the two strings
         $distance = $this->editDistance($s1, $s2, true, true);
 
         return $this->similarityEdit($s1, $s2, $distance);
