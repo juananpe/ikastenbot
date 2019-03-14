@@ -31,7 +31,7 @@ try {
     $doctrineBootstrap = DoctrineBootstrap::instance();
     $entityManager = $doctrineBootstrap->getEntityManager();
 
-    $telegram->enableMySql($entityManager->getConnection()->getWrappedConnection());
+    $telegram->enableExternalMySql($entityManager->getConnection()->getWrappedConnection());
 
     // Set download and upload paths
     $downloadDirectory = getenv('TELEGRAM_DOWNLOAD_DIRECTORY');
