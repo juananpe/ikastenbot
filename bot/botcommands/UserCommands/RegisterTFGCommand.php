@@ -59,6 +59,9 @@ class registerTFGCommand extends UserCommand
     {
         $idiomas = ['es', 'eus'];
 
+        $profes = ['Juanan' => 4694560, 'Anaje' => 2, 'Koldo' => 3, 'Aitziber' => 4, 'Maider' => 5, 'Oscar' => 6];
+        $centros = ['Informática Bilbao' => 1, 'Informática Donostia' => 2];
+
         $message = $this->getMessage();
 
         $chat = $message->getChat();
@@ -138,7 +141,8 @@ class registerTFGCommand extends UserCommand
                 $text = '';
 
             // no break
-            case 1:
+        case 1:
+
                 if ('' === $text || !in_array($text, $idiomas)) {
                     $notes['state'] = 1;
                     $this->conversation->update();
@@ -170,11 +174,75 @@ class registerTFGCommand extends UserCommand
 
                 $notes['lang'] = $text;
 
-            // no break
-            case 2:
+           // no break
+        case 2:
+
+            if ('' === $text || !in_array($text, array_keys($profes))) {
+                $notes['state'] = 2;
                 $this->conversation->update();
 
-                $anadido = $db->registerTFG($user_id, $notes['name'], $notes['lang']);
+                $r = $db->getUserLang($user_id);
+                $lang = $r[0]['language'];
+
+                $res = $db->getSystemMessageByTag('registerTFGChooseATeacher', $lang);
+                $texto = array_pop($res); // FIXME
+                $data['text'] = $texto;
+                $keyboard = new Keyboard([]);
+
+                foreach (array_keys($profes) as $profe) {
+                    $keyboard->addRow($profe);
+                }
+
+                $keyboard->setResizeKeyboard(true)
+                    ->setOneTimeKeyboard(true)
+                    ->setSelective(false)
+                    ;
+
+                $data['reply_markup'] = $keyboard;
+
+                $result = Request::sendMessage($data);
+
+                break;
+            }
+
+                $notes['director'] = $text;
+           // no break
+            case 3:
+                if ('' === $text || !in_array($text, array_keys($centros))) {
+                    $notes['state'] = 3;
+                    $this->conversation->update();
+
+                    $r = $db->getUserLang($user_id);
+                    $lang = $r[0]['language'];
+
+                    $res = $db->getSystemMessageByTag('registerTFGChooseACenter', $lang);
+                    $texto = $res[$lang];
+                    $data['text'] = $texto;
+                    $keyboard = new Keyboard([]);
+
+                    foreach (array_keys($centros) as $centro) {
+                        $keyboard->addRow($centro);
+                    }
+
+                    $keyboard->setResizeKeyboard(true)
+                        ->setOneTimeKeyboard(true)
+                        ->setSelective(false)
+                    ;
+
+                    $data['reply_markup'] = $keyboard;
+
+                    $result = Request::sendMessage($data);
+
+                    break;
+                }
+
+                $notes['center'] = $text;            // no break
+
+            // no break
+            case 4:
+                $this->conversation->update();
+
+                $anadido = $db->registerTFG($user_id, $notes['name'], $notes['lang'], $centros[$notes['center']], $profes[$notes['director']]);
                 if ($anadido) {
                     $r = $db->getUserLang($user_id);
                     $lang = $r[0]['language'];

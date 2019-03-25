@@ -57,8 +57,10 @@ class DBikastenbot
         }
 
         try {
-            $query = "select ${lang} from messages_lang where tag= '${tag}'";
+            $query = 'select :language from system_message where tag= :tag';
             $sth = self::$pdo->prepare($query);
+            $sth->bindParam(':language', $lang);
+            $sth->bindParam(':tag', $tag);
             $sth->execute();
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -196,15 +198,22 @@ class DBikastenbot
         return $result;
     }
 
-    public function registerTFG($user, $name, $lang)
+    public function registerTFG($user, $name, $lang, $center, $director)
     {
         if (!self::isDbConnected()) {
             return null;
         }
 
         try {
-            $query = "INSERT into TFG (`user`,`name`,lang) VALUES (${user},'${name}','${lang}')";
+            $query = 'INSERT into TFG (`user`,`name`,lang, center, director) 
+			VALUES (:user,:name,:lang,:center,:director)';
             $sth = self::$pdo->prepare($query);
+            $sth->bindParam(':user', $user);
+            $sth->bindParam(':name', $name);
+            $sth->bindParam(':lang', $lang);
+            $sth->bindParam(':center', $center);
+            $sth->bindParam(':director', $director);
+
             $result = $sth->execute();
         } catch (PDOException $e) {
             throw new TelegramException($e->getMessage());
@@ -406,6 +415,26 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new TelegramException($e->getMessage());
+        }
+
+        return $result;
+    }
+
+    public function getSystemMessageByTag($tag, $lang)
+    {
+        if (!self::isDbConnected()) {
+            return null;
+        }
+
+        try {
+            $query = 'select :lang from system_message where tag= :tag';
+            $sth = self::$pdo->prepare($query);
+            $sth->bindParam(':lang', $lang);
+            $sth->bindParam(':tag', $tag);
+            $sth->execute();
+            $result = $sth->fetch(\PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
