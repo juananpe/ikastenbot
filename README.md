@@ -62,6 +62,7 @@ recommended —taken from [Symfony docs][symfony-docs-apache-prod]—:
     DocumentRoot /var/www/project/public
     <Directory /var/www/project/public>
         AllowOverride None
+	Require all granted
         Order Allow,Deny
         Allow from All
 
