@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+
+  mariadb:
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bot
+      MYSQL_USER: bot_user
+      MYSQL_PASSWORD: bot_password
+    ports:
+      - "8500:3306"
+
+  nginx:
+    build:
+      target: dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./bot:/var/www/bot
+
+  php-fpm:
+    build:
+      target: dev
+    volumes:
+      - ./bot:/var/www/bot

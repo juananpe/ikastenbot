@@ -126,6 +126,34 @@ In order to run tests you have to make the following steps:
 4. Run `phpunit` by issuing the following command from the project root:
     `bin/phpunit`
 
+# Docker
+## Development environment
+This will set up a quick development environment will all the needed
+dependencies met. The web application will be exposed on port `8000`, and
+`MariaDB` will be accessible on port `8500`. `Xdebug` is enabled, and works on
+the regular `9000` port.
+
+1. Do `docker-compose up` —it will build the images and start the containers—.
+2. Create `cache` and `log` directories inside `var/`, and give them `777`
+    permissions<sup>1</sup>.
+3. Install Composer's dependencies:
+    `docker-compose exec php-fpm composer install`
+4. Set up the environment variables in a local `env` file. Do
+    `cp .env .env.local` and fill it with the parameters that work for
+    you<sup>2</sup>.
+5. Set up the database:
+    `docker-compose exec php-fpm php bin/console doctrine:migrations:migrate`
+
+**1:** The reasons for giving such loose permissions are:
+1. Both the web server and the host user will need write permissions to the
+    directories —e.g. when running a php bin/console command—.
+2. This setup is supposed to be used in a development environment.
+
+**2:** The database connection parameters are specified in the
+`docker-compose.override.yml` file. The `host` of the database must be set to
+be the same as the service name in the `docker-compose.override.yml` file:
+`mariadb`.
+
 [gantt-project-page]: https://www.ganttproject.biz/
 [apache-docs-env]: https://httpd.apache.org/docs/2.4/mod/mod_env.html#setenv
 [wiki-front-controller]: https://en.wikipedia.org/wiki/Front_controller

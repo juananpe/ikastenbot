@@ -1,0 +1,46 @@
+version: '3.4'
+
+services:
+
+  mariadb:
+    image: mariadb:10.4
+    networks:
+      - backend
+    restart: always
+    volumes:
+      - database-data:/var/lib/mysql
+
+  nginx:
+    build:
+      context: docker/nginx
+      dockerfile: Dockerfile
+    depends_on:
+      - php-fpm
+    image: ikastenbot-nginx:latest
+    networks:
+      - backend
+    volumes:
+      - nginx-logs-data:/var/log/nginx
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile: docker/php-fpm/Dockerfile
+    depends_on:
+      - mariadb
+    image: ikastenbot-php-fpm:latest
+    networks:
+      - backend
+    tty: true
+    working_dir: /var/www/bot
+
+networks:
+  backend:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
+
+volumes:
+  database-data:
+  nginx-logs-data:
