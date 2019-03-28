@@ -14,7 +14,7 @@ final class Version20190220172401 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'First migration of the domain';
+        return 'Imports base schemas and initial domain —GanttProject, Task and User—';
     }
 
     public function up(Schema $schema): void
@@ -22,10 +22,10 @@ final class Version20190220172401 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
-        // Import Longman's structure.sql file
-        $this->addSql(\file_get_contents(__DIR__.'/../../vendor/longman/telegram-bot/structure.sql'));
+        // Import php-telegram-bot's base schema file, from the 0.54.1 version
+        $this->addSql(\file_get_contents(__DIR__.'/BaseSchemas/schema_ptb_v0541.sql'));
         // Import legacy structure.sql file
-        $this->addSql(\file_get_contents(__DIR__.'/structure.sql'));
+        $this->addSql(\file_get_contents(__DIR__.'/BaseSchemas/schema_legacy.sql'));
 
         // Import model
         $this->addSql('CREATE TABLE task (id INT AUTO_INCREMENT NOT NULL, ganttproject_id INT DEFAULT NULL, gan_id INT NOT NULL, chat_id BIGINT NOT NULL, task_name VARCHAR(255) NOT NULL, task_date DATETIME NOT NULL, task_isMilestone TINYINT(1) NOT NULL, task_duration INT NOT NULL, notify TINYINT(1) NOT NULL, INDEX IDX_527EDB25777B1DBF (ganttproject_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
