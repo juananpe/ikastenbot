@@ -29,6 +29,9 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ###########################
 FROM base as dev
 
+# Set development settings for php-fpm
+RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+
 # Install XDebug and enable remote debugging
 RUN pecl install \
     xdebug-2.6.0 \
