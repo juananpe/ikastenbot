@@ -14,6 +14,7 @@ use App\Service\MessageSenderService;
 use App\Service\XmlUtilsService;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
+use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Request;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -139,8 +140,60 @@ class DelayTaskCommand extends UserCommand
                     return $ms->sendMessage();
                 }
 
+                // Store the task ID for the follow up
+                $notes['taskId'] = $text;
+
+                // Advance to the next state of the conversation
+                $notes['state'] = $state + 1;
+
+                // Store the notes in the database
+                $this->conversation->update();
+
+                $responseMessage = '¿De qué forma quieres retrasar la tarea?';
+                $responseMessage .= "\n<b>A</b>: Incrementar la duración de la tarea manteniendo su fecha de inicio.";
+                $responseMessage .= "\n<b>B</b>: Retrasa la fecha de inicio de la tarea manteniendo su duración.";
+
+                $keyboard = new Keyboard('A', 'B');
+                $keyboard->setResizeKeyboard(true)
+                    ->setOneTimeKeyboard(true)
+                    ->setSelective($selective_reply)
+                ;
+
+                $data['chat_id'] = $chat_id;
+                $data['text'] = $responseMessage;
+                $data['parse_mode'] = 'HTML';
+                $data['reply_markup'] = $keyboard;
+
+                return Request::sendMessage($data);
+            case 1:
+
+                /*
+                 * If the command doesn't come with the correct parameters,
+                 * ask the user again
+                 */
+                if (!in_array($text, ['A', 'B'])) {
+                    $responseMessage = 'Por favor, selecciona una de las opciones:';
+                    $responseMessage .= "\n<b>A</b>: Incrementar la duración de la tarea manteniendo su fecha de inicio.";
+                    $responseMessage .= "\n<b>B</b>: Retrasa la fecha de inicio de la tarea manteniendo su duración.";
+
+                    $keyboard = new Keyboard('A', 'B');
+                    $keyboard->setResizeKeyboard(true)
+                        ->setOneTimeKeyboard(true)
+                        ->setSelective($selective_reply)
+                    ;
+
+                    $data['chat_id'] = $chat_id;
+                    $data['text'] = $responseMessage;
+                    $data['parse_mode'] = 'HTML';
+                    $data['reply_markup'] = $keyboard;
+
+                    return Request::sendMessage($data);
+                }
+
+                $notes['mode'] = 'B' === $text;
+
                 // Fetch the task from the database
-                $taskId = $text;
+                $taskId = $notes['taskId'];
 
                 $task = $em->getRepository(Task::class)->find($taskId);
 
@@ -173,9 +226,6 @@ class DelayTaskCommand extends UserCommand
                     return $ms->sendMessage();
                 }
 
-                // Store the task ID for the follow up
-                $notes['taskId'] = $taskId;
-
                 // Advance to the next state of the conversation
                 $notes['state'] = $state + 1;
 
@@ -195,7 +245,7 @@ class DelayTaskCommand extends UserCommand
                 $ms->prepareMessage($chat_id, $responseMessage, 'HTML');
 
                 return $ms->sendMessage();
-            case 1:
+            case 2:
                 // If the supplied delay isn't a number, ask again
                 if (!\preg_match('/^[0-9]+$/', $text)) {
                     $ms->prepareMessage($chat_id, 'Please send a positive number');
@@ -212,7 +262,7 @@ class DelayTaskCommand extends UserCommand
                 $ganttProject = $task->getGanttProject();
 
                 // Get the path of the Gan file
-                $ganFilePath = DOWNLOAD_DIR.'/'.$ganttProject->getUser()->getId();
+                $ganFilePath = $this->telegram->getDownloadPath().'/'.$ganttProject->getUser()->getId();
                 $ganFilePath .= '/'.$ganttProject->getVersion();
                 $ganFilePath .= '/'.$ganttProject->getFileName();
 
@@ -222,7 +272,7 @@ class DelayTaskCommand extends UserCommand
                     $ganFilePath,
                     $task,
                     (int) $text,
-                    false
+                    $notes['mode']
                 );
 
                 // Save the new Gan file
