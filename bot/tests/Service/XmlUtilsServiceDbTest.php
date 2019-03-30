@@ -394,7 +394,8 @@ final class XmlUtilsDbTest extends KernelTestCase
         $resultingXml = $this->xu->delayTaskAndDependants(
             $this->ganDir.'TwelveTasks.gan',
             $task,
-            3
+            3,
+            false
         );
 
         // Get all the tasks and check if there are a correct amount of them
@@ -443,7 +444,8 @@ final class XmlUtilsDbTest extends KernelTestCase
         $resultingXml = $this->xu->delayTaskAndDependants(
             $this->ganDir.'TwelveTasks.gan',
             $task,
-            3
+            3,
+            false
         );
 
         // Get all the tasks and check if there are a correct amount of them
