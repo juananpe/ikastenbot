@@ -331,23 +331,64 @@ class addTFGCommand extends UserCommand
 
     private function cleanText($texto_original)
     {
-        //Juntar las frases que empiezan por minuscula
-        $texto_juntado = preg_replace('/(\n)([a-záéíóúñ]+)/u', ' $2', $texto_original);
+        // Fix accents
+        $fixed_accents = $this->fixAccents($texto_original);
 
-        //Quitar URLs
-        $sin_url = preg_replace('/https?:[^ \n][ \n]/u', '', $texto_juntado);
+        // Remove all linebreaks
+        $replacements = [
+            "\n" => ' ',
+            "\r" => ' ',
+        ];
+        $single_line = strtr($fixed_accents, $replacements);
 
-        //Conseguir las frases
-        $letras_frase = 30;
-        $filtro = '/([A-Z¡¿][^\.!?\n]{'.$letras_frase.',}[\.!?][ \n])/u';
-        $frases = preg_match_all($filtro, $sin_url, $matches);
+        // Remove URLs
+        $no_url = preg_replace('/\s?https?:[^\s]*?(?=\.?\s)/u', '', $single_line);
+
+        // Separate sentences with linebreaks
+        // A sentence starts with a letter, ¿ or ¡ and ends with a period, ? or !
+        // followed by a whitespace.
+        $filter = '/[¡¿]?[\w].*?[\.!?](?=\s)/u';
+        preg_match_all($filter, $no_url.' ', $matches);
 
         $text = '';
         foreach ($matches[0] as $m) {
-            $text = $text.PHP_EOL.$m;
+            $text .= $m.PHP_EOL;
         }
 
         return $text;
+    }
+
+    /**
+     * Fixes cases of letters with accents being represented by the letter
+     * followed by a combining accent character.
+     * Those occurrences are replaced by the corresponding accented letter character.
+     *
+     * @param string $text The text to be processed
+     *
+     * @return string The text after having been fixed
+     */
+    private function fixAccents($text): string
+    {
+        // '́ '-> U+0301
+        // '̃ '-> U+0303
+
+        $replacePairs = [
+            'á' => 'á', // a + ́  -> á
+            'Á' => 'Á', // A + ́  -> Á
+            'é' => 'é', // e + ́  -> é
+            'É' => 'É', // E + ́  -> É
+            'í' => 'í', // i + ́  -> í
+            'ı́' => 'í', // ı + ́  -> í
+            'Í' => 'Í', // I + ́  -> Í
+            'ó' => 'ó', // o + ́  -> ó
+            'Ó' => 'Ó', // O + ́  -> Ó
+            'ú' => 'ú', // u + ́  -> ú
+            'Ú' => 'Ú', // U + ́  -> Ú
+            'ñ' => 'ñ', // n + ̃  -> ñ
+            'Ñ' => 'Ñ', // N + ̃  -> Ń
+        ];
+
+        return strtr($text, $replacePairs);
     }
 
     private function pdf2text($pdf_path, $user_id, $version)
