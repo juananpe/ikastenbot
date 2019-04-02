@@ -237,7 +237,13 @@ class CorrectTFGCommand extends UserCommand
         $text = fread($fitx, filesize($txt_path));
         fclose($fitx);
 
-        $data = ['language' => 'es', 'text' => $text];
+        // the altLanguage parameter helps treat words from another
+        // language differently from spelling errors.
+        $data = [
+            'language' => 'es',
+            'altLanguages' => 'en-GB, en-US',
+            'text' => $text,
+        ];
         $data = http_build_query($data);
         $context_options = [
             'http' => [
@@ -338,7 +344,14 @@ class CorrectTFGCommand extends UserCommand
             //        echo $correction;
 
             $json_correction = json_decode($correction, true);
-            $errors = $json_correction['matches'];
+            $potential_errors = $json_correction['matches'];
+            $errors = [];
+            // filter out different language words
+            foreach ($potential_errors as $e) {
+                if ('Hint' != $e['type']['typeName']) {
+                    $errors[] = $e;
+                }
+            }
             $db = DBikastenbot::getInstance();
             $lang = $notes['user_lang'];
 
