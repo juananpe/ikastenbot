@@ -157,6 +157,31 @@ class SendGpFileCommand extends UserCommand
 
             return $ms->sendMessage();
         }
+
+        // deactivate all notifications from the previous version(s) of this user's gantt.
+        // find all the tasks from the same user and a previous version of the gantt that are
+        // set to notify
+        $q = $em->createQuery('SELECT t FROM App\Entity\Task t
+        JOIN t.ganttProject g
+        WHERE t.chat_id = :chat_id
+        AND g.version < :version
+        AND t.notify = :notify');
+
+        $q->setParameters([
+            'chat_id' => $chat_id,
+            'version' => $ganttProject->getVersion(),
+            'notify' => true,
+        ]);
+
+        $previousTasks = $q->getResult();
+
+        // set notify to false on these tasks and persist them to the DB
+        foreach ($previousTasks as $task) {
+            $task->setNotify(false);
+            $em->persist($task);
+        }
+        $em->flush();
+
         $this->conversation->stop();
         $ms->prepareMessage($chat_id, $this->prepareFormattedMessage($tasks), 'HTML', $selective_reply);
         $result = $ms->sendMessage();
