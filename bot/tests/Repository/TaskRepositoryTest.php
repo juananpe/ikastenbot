@@ -101,7 +101,7 @@ class TaskRepositoryTest extends KernelTestCase
     /**
      * @covers \App\Repository\TaskRepository::findTasksReachToday()
      */
-    public function testFindTodayTasks()
+    public function testFindTasksReachToday()
     {
         $tasks = $this->em->getRepository(Task::class)->findTasksReachToday();
 
@@ -152,11 +152,11 @@ class TaskRepositoryTest extends KernelTestCase
     }
 
     /**
-     * @covers \App\Repository\TaskRepository::findTasksReachToday()
+     * @covers \App\Repository\TaskRepository::findMilestonesReachToday()
      */
-    public function testFindTodayTasksRestrictToMilestones()
+    public function testFindMilestonesReachToday()
     {
-        $tasks = $this->em->getRepository(Task::class)->findTasksReachToday(true);
+        $tasks = $this->em->getRepository(Task::class)->findMilestonesReachToday();
 
         // Check that only one milestone has been fetched
         $this->assertSame(1, \count($tasks));
@@ -175,11 +175,11 @@ class TaskRepositoryTest extends KernelTestCase
     }
 
     /**
-     * @covers \App\Repository\TaskRepository::findTasksToNotifyAbout()
+     * @covers \App\Repository\TaskRepository::findMilestonesToNotifyAbout()
      */
-    public function testFindTasksNotifyAboutRestrictToMilestones()
+    public function testFindMilestonesToNotifyAbout()
     {
-        $results = $this->em->getRepository(Task::class)->findTasksToNotifyAbout(true);
+        $results = $this->em->getRepository(Task::class)->findMilestonesToNotifyAbout();
 
         // Check that only four milestones have been fetched
         $this->assertSame(4, \count($results));

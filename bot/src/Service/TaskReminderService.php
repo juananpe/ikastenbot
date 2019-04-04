@@ -105,7 +105,7 @@ class TaskReminderService
      */
     public function notifyUsersMilestonesToday(): void
     {
-        $milestones = $this->em->getRepository(Task::class)->findTasksReachToday(true);
+        $milestones = $this->em->getRepository(Task::class)->findMilestonesReachToday();
 
         foreach ($milestones as $milestone) {
             $text = '';
@@ -128,7 +128,7 @@ class TaskReminderService
      */
     public function notifyUsersMilestonesClose(): void
     {
-        $results = $this->em->getRepository(Task::class)->findTasksToNotifyAbout(true);
+        $results = $this->em->getRepository(Task::class)->findMilestonesToNotifyAbout();
 
         foreach ($results as $row) {
             $text = '';
