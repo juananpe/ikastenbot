@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\GanttProject;
 use App\Entity\Task;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 class TaskRepository extends EntityRepository
 {
@@ -17,54 +18,58 @@ class TaskRepository extends EntityRepository
     const DATEDIFFFUNCTION = 'DATE_DIFF(t.date, CURRENT_DATE())';
 
     /**
-     * Finds Tasks that are to be reached today.
-     *
-     * @param bool $restrictToMilestones Restrict search to milestones
-     *                                   only
+     * Finds tasks that are to be reached today.
      *
      * @return Task[] Array of tasks
      */
-    public function findTasksReachToday(bool $restrictToMilestones = false): array
+    public function findTasksReachToday(): array
     {
-        $qb = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->getTasksReachTodayQueryBuilder();
 
-        $qb->select('t')
-            ->from(Task::class, 't')
-            ->where(self::DATEDIFFFUNCTION.' = 0')
-            ->andWhere('t.notify = 1')
-        ;
-
-        if ($restrictToMilestones) {
-            $qb->andWhere('t.isMilestone = 1');
-        }
-
-        return $qb->getQuery()->getResult();
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**
-     * Finds Tasks that are to be reached in 30, 15, 3, 2 or 1 days.
+     * Find tasks that are milestones and are to be reached today.
      *
-     * @param bool $restrictToMilestones Restrict search to milestones only
+     * @return Task[] Array of tasks that are milestones
+     */
+    public function findMilestonesReachToday(): array
+    {
+        $queryBuilder = $this->getTasksReachTodayQueryBuilder();
+
+        $queryBuilder->andWhere('t.isMilestone = 1');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
+     * Finds tasks that are to be reached in 30, 15, 3, 2 or 1 days from today.
      *
-     * @return task[][] Nested array of Tasks and their corresponding days to
+     * @return Task[][] Nested array of tasks and their corresponding days to
      *                  be reached
      */
-    public function findTasksToNotifyAbout(bool $restrictToMilestones = false)
+    public function findTasksToNotifyAbout(): array
     {
-        $qb = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->getTasksReachCloseQueryBuilder();
 
-        $qb->select('t', self::DATEDIFFFUNCTION)
-            ->from(Task::class, 't')
-            ->where(self::DATEDIFFFUNCTION.' IN (1, 2, 3, 15, 30)')
-            ->andWhere('t.notify = 1')
-            ->orderBy(self::DATEDIFFFUNCTION)
-        ;
+        return $queryBuilder->getQuery()->getResult();
+    }
 
-        if ($restrictToMilestones) {
-            $qb->andWhere('t.isMilestone = 1');
-        }
+    /**
+     * Finds tasks that are milestones and are to be reached in 30, 15, 3, 2 or
+     * 1 days from today.
+     *
+     * @return Task[][] Nested array of tasks that are milestones and their
+     *                  corresponding days to be reached
+     */
+    public function findMilestonesToNotifyAbout(): array
+    {
+        $queryBuilder = $this->getTasksReachCloseQueryBuilder();
 
-        return $qb->getQuery()->getResult();
+        $queryBuilder->andWhere('t.isMilestone = 1');
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**
@@ -92,5 +97,45 @@ class TaskRepository extends EntityRepository
         ;
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
+     * Returns a query builder for tasks that are to be reached today and
+     * have the notify flag on.
+     *
+     * @return QueryBuilder The resulting query builder
+     */
+    private function getTasksReachTodayQueryBuilder(): QueryBuilder
+    {
+        $queryBuilder = $this->_em->createQueryBuilder();
+
+        $queryBuilder->select('t')
+            ->from(Task::class, 't')
+            ->where(self::DATEDIFFFUNCTION.' = 0')
+            ->andWhere('t.notify = 1')
+        ;
+
+        return $queryBuilder;
+    }
+
+    /**
+     * Returns a query builder for tasks that are to be reach close and have
+     * the notify flag on. Close means exactly 1, 2, 3, 15 or 30 days from
+     * today.
+     *
+     * @return QueryBuilder The resulting query builder
+     */
+    private function getTasksReachCloseQueryBuilder(): QueryBuilder
+    {
+        $queryBuilder = $this->_em->createQueryBuilder();
+
+        $queryBuilder->select('t', self::DATEDIFFFUNCTION)
+            ->from(Task::class, 't')
+            ->where(self::DATEDIFFFUNCTION.' IN (1, 2, 3, 15, 30)')
+            ->andWhere('t.notify = 1')
+            ->orderBy(self::DATEDIFFFUNCTION)
+        ;
+
+        return $queryBuilder;
     }
 }
