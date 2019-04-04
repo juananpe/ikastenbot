@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Repository;
 
+use App\Entity\GanttProject;
 use App\Entity\Task;
 use App\Tests\Fixtures\GanttProjectDataLoader;
 use App\Tests\Fixtures\TaskDataLoader;
@@ -201,6 +202,105 @@ class TaskRepositoryTest extends KernelTestCase
             $this->assertTrue(\in_array($row[0]->getName(), $this->plusDays));
             $this->assertTrue(\in_array($row[0]->getDate()->format('Y-m-d'), $expectedDates));
             $this->assertSame($row[0]->getIsMilestone(), true);
+        }
+    }
+
+    /**
+     * @covers \App\Repository\TaskRepository::findFromPreviousVersionsOfGanttProject()
+     */
+    public function testFetchNoTasksFromOutdatedGanttProjects()
+    {
+        $ganttProject = $this->em->getRepository(GanttProject::class)->find(1);
+
+        $result = $this->em->getRepository(Task::class)->findFromPreviousVersionsOfGanttProject(12345, $ganttProject);
+
+        /*
+         * It shouldn't find any tasks since there's only one GanttProject in the
+         * database
+         */
+        $this->assertEquals(0, \count($result));
+    }
+
+    /**
+     * @covers \App\Repository\TaskRepository::findFromPreviousVersionsOfGanttProject()
+     */
+    public function testFetchTasksFromOutdatedGanttProject()
+    {
+        $this->reloadGanttAndTaskFixtures(1);
+
+        // Fetch the latest inserted GanttProject
+        $ganttProjectRepository = $this->em->getRepository(GanttProject::class);
+        $latestGanttProject = $ganttProjectRepository->find(2);
+
+        // Fetch the tasks
+        $taskRepository = $this->em->getRepository(Task::class);
+        $resultCollection = $taskRepository->findFromPreviousVersionsOfGanttProject(12345, $latestGanttProject);
+
+        // There should be 24 inserted tasks which meet the condition
+        $this->assertEquals(24, \count($resultCollection));
+
+        // Check that the GanttVersion and the notify flag are set as expected
+        foreach ($resultCollection as $result) {
+            $this->assertEquals(1, $result->getGanttProject()->getVersion());
+            $this->assertEquals(true, $result->getNotify());
+        }
+    }
+
+    /**
+     * @covers \App\Repository\TaskRepository::findFromPreviousVersionsOfGanttProject()
+     */
+    public function testFetchTasksFromManyOutdatedGanttProjects()
+    {
+        $this->reloadGanttAndTaskFixtures(4);
+
+        // Fetch the latest inserted GanttProject
+        $ganttProjectRepository = $this->em->getRepository(GanttProject::class);
+        $latestGanttProject = $ganttProjectRepository->find(5);
+
+        // Fetch the tasks
+        $taskRepository = $this->em->getRepository(Task::class);
+        $resultCollection = $taskRepository->findFromPreviousVersionsOfGanttProject(12345, $latestGanttProject);
+
+        // There should be 24 * 4 = 96 inserted tasks which meet the condition
+        $this->assertEquals(96, \count($resultCollection));
+
+        // Check that the GanttVersion and the notify flag are set as expected
+        foreach ($resultCollection as $result) {
+            $this->assertLessThan(5, $result->getGanttProject()->getVersion());
+            $this->assertEquals(true, $result->getNotify());
+        }
+    }
+
+    /**
+     * Reloads GanttProject and Task fixtures as many times as specified. It
+     * assumes that a first version of the GanttProject exists.
+     *
+     * @param int $times The amount of times to load the fixtures
+     */
+    private function reloadGanttAndTaskFixtures(int $times)
+    {
+        for ($i = 0; $i < $times; ++$i) {
+            /*
+            *The user table needs to be truncated in order to avoid duplication
+            * constraint issues.
+            */
+            $connection = $this->em->getConnection();
+            $platform = $connection->getDatabasePlatform();
+
+            $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
+
+            $truncate = $platform->getTruncateTableSQL('user');
+            $connection->executeUpdate($truncate);
+
+            $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+
+            // Load a new GanttProject and new Tasks into the database
+            $loader = new Loader();
+            $loader->addFixture(new UserDataLoader());
+            $loader->addFixture(new GanttProjectDataLoader(null, 2 + $i, null));
+            $loader->addFixture(new TaskDataLoader());
+            $executor = new ORMExecutor($this->em, new ORMPurger());
+            $executor->execute($loader->getFixtures(), true);
         }
     }
 }
