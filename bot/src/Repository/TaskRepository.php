@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\GanttProject;
 use App\Entity\Task;
 use Doctrine\ORM\EntityRepository;
 
@@ -64,5 +65,32 @@ class TaskRepository extends EntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Finds the tasks belonging to the previous versions of the given
+     * GanttProject.
+     *
+     * @param int          $chatId       The chat id of the tasks to be fetched
+     * @param GanttProject $ganttProject The newest GanttProject
+     *
+     * @return Task[] The resulting tasks
+     */
+    public function findFromPreviousVersionsOfGanttProject(int $chatId, GanttProject $ganttProject): array
+    {
+        $queryBuilder = $this->_em->createQueryBuilder();
+
+        $queryBuilder
+            ->select('t')
+            ->from(Task::class, 't')
+            ->join('t.ganttProject', 'g')
+            ->where('t.chat_id = :chatId')
+            ->andWhere('t.notify = true')
+            ->andWhere('g.version < :version')
+            ->setParameter('chatId', $chatId)
+            ->setParameter('version', $ganttProject->getVersion())
+        ;
+
+        return $queryBuilder->getQuery()->getResult();
     }
 }
