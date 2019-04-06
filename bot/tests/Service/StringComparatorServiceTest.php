@@ -156,7 +156,7 @@ class StringComparatorServiceTest extends TestCase
     }
 
     /**
-     * @covers \App\Service\StringComparator::similarityDice()
+     * @covers \App\Service\StringComparator::similarityOverlap()
      */
     public function testSimilarityOverlap()
     {
