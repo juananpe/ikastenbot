@@ -99,7 +99,7 @@ class StringComparator
      */
     public function removeNumbersAtStart($string): string
     {
-        return preg_replace('/\s*\.*([1-9]+(\.)*)+/', '', $string, 1);
+        return preg_replace('/^([1-9]+(\.)*)+\s*/', '', $string, 1);
     }
 
     /**
