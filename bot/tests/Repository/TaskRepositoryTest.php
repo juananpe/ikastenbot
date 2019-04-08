@@ -6,20 +6,20 @@ namespace App\Tests\Repository;
 
 use App\Entity\GanttProject;
 use App\Entity\Task;
+use App\Tests\DatabaseTestCase;
 use App\Tests\Fixtures\GanttProjectDataLoader;
 use App\Tests\Fixtures\TaskDataLoader;
 use App\Tests\Fixtures\UserDataLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
  * @covers \App\Repository\GanttProjectRepository
  *
  * @internal
  */
-class TaskRepositoryTest extends KernelTestCase
+class TaskRepositoryTest extends DatabaseTestCase
 {
     /**
      * Doctrine entity manager.
@@ -38,20 +38,10 @@ class TaskRepositoryTest extends KernelTestCase
     public function setUp(): void
     {
         // Get entity manager
-        $kernel = self::bootKernel();
-
-        $this->em = $kernel->getContainer()
-            ->get('doctrine')
-            ->getManager()
-        ;
-
-        // Get pdo
-        $pdo = $this->em->getConnection()->getWrappedConnection();
+        $this->em = $this->getEntityManager();
 
         // Insert test chat to avoid triggering foreign key constraints
-        $insert_test_chat = 'INSERT INTO `chat` (id) VALUES (12345)';
-        $statement = $pdo->prepare($insert_test_chat);
-        $statement->execute();
+        $this->insertDummyTestChat();
 
         // Load fixtures into the database for the tests
         $loader = new Loader();
@@ -75,27 +65,15 @@ class TaskRepositoryTest extends KernelTestCase
 
     public function tearDown(): void
     {
-        $connection = $this->em->getConnection();
-        $platform = $connection->getDatabasePlatform();
+        $tables = [
+            'chat',
+            'ganttproject',
+            'task',
+            'user',
+        ];
 
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
-
-        $truncate = $platform->getTruncateTableSQL('chat');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('user');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('ganttproject');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('task');
-        $connection->executeUpdate($truncate);
-
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
-
-        $this->em->close();
-        $this->em = null; // avoid memory leaks
+        $this->truncateTables($tables);
+        $this->closeEntityManager();
     }
 
     /**
@@ -284,15 +262,8 @@ class TaskRepositoryTest extends KernelTestCase
             *The user table needs to be truncated in order to avoid duplication
             * constraint issues.
             */
-            $connection = $this->em->getConnection();
-            $platform = $connection->getDatabasePlatform();
-
-            $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
-
-            $truncate = $platform->getTruncateTableSQL('user');
-            $connection->executeUpdate($truncate);
-
-            $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+            $table = ['user'];
+            $this->truncateTables($table);
 
             // Load a new GanttProject and new Tasks into the database
             $loader = new Loader();
