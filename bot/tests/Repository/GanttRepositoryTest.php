@@ -6,14 +6,14 @@ namespace App\Tests\Repository;
 
 use App\Entity\GanttProject;
 use App\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\DatabaseTestCase;
 
 /**
  * @covers \App\Repository\GanttProjectRepository
  *
  * @internal
  */
-class GanttProjectRepositoryTest extends KernelTestCase
+class GanttProjectRepositoryTest extends DatabaseTestCase
 {
     /**
      * Doctrine entity manager.
@@ -31,12 +31,7 @@ class GanttProjectRepositoryTest extends KernelTestCase
 
     public function setUp(): void
     {
-        $kernel = self::bootKernel();
-
-        $this->dem = $kernel->getContainer()
-            ->get('doctrine')
-            ->getManager()
-        ;
+        $this->dem = $this->getEntityManager();
 
         $fixedDate = new \DateTime('2021-01-01');
 
@@ -68,21 +63,13 @@ class GanttProjectRepositoryTest extends KernelTestCase
 
     public function tearDown(): void
     {
-        $connection = $this->dem->getConnection();
-        $platform = $connection->getDatabasePlatform();
+        $tables = [
+            'ganttproject',
+            'user',
+        ];
 
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
-
-        $truncate = $platform->getTruncateTableSQL('user');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('ganttproject');
-        $connection->executeUpdate($truncate);
-
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
-
-        $this->dem->close();
-        $this->dem = null; // avoid memory leaks
+        $this->truncateTables($tables);
+        $this->closeEntityManager();
     }
 
     /**

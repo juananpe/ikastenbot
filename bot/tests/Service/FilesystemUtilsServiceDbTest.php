@@ -8,6 +8,7 @@ use App\Entity\GanttProject;
 use App\Entity\Task;
 use App\Service\FilesystemUtilsService;
 use App\Service\XmlUtilsService;
+use App\Tests\DatabaseTestCase;
 use App\Tests\Fixtures\GanttProjectDataLoader;
 use App\Tests\Fixtures\SingleTaskDataLoader;
 use App\Tests\Fixtures\UserDataLoader;
@@ -15,7 +16,6 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -23,7 +23,7 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @internal
  */
-final class FilesystemUtilsServiceDbTest extends KernelTestCase
+final class FilesystemUtilsServiceDbTest extends DatabaseTestCase
 {
     /**
      * Entity manager.
@@ -49,20 +49,10 @@ final class FilesystemUtilsServiceDbTest extends KernelTestCase
     public function setUp(): void
     {
         // Get the entity manager
-        $kernel = self::bootKernel();
-
-        $this->em = $kernel->getContainer()
-            ->get('doctrine')
-            ->getManager()
-        ;
-
-        // Get pdo
-        $pdo = $this->em->getConnection()->getWrappedConnection();
+        $this->em = $this->getEntityManager();
 
         // Insert a test chat to avoid the foreign key constraints
-        $insert_test_chat = 'INSERT INTO chat (id) VALUES (12345)';
-        $statement = $pdo->prepare($insert_test_chat);
-        $statement->execute();
+        $this->insertDummyTestChat();
 
         // Load fixtures into the database for the tests
         $loader = new Loader();
@@ -91,27 +81,15 @@ final class FilesystemUtilsServiceDbTest extends KernelTestCase
 
     public function tearDown(): void
     {
-        $connection = $this->em->getConnection();
-        $platform = $connection->getDatabasePlatform();
+        $tables = [
+            'chat',
+            'ganttproject',
+            'task',
+            'user',
+        ];
 
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
-
-        $truncate = $platform->getTruncateTableSQL('chat');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('user');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('ganttproject');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('task');
-        $connection->executeUpdate($truncate);
-
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
-
-        $this->em->close();
-        $this->em = null; // avoid memory leaks
+        $this->truncateTables($tables);
+        $this->closeEntityManager();
     }
 
     /**

@@ -9,13 +9,13 @@ use App\Entity\Task;
 use App\Entity\User;
 use App\Exception\NoTasksException;
 use App\Service\XmlUtilsService;
+use App\Tests\DatabaseTestCase;
 use App\Tests\Fixtures\GanttProjectDataLoader;
 use App\Tests\Fixtures\UserDataLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Longman\TelegramBot\Telegram;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -23,7 +23,7 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @internal
  */
-final class XmlUtilsDbTest extends KernelTestCase
+final class XmlUtilsDbTest extends DatabaseTestCase
 {
     /**
      * Entity manager.
@@ -66,32 +66,16 @@ final class XmlUtilsDbTest extends KernelTestCase
      */
     private $xu;
 
-    /**
-     * PDO object.
-     *
-     * @var PDO
-     */
-    private $pdo;
-
     public function setUp(): void
     {
         $this->dataDir = __DIR__.'/../_data/task_data/';
         $this->ganDir = $this->dataDir.'gan/';
 
         // Get entity manager
-        $kernel = self::bootKernel();
+        $this->em = $this->getEntityManager();
 
-        $this->em = $kernel->getContainer()
-            ->get('doctrine')
-            ->getManager()
-        ;
-
-        // Get pdo
-        $this->pdo = $this->em->getConnection()->getWrappedConnection();
-
-        $insert_test_chat = 'INSERT INTO chat (id) VALUES (12345)';
-        $statement = $this->pdo->prepare($insert_test_chat);
-        $statement->execute();
+        // Insert a test chat to avoid the foreign key constraints
+        $this->insertDummyTestChat();
 
         // Load fixtures into the database for the tests
         $this->xu = new XmlUtilsService($this->em);
@@ -110,27 +94,15 @@ final class XmlUtilsDbTest extends KernelTestCase
 
     public function tearDown(): void
     {
-        $connection = $this->em->getConnection();
-        $platform = $connection->getDatabasePlatform();
+        $tables = [
+            'chat',
+            'ganttproject',
+            'task',
+            'user',
+        ];
 
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0;');
-
-        $truncate = $platform->getTruncateTableSQL('chat');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('user');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('ganttproject');
-        $connection->executeUpdate($truncate);
-
-        $truncate = $platform->getTruncateTableSQL('task');
-        $connection->executeUpdate($truncate);
-
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
-
-        $this->em->close();
-        $this->em = null; // avoid memory leaks
+        $this->truncateTables($tables);
+        $this->closeEntityManager();
     }
 
     /**
@@ -139,7 +111,7 @@ final class XmlUtilsDbTest extends KernelTestCase
     public function testInsertTwelveTasksDb()
     {
         $telegram = new Telegram('123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'TestO');
-        $telegram->enableExternalMySql($this->pdo);
+        $telegram->enableExternalMySql($this->em->getConnection()->getWrappedConnection());
 
         $this->xu->extractStoreTasks(
             $this->ganDir.'TwelveTasks.gan',
@@ -169,7 +141,7 @@ final class XmlUtilsDbTest extends KernelTestCase
     public function testInsertTwelveTasksWithNoNameDb()
     {
         $telegram = new Telegram('123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'TestO');
-        $telegram->enableExternalMySql($this->pdo);
+        $telegram->enableExternalMySql($this->em->getConnection()->getWrappedConnection());
 
         $this->xu->extractStoreTasks(
             $this->ganDir.'TwelveTasksNoName.gan',
@@ -213,7 +185,7 @@ final class XmlUtilsDbTest extends KernelTestCase
     public function testExtractStoreTasksNotifyPastTasksOff()
     {
         $telegram = new Telegram('123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'TestO');
-        $telegram->enableExternalMySql($this->pdo);
+        $telegram->enableExternalMySql($this->em->getConnection()->getWrappedConnection());
 
         $this->xu->extractStoreTasks(
             $this->ganDir.'TwelveTasksWithPastTasks.gan',
