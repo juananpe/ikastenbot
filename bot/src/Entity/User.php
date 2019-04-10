@@ -365,18 +365,4 @@ class User
 
         return $this;
     }
-
-    /**
-     * Set the associated Gantt project.
-     *
-     * @param GanttProject $ganttProject The associated Gantt project
-     *
-     * @return self
-     */
-    public function setGanttProject(GanttProject $ganttProject): self
-    {
-        $this->ganttProject = $ganttProject;
-
-        return $this;
-    }
 }
