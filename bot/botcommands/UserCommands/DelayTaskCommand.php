@@ -22,7 +22,7 @@ use Symfony\Component\Process\Process;
 class DelayTaskCommand extends UserCommand
 {
     /**
-     * Conversation
+     * Conversation.
      *
      * @var Conversation
      */

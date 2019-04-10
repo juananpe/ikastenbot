@@ -26,7 +26,7 @@ use Longman\TelegramBot\Request;
 class CallbackqueryCommand extends SystemCommand
 {
     /**
-     * Conversation
+     * Conversation.
      *
      * @var Conversation
      */
