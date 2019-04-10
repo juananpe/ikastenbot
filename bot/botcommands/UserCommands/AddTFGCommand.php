@@ -186,7 +186,7 @@ class AddTFGCommand extends UserCommand
                                                        $res = $db->getSystemMessageById(10, $lang);
                                                        $texto = $res[$lang];
                                                        $data['text'] = $texto;
-                                                   } catch (Exception $e) {
+                                                   } catch (\Exception $e) {
                                                        $r = $db->getUserLang($user_id);
                                                        $lang = $r[0]['language'];
 
@@ -240,7 +240,7 @@ class AddTFGCommand extends UserCommand
                                                 $res = $db->getSystemMessageById(10, $lang);
                                                 $texto = $res[$lang];
                                                 $data['text'] = $texto;
-                                            } catch (Exception $e) {
+                                            } catch (\Exception $e) {
                                                 $r = $db->getUserLang($user_id);
                                                 $lang = $r[0]['language'];
 
