@@ -17,7 +17,7 @@ use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Request;
 use Spatie\PdfToText\Pdf;
 
-class addTFGCommand extends UserCommand
+class AddTFGCommand extends UserCommand
 {
     /**
      * @var string
