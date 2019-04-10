@@ -75,7 +75,7 @@ class User
      *
      * @ORM\Column(type="datetime", name="created_at", nullable=true, options={"comment": "Entry date creation"})
      *
-     * @var DateTime
+     * @var \DateTime
      */
     protected $createdAt;
 
@@ -84,7 +84,7 @@ class User
      *
      * @ORM\Column(type="datetime", name="updated_at", nullable=true, options={"comment": "Entry date update"})
      *
-     * @var DateTime
+     * @var \DateTime
      */
     protected $updatedAt;
 

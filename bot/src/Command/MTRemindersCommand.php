@@ -26,14 +26,14 @@ class MTRemindersCommand extends Command
     /**
      * Entity manager.
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $entityManager;
 
     /**
      * Message formatter utils.
      *
-     * @var MessageFormatterUtils
+     * @var MessageFormatterUtilsService
      */
     protected $messageFormatterUtils;
 

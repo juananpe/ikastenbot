@@ -18,7 +18,7 @@ class TaskReminderService
     /**
      * Entity manager.
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $em;
 
