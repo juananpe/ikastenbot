@@ -2,4 +2,5 @@ parameters:
     level: 0
     paths:
         - 'botcommands'
+        - 'public'
         - 'src'
