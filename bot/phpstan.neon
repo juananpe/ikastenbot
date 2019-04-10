@@ -1,7 +1,12 @@
 parameters:
+    includes:
+        - vendor/phpstan/phpstan-phpunit/extension.neon
+        - vendor/phpstan/phpstan-phpunit/rules.neon
     level: 0
     paths:
         - 'botcommands'
         - 'public'
         - 'src'
         - 'tests'
+    autoload_directories:
+            - %rootDir%/../../../bin/.phpunit/phpunit-6.5/src
