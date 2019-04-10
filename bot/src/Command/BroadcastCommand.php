@@ -44,6 +44,12 @@ class BroadcastCommand extends Command
         ;
     }
 
+    protected function insertDates(string $text, string $dates)
+    {
+        // $text = str_replace("##", $dates, $text);
+        return $text.' '.$dates;
+    }
+
     protected function convocatorias(\PDO $pdoInstance)
     {
         $pdo = $pdoInstance;
@@ -86,8 +92,8 @@ class BroadcastCommand extends Command
             $sth->execute();
             $msg = $sth->fetch(\PDO::FETCH_ASSOC);
 
-            $msg_date['es'] = insertDates($msg['es'], $convo['to']);
-            $msg_date['eus'] = insertDates($msg['eus'], $convo['to']);
+            $msg_date['es'] = $this->insertDates($msg['es'], $convo['to']);
+            $msg_date['eus'] = $this->insertDates($msg['eus'], $convo['to']);
 
             foreach ($users as $user) {
                 $user_id = $user['id'];
