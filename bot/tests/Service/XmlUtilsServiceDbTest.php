@@ -23,7 +23,7 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @internal
  */
-final class XmlUtilsDbTest extends DatabaseTestCase
+final class XmlUtilsServiceDbTest extends DatabaseTestCase
 {
     /**
      * Entity manager.
