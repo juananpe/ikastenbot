@@ -242,7 +242,7 @@ class SendGpFileCommand extends UserCommand
     /**
      * Prepare a formatted message with the tasks to be reminded of.
      *
-     * @param App\Entity\Task[] $tasks Array of Task objects
+     * @param array $tasks Array of Task objects
      *
      * @return string Formatted message in HTML
      */

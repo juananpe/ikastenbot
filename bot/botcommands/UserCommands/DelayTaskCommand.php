@@ -22,6 +22,13 @@ use Symfony\Component\Process\Process;
 class DelayTaskCommand extends UserCommand
 {
     /**
+     * Conversation.
+     *
+     * @var Conversation
+     */
+    protected $conversation;
+
+    /**
      * {@inheritdoc}
      */
     protected $name = 'delaytask';

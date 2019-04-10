@@ -24,3 +24,4 @@ test:
     - php bin/console doctrine:schema:validate
     - vendor/bin/php-cs-fixer fix --config=.php_cs.dist --dry-run --verbose
     - ./bin/phpunit
+    - vendor/bin/phpstan analyse

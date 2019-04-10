@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
  * @internal
  * @coversNothing
  */
-final class XmlUtilsTest extends TestCase
+final class XmlUtilsServiceTest extends TestCase
 {
     /**
      * Directory path containing test files.
@@ -32,7 +32,7 @@ final class XmlUtilsTest extends TestCase
     /**
      * XML Utils.
      *
-     * @var XmlUtils
+     * @var XmlUtilsService
      */
     private $xu;
 

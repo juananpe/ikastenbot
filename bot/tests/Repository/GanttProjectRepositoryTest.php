@@ -18,7 +18,7 @@ class GanttProjectRepositoryTest extends DatabaseTestCase
     /**
      * Doctrine entity manager.
      *
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $dem;
 

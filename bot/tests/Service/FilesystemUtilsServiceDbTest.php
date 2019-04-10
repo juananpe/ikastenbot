@@ -35,9 +35,16 @@ final class FilesystemUtilsServiceDbTest extends DatabaseTestCase
     /**
      * Filesystem utils.
      *
-     * @var FilesystemUtils
+     * @var FilesystemUtilsService
      */
     private $fu;
+
+    /**
+     * Symfony filesystem.
+     *
+     * @var Filesystem
+     */
+    private $filesystem;
 
     /**
      * Test GanttProject.
@@ -45,6 +52,13 @@ final class FilesystemUtilsServiceDbTest extends DatabaseTestCase
      * @var GanttProject
      */
     private $ganttProject;
+
+    /**
+     * Xml utils service.
+     *
+     * @var XmlUtilsService
+     */
+    private $xu;
 
     public function setUp(): void
     {

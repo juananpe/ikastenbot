@@ -22,6 +22,13 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
  */
 class NotificationManagerServiceDbTest extends DatabaseTestCase
 {
+    /**
+     * Entity Manager.
+     *
+     * @return \Doctrine\ORM\EntityManager
+     */
+    protected $em;
+
     public function setUp(): void
     {
         // Get the entity manager

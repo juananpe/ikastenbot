@@ -14,7 +14,7 @@ use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Request;
 
-class registerTFGCommand extends UserCommand
+class RegisterTFGCommand extends UserCommand
 {
     /**
      * @var string

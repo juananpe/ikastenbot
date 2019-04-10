@@ -75,7 +75,7 @@ class User
      *
      * @ORM\Column(type="datetime", name="created_at", nullable=true, options={"comment": "Entry date creation"})
      *
-     * @var DateTime
+     * @var \DateTime
      */
     protected $createdAt;
 
@@ -84,7 +84,7 @@ class User
      *
      * @ORM\Column(type="datetime", name="updated_at", nullable=true, options={"comment": "Entry date update"})
      *
-     * @var DateTime
+     * @var \DateTime
      */
     protected $updatedAt;
 
@@ -362,20 +362,6 @@ class User
                 $ganttProject->setUser(null);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * Set the associated Gantt project.
-     *
-     * @param GanttProject $ganttProject The associated Gantt project
-     *
-     * @return self
-     */
-    public function setGanttProject(GanttProject $ganttProject): self
-    {
-        $this->ganttProject = $ganttProject;
 
         return $this;
     }

@@ -18,9 +18,16 @@ class TaskReminderService
     /**
      * Entity manager.
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $em;
+
+    /**
+     * Message formatter utils service.
+     *
+     * @var MessageFormatterUtilsService
+     */
+    protected $mf;
 
     /**
      * Message sender service.
