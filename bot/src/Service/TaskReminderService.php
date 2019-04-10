@@ -23,6 +23,13 @@ class TaskReminderService
     protected $em;
 
     /**
+     * Message formatter utils service.
+     *
+     * @var MessageFormatterUtilsService
+     */
+    protected $mf;
+
+    /**
      * Message sender service.
      *
      * @var MessageSenderService
