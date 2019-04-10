@@ -26,6 +26,13 @@ use Longman\TelegramBot\Request;
 class CallbackqueryCommand extends SystemCommand
 {
     /**
+     * Conversation
+     *
+     * @var Conversation
+     */
+    protected $conversation;
+
+    /**
      * @var string
      */
     protected $name = 'callbackquery';
