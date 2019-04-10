@@ -9,7 +9,6 @@
 namespace App\Legacy;
 
 use Longman\TelegramBot\Exception\TelegramException;
-use PDO;
 
 class DBikastenbot
 {
@@ -29,11 +28,11 @@ class DBikastenbot
 
         $dsn = "mysql:host=${host};dbname=${db};charset=${charset}";
         $opt = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            \PDO::ATTR_EMULATE_PREPARES => false,
         ];
-        self::$pdo = new PDO($dsn, $user, $pass, $opt);
+        self::$pdo = new \PDO($dsn, $user, $pass, $opt);
     }
 
     public static function getInstance()
@@ -63,7 +62,7 @@ class DBikastenbot
             $sth->bindParam(':tag', $tag);
             $sth->execute();
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -81,7 +80,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -99,7 +98,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -119,7 +118,7 @@ class DBikastenbot
             $sth->execute();
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             //echo(sizeof($result));
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -137,7 +136,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -155,7 +154,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -173,7 +172,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -191,7 +190,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -215,7 +214,7 @@ class DBikastenbot
             $sth->bindParam(':director', $director);
 
             $result = $sth->execute();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -233,7 +232,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -252,7 +251,7 @@ class DBikastenbot
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
             $result = $result['last_version'];
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -275,7 +274,7 @@ class DBikastenbot
             $query = "INSERT into TFGversion (`version`,`hash`,TFGid, docPath,pdfPath) VALUES (${version},'${hash}',${tfgid},'${docPath}','${pdfPath}')";
             $sth = self::$pdo->prepare($query);
             $result = $sth->execute();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -293,7 +292,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -310,7 +309,7 @@ class DBikastenbot
             $query = "UPDATE TFGversion set txtPath='${txt_path}' where pdfPath='${pdfPath}'";
             $sth = self::$pdo->prepare($query);
             $result = $sth->execute();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -328,7 +327,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -345,7 +344,7 @@ class DBikastenbot
             $query = 'UPDATE TFGversion set correction=? where id=?';
             $sth = self::$pdo->prepare($query);
             $result = $sth->execute([$correction, $tfgVersion_id]);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -363,7 +362,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -380,7 +379,7 @@ class DBikastenbot
             $query = 'INSERT into TFGimage (TFGversion_id, hash, path,api_result) VALUES (?,?,?,?)';
             $sth = self::$pdo->prepare($query);
             $result = $sth->execute([$tfgVersion_id, $hash, $path, $api_result]);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -397,7 +396,7 @@ class DBikastenbot
             $query = 'UPDATE TFGversion set imagesPath=? where id=?';
             $sth = self::$pdo->prepare($query);
             $result = $sth->execute([$imagesPath, $tfgVersion_id]);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -415,7 +414,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -435,7 +434,7 @@ class DBikastenbot
             $sth->bindParam(':tag', $tag);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
@@ -453,7 +452,7 @@ class DBikastenbot
             $sth = self::$pdo->prepare($query);
             $sth->execute();
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new TelegramException($e->getMessage());
         }
 
