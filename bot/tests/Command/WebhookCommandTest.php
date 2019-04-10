@@ -18,7 +18,7 @@ final class WebhookCommandTest extends KernelTestCase
     /**
      * The command to be executed.
      *
-     * @var Symfony\Component\Console\Command\Command
+     * @var \Symfony\Component\Console\Command\Command
      */
     private $command;
 

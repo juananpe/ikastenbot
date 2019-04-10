@@ -35,7 +35,7 @@ final class FilesystemUtilsServiceDbTest extends DatabaseTestCase
     /**
      * Filesystem utils.
      *
-     * @var FilesystemUtils
+     * @var FilesystemUtilsService
      */
     private $fu;
 

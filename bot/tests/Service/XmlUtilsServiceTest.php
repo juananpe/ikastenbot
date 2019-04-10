@@ -32,7 +32,7 @@ final class XmlUtilsServiceTest extends TestCase
     /**
      * XML Utils.
      *
-     * @var XmlUtils
+     * @var XmlUtilsService
      */
     private $xu;
 

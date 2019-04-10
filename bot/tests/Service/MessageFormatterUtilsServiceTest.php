@@ -21,7 +21,7 @@ final class MessageFormatterUtilsServiceTest extends TestCase
     /**
      * Message formatter utils.
      *
-     * @var MessageFormatterUtils
+     * @var MessageFormatterUtilsService
      */
     private $mfu;
     /**
