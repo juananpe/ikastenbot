@@ -291,43 +291,54 @@ class StringComparator
     /**
      * Separates a string into tokens (words separated by whitespaces).
      *
-     * @param string $string The string to tokenize
+     * @param string $string          The string to tokenize
+     * @param bool   $allowDuplicates Flag to allow/disallow duplicate chunks
      *
      * @return array Array of tokens obtained from the string
      */
-    private function chunkToTokens($string): array
+    private function chunkToTokens($string, $allowDuplicates = false): array
     {
         $clean_string = $this->unifyWhitespaces($string);
 
-        return explode(' ', $clean_string);
+        if ($allowDuplicates) {
+            return explode(' ', $clean_string);
+        }
+
+        return array_unique(explode(' ', $clean_string));
     }
 
     /**
      * Separates a string into n-grams. An n-gram is a substring of n consecutive
      * characters, ignoring whitespaces.
      *
-     * @param string $string The string to divide in n-grams
-     * @param int    $n      The number of characters of each n-gram
+     * @param string $string          The string to divide in n-grams
+     * @param int    $n               The number of characters of each n-gram
+     * @param bool   $allowDuplicates Flag to allow/disallow duplicate chunks
      *
      * @return array Array of n-grams obtained from the string
      */
-    private function chunkToNGrams($string, $n): array
+    private function chunkToNGrams($string, $n, $allowDuplicates = false): array
     {
         $clean_string = $this->removeWhitespaces($string);
 
-        return $this->mb_split($clean_string, $n);
+        if ($allowDuplicates) {
+            return $this->mb_split($clean_string, $n);
+        }
+
+        return array_unique($this->mb_split($clean_string, $n));
     }
 
     /**
      * Separates a string into n-shingles. An n-shingle is a substring of n consecutive
      * tokens separated by whitespaces.
      *
-     * @param string $string The string to divide in n-shingles
-     * @param int    $n      The number of tokens of each n-shingle
+     * @param string $string          The string to divide in n-shingles
+     * @param int    $n               The number of tokens of each n-shingle
+     * @param bool   $allowDuplicates Flag to allow/disallow duplicate chunks
      *
      * @return array Array of n-shingles obtained from the string
      */
-    private function chunkToNShingles($string, $n): array
+    private function chunkToNShingles($string, $n, $allowDuplicates = false): array
     {
         $clean_string = $this->unifyWhitespaces($string);
         $tokens = explode(' ', $clean_string);
@@ -344,28 +355,33 @@ class StringComparator
             $indexShingles = intdiv($indexTokens, $n);
         }
 
-        return $shingles;
+        if ($allowDuplicates) {
+            return $shingles;
+        }
+
+        return array_unique($shingles);
     }
 
     /**
      * Separates the string into substrings using the strategy set by the
      * setStrategy*() methods.
      *
-     * @param string $string The string to be divided
+     * @param string $string          The string to be divided
+     * @param bool   $allowDuplicates Flag to allow/disallow duplicate chunks
      *
      * @throws NoStrategySetException
      *
      * @return array Array containing the substrings
      */
-    private function chunkString($string): array
+    private function chunkString($string, $allowDuplicates = false): array
     {
         switch ($this->currentStrategy) {
             case self::STRATEGY_TOKENS:
-                return $this->chunkToTokens($string);
+                return $this->chunkToTokens($string, $allowDuplicates);
             case self::STRATEGY_N_GRAMS:
-                return $this->chunkToNGrams($string, $this->n);
+                return $this->chunkToNGrams($string, $this->n, $allowDuplicates);
             case self::STRATEGY_N_SHINGLES:
-                return $this->chunkToNShingles($string, $this->n);
+                return $this->chunkToNShingles($string, $this->n, $allowDuplicates);
             default:
                 throw new NoStrategySetException();
         }
