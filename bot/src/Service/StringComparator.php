@@ -113,10 +113,13 @@ class StringComparator
      */
     public function similarityOA($s1, $s2): float
     {
-        // calculate the Optimal Alignment edit distance between the two strings
-        $distance = $this->editDistance($s1, $s2, false, false);
+        $cleanS1 = $this->cleanString($s1);
+        $cleanS2 = $this->cleanString($s2);
 
-        return $this->similarityEdit($s1, $s2, $distance);
+        // calculate the Optimal Alignment edit distance between the two strings
+        $distance = $this->editDistance($cleanS1, $cleanS2, false, false);
+
+        return $this->similarityEdit($cleanS1, $cleanS2, $distance);
     }
 
     /**
@@ -130,10 +133,13 @@ class StringComparator
      */
     public function similarityLevenshtein($s1, $s2): float
     {
-        // calculate the Levenshtein edit distance between the two strings
-        $distance = $this->editDistance($s1, $s2, true, false);
+        $cleanS1 = $this->cleanString($s1);
+        $cleanS2 = $this->cleanString($s2);
 
-        return $this->similarityEdit($s1, $s2, $distance);
+        // calculate the Levenshtein edit distance between the two strings
+        $distance = $this->editDistance($cleanS1, $cleanS2, true, false);
+
+        return $this->similarityEdit($cleanS1, $cleanS2, $distance);
     }
 
     /**
@@ -147,10 +153,13 @@ class StringComparator
      */
     public function similarityDamLev($s1, $s2): float
     {
-        // calculatethe Damerau-Levenshtein edit distance between the two strings
-        $distance = $this->editDistance($s1, $s2, true, true);
+        $cleanS1 = $this->cleanString($s1);
+        $cleanS2 = $this->cleanString($s2);
 
-        return $this->similarityEdit($s1, $s2, $distance);
+        // calculatethe Damerau-Levenshtein edit distance between the two strings
+        $distance = $this->editDistance($cleanS1, $cleanS2, true, true);
+
+        return $this->similarityEdit($cleanS1, $cleanS2, $distance);
     }
 
     /**
@@ -167,8 +176,11 @@ class StringComparator
      */
     public function similarityJaccard($s1, $s2): float
     {
-        $set1 = $this->chunkString($s1);
-        $set2 = $this->chunkString($s2);
+        $cleanS1 = $this->cleanString($s1);
+        $cleanS2 = $this->cleanString($s2);
+
+        $set1 = $this->chunkString($cleanS1);
+        $set2 = $this->chunkString($cleanS2);
 
         return $this->jaccardIndex($set1, $set2);
     }
@@ -187,8 +199,11 @@ class StringComparator
      */
     public function similarityDice($s1, $s2): float
     {
-        $set1 = $this->chunkString($s1);
-        $set2 = $this->chunkString($s2);
+        $cleanS1 = $this->cleanString($s1);
+        $cleanS2 = $this->cleanString($s2);
+
+        $set1 = $this->chunkString($cleanS1);
+        $set2 = $this->chunkString($cleanS2);
 
         return $this->diceIndex($set1, $set2);
     }
@@ -207,8 +222,11 @@ class StringComparator
      */
     public function similarityOverlap($s1, $s2): float
     {
-        $set1 = $this->chunkString($s1);
-        $set2 = $this->chunkString($s2);
+        $cleanS1 = $this->cleanString($s1);
+        $cleanS2 = $this->cleanString($s2);
+
+        $set1 = $this->chunkString($cleanS1);
+        $set2 = $this->chunkString($cleanS2);
 
         return $this->OverlapIndex($set1, $set2);
     }
@@ -237,6 +255,37 @@ class StringComparator
     private function removeWhitespaces($string): string
     {
         return preg_replace('/\s+/', '', $string);
+    }
+
+    /**
+     * Preprocess a string to remove noise for the comparison.
+     * Transforms the string to lowercase, removes non-alphanumeric characters
+     * (comas, periods, etc.) and removes articles and other words
+     * that don't carry important information.
+     *
+     * @param string $string The string to be processed
+     *
+     * @return string String resulting from the process
+     */
+    private function cleanString($string): string
+    {
+        // transform to lowercase
+        $loweCase = strtolower($string);
+
+        // remove non-alphanumeric characters
+        $alphanumeric = preg_replace('/[^\w\sá-úÁ-ú]/', '', $loweCase);
+
+        // remove articles and other common words that don't add information
+        // TODO: completar para euskera
+        $tokens = ['el', 'la', 'los', 'las', 'con', 'sin', 'a', 'y', 'que', 'qué', 'de', 'en',
+            'entre', 'para', 'por', 'según', 'sin', 'sobre', 'mediante', ];
+
+        $cleanString = $alphanumeric;
+        foreach ($tokens as $token) {
+            $cleanString = preg_replace('/(?!=[\w])'.$token.'\s/i', '', $cleanString);
+        }
+
+        return $cleanString;
     }
 
     /**
