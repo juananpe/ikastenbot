@@ -232,6 +232,65 @@ class StringComparator
     }
 
     /**
+     * Obtains the Manhattan distance between two string.
+     * Both string are represented as vectors of the space
+     * formed by all the substring obtained by chunking the strings.
+     * The result is the Manhattan distance between said vectors.
+     *
+     * @param string $s1 First string
+     * @param string $s2 Second string
+     *
+     * @throws NoStrategySetException
+     *
+     * @return float Manhattan distance between the strings
+     */
+    public function manhattanDistance($s1, $s2): float
+    {
+        $cleanS1 = $this->cleanString($s1);
+        $cleanS2 = $this->cleanString($s2);
+
+        // allow duplicates when chunking the strings
+        $set1 = $this->chunkString($cleanS1, true);
+        $set2 = $this->chunkString($cleanS2, true);
+
+        // obtain all the substring without duplicates
+        $values = array_unique(array_merge($set1, $set2));
+
+        $squareSum = 0;
+
+        foreach ($values as $value) {
+            /*
+             * for each substring (dimension), the value of each word
+             * for said dimension is equal to how many times the substring
+             * appears in them
+             */
+
+            // string1's value for the current dimension
+            $value1 = 0;
+            for ($i = 0; $i < count($set1); ++$i) {
+                if ($set1[$i] === $value) {
+                    ++$value1;
+                }
+            }
+
+            // string2's value for the current dimension
+            $value2 = 0;
+            for ($i = 0; $i < count($set2); ++$i) {
+                if ($set2[$i] === $value) {
+                    ++$value2;
+                }
+            }
+
+            $difference = $value2 - $value1;
+
+            // add the square difference to the cumulative sum
+            $squareSum += pow($difference, 2);
+        }
+
+        return sqrt($squareSum);
+    }
+
+    /**
      * Unify all the whitespace characters (spaces, tabs, etc.) in the string
      * by turning them into a single whitespace. Also removes leading and
      * trailing whitespaces.
