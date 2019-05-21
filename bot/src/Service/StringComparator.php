@@ -332,7 +332,7 @@ class StringComparator
         $loweCase = strtolower($string);
 
         // remove non-alphanumeric characters
-        $alphanumeric = preg_replace('/[^\w\sá-úÁ-ú]/', '', $loweCase);
+        $alphanumeric = preg_replace('/[^\w\sá-úÁ-úñÑ]/', '', $loweCase);
 
         // remove articles and other common words that don't add information
         // TODO: completar para euskera
@@ -341,7 +341,7 @@ class StringComparator
 
         $cleanString = $alphanumeric;
         foreach ($tokens as $token) {
-            $cleanString = preg_replace('/(?!=[\w])'.$token.'\s/i', '', $cleanString);
+            $cleanString = preg_replace('/[^\wsá-úÁ-úñÑ]'.$token.'\s/i', ' ', $cleanString);
         }
 
         return $cleanString;
