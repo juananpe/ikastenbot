@@ -183,15 +183,15 @@ class StringComparatorServiceTest extends TestCase
     }
 
     /**
-     * @covers \App\Service\StringComparator::manhattanDistance()
+     * @covers \App\Service\StringComparator::similarityManhattan()
      */
     public function testManhattanDistance()
     {
         $this->sc->setStrategyNGrams(2);
         $s1 = 'casa gato caballo';
         $s2 = 'cabaña mega perro';
-        $distance = sqrt(8);
+        $distance = 1 - sqrt(8) / sqrt(28);
 
-        $this->assertEquals($distance, $this->sc->manhattanDistance($s1, $s2));
+        $this->assertEquals($distance, $this->sc->similarityManhattan($s1, $s2));
     }
 }

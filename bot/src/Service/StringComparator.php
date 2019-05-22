@@ -232,19 +232,22 @@ class StringComparator
     }
 
     /**
-     * Obtains the Manhattan distance between two string.
+     * Obtains a similarity metric based on the Manhattan distance
+     * between the strings.
      * Both string are represented as vectors of the space
      * formed by all the substring obtained by chunking the strings.
-     * The result is the Manhattan distance between said vectors.
+     * The Manhattan distance is obtained from said vectors.
+     * The result is 1 minus their actual Manhattan distance over their maximum
+     * possible Manhattan distance.
      *
      * @param string $s1 First string
      * @param string $s2 Second string
      *
      * @throws NoStrategySetException
      *
-     * @return float Manhattan distance between the strings
+     * @return float Manhattan similarity between the strings
      */
-    public function manhattanDistance($s1, $s2): float
+    public function similarityManhattan($s1, $s2): float
     {
         $cleanS1 = $this->cleanString($s1);
         $cleanS2 = $this->cleanString($s2);
@@ -256,7 +259,11 @@ class StringComparator
         // obtain all the substring without duplicates
         $values = array_unique(array_merge($set1, $set2));
 
+        // square sum of the elements of the difference vector
         $squareSum = 0;
+
+        // square sum of the elements of the sum vector (maximum distance)
+        $maxSum = 0;
 
         foreach ($values as $value) {
             /*
@@ -281,13 +288,14 @@ class StringComparator
                 }
             }
 
-            $difference = $value2 - $value1;
-
             // add the square difference to the cumulative sum
-            $squareSum += pow($difference, 2);
+            $squareSum += pow($value2 - $value1, 2);
+
+            // add the square sum to the cumulative sum
+            $maxSum += pow($value2 + $value1, 2);
         }
 
-        return sqrt($squareSum);
+        return 1 - sqrt($squareSum) / sqrt($maxSum);
     }
 
     /**
@@ -336,7 +344,7 @@ class StringComparator
 
         // remove articles and other common words that don't add information
         // TODO: completar para euskera
-        $tokens = ['el', 'la', 'los', 'las', 'con', 'sin', 'a', 'y', 'que', 'qué', 'de', 'en',
+        $tokens = ['el', 'la', 'los', 'las', 'de', 'del', 'con', 'sin', 'a', 'y', 'e', 'o', 'u', 'que', 'qué', 'de', 'en',
             'entre', 'para', 'por', 'según', 'sin', 'sobre', 'mediante', ];
 
         $cleanString = $alphanumeric;
