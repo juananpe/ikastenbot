@@ -14,6 +14,7 @@ use App\Exception\NoTasksException;
 use App\Service\MessageFormatterUtilsService;
 use App\Service\MessageSenderService;
 use App\Service\NotificationManagerService;
+use App\Service\SimilarTasksDurationNotifier;
 use App\Service\XmlUtilsService;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
@@ -143,6 +144,10 @@ class SendGpFileCommand extends UserCommand
 
         try {
             $tasks = $xmlManCon->extractStoreTasks($ganFilePath, $chat->getId(), $gt);
+
+            // send message related to similar tasks' average durations
+            $notifier = new SimilarTasksDurationNotifier($chat_id);
+            $notifier->NotifyOfAtypicalTasks($tasks);
         } catch (NoTasksException $e) {
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
 
