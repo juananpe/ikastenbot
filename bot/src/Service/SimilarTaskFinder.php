@@ -86,7 +86,7 @@ class SimilarTaskFinder
      *
      * @return array Result list
      */
-    private function getSimilarTasksDurations(array $targetTasks, array $taskList): array
+    public function getSimilarTasksDurations(array $targetTasks, array $taskList): array
     {
         $result = [];
         foreach ($targetTasks as $target) {
