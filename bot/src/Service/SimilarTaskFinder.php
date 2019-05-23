@@ -99,7 +99,16 @@ class SimilarTaskFinder
             ];
 
             foreach ($taskList as $task) {
-                if ($this->areSimilar($target->getName(), $task->getName())) {
+                if (($task->getChat_id() === null ||
+                    $task->getChat_id() !== $target->getChat_id()) &&
+                    $this->areSimilar($target->getName(), $task->getName())) {
+                    /*
+                     * if task and target come from different users
+                     * and have similar names...
+                     *
+                     * This is to avoid a task influencing itself or other
+                     * tasks from the same Gantt.
+                     */
                     $targetInfo['similarTasksAccDur'] += $task->getDuration();
                     ++$targetInfo['similarTasksCount'];
                 }
