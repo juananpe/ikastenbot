@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
-use App\Entity\DoctrineBootstrap;
 use App\Entity\Task;
 use App\Exception\NoStrategySetException;
+use Doctrine\ORM\EntityManager;
 
 class SimilarTaskFinder
 {
@@ -14,19 +16,21 @@ class SimilarTaskFinder
     private $sc;
 
     /**
-     * @var StringComparator
+     * @var EntityManager
      */
     private $em;
 
     /**
      * SimilarTaskFinder constructor.
+     *
+     * @param StringComparator $sc
+     * @param EntityManager    $em
      */
-    public function __construct()
+    public function __construct(StringComparator $sc, EntityManager $em)
     {
-        $this->sc = new StringComparator();
+        $this->sc = $sc;
 
-        $db = new DoctrineBootstrap();
-        $this->em = $db->getEntityManager();
+        $this->em = $em;
     }
 
     /**
@@ -86,7 +90,6 @@ class SimilarTaskFinder
     {
         $result = [];
         foreach ($targetTasks as $target) {
-
             $targetInfo = [
                 'taskName' => $target->getName(),
                 'taskId' => $target->getId(),
@@ -97,7 +100,6 @@ class SimilarTaskFinder
 
             foreach ($taskList as $task) {
                 if ($this->areSimilar($target->getName(), $task->getName())) {
-
                     $targetInfo['similarTasksAccDur'] += $task->getDuration();
                     ++$targetInfo['similarTasksCount'];
                 }
@@ -157,9 +159,8 @@ class SimilarTaskFinder
                 return true;
             }
         } catch (NoStrategySetException $e) {
-
         } finally {
-           return false;
+            return false;
         }
     }
 }
