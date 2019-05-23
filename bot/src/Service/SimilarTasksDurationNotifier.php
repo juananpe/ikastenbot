@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 class SimilarTasksDurationNotifier
@@ -10,18 +12,21 @@ class SimilarTasksDurationNotifier
     private $stf;
 
     /**
-     * @var string
+     * @var int
      */
     private $chatId;
 
     /**
      * SimilarTasksDurationNotifier constructor.
      *
-     * @param string $chatId
+     * @param int               $chatId Id of the chat to send
+     *                                  the message to
+     * @param SimilarTaskFinder $stf
      */
-    public function __construct($chatId)
+    public function __construct(int $chatId, SimilarTaskFinder $stf)
     {
-        $this->stf = new SimilarTaskFinder();
+        $this->stf = $stf;
+
         $this->chatId = $chatId;
     }
 
@@ -31,9 +36,8 @@ class SimilarTasksDurationNotifier
      *
      * @param array $tasks List of tasks
      */
-    public function NotifyOfAtypicalTasks($tasks)
+    public function NotifyOfAtypicalTasks(array $tasks)
     {
-        $this->stf = new SimilarTaskFinder();
         $tasksTimes = $this->stf->getTasksWithAtypicalDuration($tasks);
         if (!empty($tasksTimes)) {
             $this->sendMessage($tasksTimes);
@@ -46,7 +50,7 @@ class SimilarTasksDurationNotifier
      *
      * @param array $tasksTimes List of tasks
      */
-    private function sendMessage($tasksTimes)
+    private function sendMessage(array $tasksTimes)
     {
         $mss = new MessageSenderService();
         $text = 'Estas tareas divergen mucho en duración del resto de tareas de la base de datos'.PHP_EOL
