@@ -44,7 +44,7 @@ class SimilarTaskFinder
      *
      * @return array Result list
      */
-    public function getTasksWithAtypicalDuration($targetTasks): array
+    public function getTasksWithAtypicalDuration(array $targetTasks): array
     {
         $percentBuffer = 0.2; // 20% buffer
 
@@ -86,7 +86,7 @@ class SimilarTaskFinder
      *
      * @return array Result list
      */
-    private function getSimilarTasksDurations($targetTasks, $taskList): array
+    private function getSimilarTasksDurations(array $targetTasks, array $taskList): array
     {
         $result = [];
         foreach ($targetTasks as $target) {
@@ -119,7 +119,7 @@ class SimilarTaskFinder
      *
      * @return bool True if the strings are considered similar, False otherwise
      */
-    private function areSimilar($taskName1, $taskName2): bool
+    private function areSimilar(string $taskName1, string $taskName2): bool
     {
         //TODO: probably needs tuning
 
