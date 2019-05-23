@@ -46,7 +46,8 @@ class SimilarTaskFinder
 
         $result = [];
 
-        $accTimes = $this->getSimilarTasksDurations($targetTasks, $this->getDBTasks());
+        $dbTasks = $this->em->getRepository(Task::class)->findAll();
+        $accTimes = $this->getSimilarTasksDurations($targetTasks, $dbTasks);
         foreach ($accTimes as $targetInfo) {
             // if similar tasks have been found
             if (0 !== $targetInfo['similarTasksCount']) {
@@ -85,7 +86,6 @@ class SimilarTaskFinder
     {
         $result = [];
         foreach ($targetTasks as $target) {
-//            echo $target->getName()."(".$target->getDuration().")".PHP_EOL;
 
             $targetInfo = [
                 'taskName' => $target->getName(),
@@ -97,7 +97,6 @@ class SimilarTaskFinder
 
             foreach ($taskList as $task) {
                 if ($this->areSimilar($target->getName(), $task->getName())) {
-//                    echo '--'.$task->getName()."(".$task->getDuration().")".PHP_EOL;
 
                     $targetInfo['similarTasksAccDur'] += $task->getDuration();
                     ++$targetInfo['similarTasksCount'];
@@ -108,14 +107,6 @@ class SimilarTaskFinder
         }
 
         return $result;
-    }
-
-    /**
-     * @return array List with all the tasks from the database
-     */
-    private function getDBTasks(): array
-    {
-        return $this->em->getRepository(Task::class)->findAll();
     }
 
     /**
@@ -166,9 +157,9 @@ class SimilarTaskFinder
                 return true;
             }
         } catch (NoStrategySetException $e) {
-            return false;
-        }
 
-        return false;
+        } finally {
+           return false;
+        }
     }
 }
