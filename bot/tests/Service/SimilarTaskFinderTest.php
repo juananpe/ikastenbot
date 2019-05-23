@@ -19,7 +19,6 @@ use PHPUnit\Framework\TestCase;
  */
 class SimilarTaskFinderTest extends TestCase
 {
-
     /**
      * @var SimilarTaskFinder
      */
@@ -38,21 +37,21 @@ class SimilarTaskFinderTest extends TestCase
     public function setUp()
     {
         $this->targetTaskList = [
-            $this->createProxyTask(0, 0, "Escribir la Memoria", 6),
-            $this->createProxyTask(0, 0, "Diseñar los Diagrama de clases", 2),
+            $this->createProxyTask(0, 0, 'Escribir la Memoria', 6),
+            $this->createProxyTask(0, 0, 'Diseñar los Diagrama de clases', 2),
         ];
 
         $this->dbTaskList = [
-            $this->createProxyTask(1, 0, "Redacción de la memoria", 6),
-            $this->createProxyTask(1, 1, "Memoria", 2),
-            $this->createProxyTask(1, 2, "Memoria del TFG", 1),
+            $this->createProxyTask(1, 0, 'Redacción de la memoria', 6),
+            $this->createProxyTask(1, 1, 'Memoria', 2),
+            $this->createProxyTask(1, 2, 'Memoria del TFG', 1),
 
-            $this->createProxyTask(1, 3, "Diseño de diagramas", 1),
-            $this->createProxyTask(1, 4, "Diagrama de clases", 3),
+            $this->createProxyTask(1, 3, 'Diseño de diagramas', 1),
+            $this->createProxyTask(1, 4, 'Diagrama de clases', 3),
 
-            $this->createProxyTask(1, 5, "Foo Bar Eggs", 123),
-            $this->createProxyTask(1, 6, "Kvothe", 456),
-            $this->createProxyTask(1, 7, "Bolt the Bird", 789),
+            $this->createProxyTask(1, 5, 'Foo Bar Eggs', 123),
+            $this->createProxyTask(1, 6, 'Kvothe', 456),
+            $this->createProxyTask(1, 7, 'Bolt the Bird', 789),
         ];
 
         $em = (new DoctrineBootstrap())->getEntityManager();
@@ -60,16 +59,6 @@ class SimilarTaskFinderTest extends TestCase
         $sc = new StringComparator();
 
         $this->stf = new SimilarTaskFinder($sc, $proxyEm);
-    }
-
-    private function createProxyTask(int $chat_id, int $id, string $name, int $duration) {
-        $task = new Task();
-        $task->setChat_id($chat_id);
-        $task->setId($id);
-        $task->setName($name);
-        $task->setDuration($duration);
-
-        return $task;
     }
 
     /**
@@ -101,11 +90,20 @@ class SimilarTaskFinderTest extends TestCase
 
         self::assertEquals($avgTasksDuration[0]['taskName'], $this->targetTaskList[0]->getName());
         self::assertEquals($avgTasksDuration[0]['taskDuration'], $this->targetTaskList[0]->getDuration());
-        self::assertEquals($avgTasksDuration[0]['avgDuration'], 9/3);
+        self::assertEquals($avgTasksDuration[0]['avgDuration'], 9 / 3);
     }
 
-}
+    private function createProxyTask(int $chat_id, int $id, string $name, int $duration)
+    {
+        $task = new Task();
+        $task->setChat_id($chat_id);
+        $task->setId($id);
+        $task->setName($name);
+        $task->setDuration($duration);
 
+        return $task;
+    }
+}
 
 class ProxyEntityManager extends EntityManager
 {

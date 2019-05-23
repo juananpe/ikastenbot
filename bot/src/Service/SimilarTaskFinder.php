@@ -99,7 +99,7 @@ class SimilarTaskFinder
             ];
 
             foreach ($taskList as $task) {
-                if (($task->getChat_id() === null ||
+                if ((null === $task->getChat_id() ||
                     $task->getChat_id() !== $target->getChat_id()) &&
                     $this->areSimilar($target->getName(), $task->getName())) {
                     /*
