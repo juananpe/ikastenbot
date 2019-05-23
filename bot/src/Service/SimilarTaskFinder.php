@@ -159,8 +159,8 @@ class SimilarTaskFinder
                 return true;
             }
         } catch (NoStrategySetException $e) {
-        } finally {
-            return false;
         }
+
+        return false;
     }
 }
