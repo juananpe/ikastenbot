@@ -132,7 +132,7 @@ class SimilarTaskFinder
     {
         //TODO: probably needs tuning
 
-        if (0.85 <= $this->sc->similarityDamLev($taskName1, $taskName2)) {
+        if (0.6 <= $this->sc->similarityDamLev($taskName1, $taskName2)) {
             return true;
         }
 
