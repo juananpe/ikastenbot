@@ -150,7 +150,7 @@ class SendGpFileCommand extends UserCommand
             // send message related to similar tasks' average durations
             $stf = new SimilarTaskFinder(new StringComparator(), $em);
             $notifier = new SimilarTasksDurationNotifier($chat_id, $stf);
-            $notifier->NotifyOfAtypicalTasks($tasks);
+            $notifier->notifyOfAtypicalTasks($tasks);
         } catch (NoTasksException $e) {
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
 

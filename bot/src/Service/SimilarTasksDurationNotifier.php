@@ -36,7 +36,7 @@ class SimilarTasksDurationNotifier
      *
      * @param array $tasks List of tasks
      */
-    public function NotifyOfAtypicalTasks(array $tasks)
+    public function notifyOfAtypicalTasks(array $tasks)
     {
         $tasksTimes = $this->stf->getTasksWithAtypicalDuration($tasks);
         if (!empty($tasksTimes)) {
