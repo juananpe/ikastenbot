@@ -151,7 +151,7 @@ class SimilarTaskFinder
             }
 
             $this->sc->setStrategyNGrams(2);
-            if (0.6 <= $this->sc->similarityManhattan($taskName1, $taskName2)) {
+            if (0.55 <= $this->sc->similarityManhattan($taskName1, $taskName2)) {
                 return true;
             }
 
@@ -160,7 +160,7 @@ class SimilarTaskFinder
             }
 
             $this->sc->setStrategyNGrams(3);
-            if (0.6 <= $this->sc->similarityManhattan($taskName1, $taskName2)) {
+            if (0.55 <= $this->sc->similarityManhattan($taskName1, $taskName2)) {
                 return true;
             }
 
