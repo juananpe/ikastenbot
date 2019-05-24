@@ -190,7 +190,7 @@ class StringComparatorServiceTest extends TestCase
         $this->sc->setStrategyNGrams(2);
         $s1 = 'casa gato caballo';
         $s2 = 'cabaña mega perro';
-        $distance = 1 - sqrt(8) / sqrt(28);
+        $distance = 1 - 8 / 16;
 
         $this->assertEquals($distance, $this->sc->similarityManhattan($s1, $s2));
     }
