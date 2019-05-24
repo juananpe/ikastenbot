@@ -146,11 +146,6 @@ class SendGpFileCommand extends UserCommand
 
         try {
             $tasks = $xmlManCon->extractStoreTasks($ganFilePath, $chat->getId(), $gt);
-
-            // send message related to similar tasks' average durations
-            $stf = new SimilarTaskFinder(new StringComparator(), $em);
-            $notifier = new SimilarTasksDurationNotifier($chat_id, $stf);
-            $notifier->notifyOfAtypicalTasks($tasks);
         } catch (NoTasksException $e) {
             $ms->prepareMessage($chat_id, $e->getMessage(), null, $selective_reply);
 
@@ -201,6 +196,11 @@ class SendGpFileCommand extends UserCommand
             $ms->prepareMessage($chat_id, $text, null, $selective_reply);
             $ms->sendMessage();
         }
+
+        // send message related to similar tasks' average durations
+        $stf = new SimilarTaskFinder(new StringComparator(), $em);
+        $notifier = new SimilarTasksDurationNotifier($chat_id, $stf, $ms);
+        $notifier->notifyOfAtypicalTasks($tasks);
 
         return $result;
     }
