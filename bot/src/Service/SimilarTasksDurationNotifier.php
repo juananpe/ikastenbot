@@ -17,17 +17,24 @@ class SimilarTasksDurationNotifier
     private $chatId;
 
     /**
+     * @var MessageSenderService
+     */
+    private $mss;
+
+    /**
      * SimilarTasksDurationNotifier constructor.
      *
      * @param int               $chatId Id of the chat to send
      *                                  the message to
      * @param SimilarTaskFinder $stf
      */
-    public function __construct(int $chatId, SimilarTaskFinder $stf)
+    public function __construct(int $chatId, SimilarTaskFinder $stf, MessageSenderService $mss)
     {
         $this->stf = $stf;
 
         $this->chatId = $chatId;
+
+        $this->mss = $mss;
     }
 
     /**
@@ -52,7 +59,6 @@ class SimilarTasksDurationNotifier
      */
     private function sendMessage(array $tasksTimes)
     {
-        $mss = new MessageSenderService();
         $text = 'Estas tareas divergen mucho en duración del resto de tareas de la base de datos'.PHP_EOL
             .'Eso no significa que sean incorrectas, pero puede ser recomendable echarles un segundo vistazo.'.PHP_EOL
             .'(tarea -> tu duración // duración media estimada)'.PHP_EOL.PHP_EOL;
@@ -63,7 +69,7 @@ class SimilarTasksDurationNotifier
                 .$taskInfo['avgDuration'].PHP_EOL;
         }
 
-        $mss->prepareMessage($this->chatId, $text);
-        $mss->sendMessage();
+        $this->mss->prepareMessage($this->chatId, $text);
+        $this->mss->sendMessage();
     }
 }
