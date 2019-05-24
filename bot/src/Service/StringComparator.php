@@ -259,10 +259,10 @@ class StringComparator
         // obtain all the substring without duplicates
         $values = array_unique(array_merge($set1, $set2));
 
-        // square sum of the elements of the difference vector
-        $squareSum = 0;
+        // sum of the elements of the difference vector
+        $sumOfDifference = 0;
 
-        // square sum of the elements of the sum vector (maximum distance)
+        // sum of the elements of the sum vector (maximum distance)
         $maxSum = 0;
 
         foreach ($values as $value) {
@@ -288,14 +288,14 @@ class StringComparator
                 }
             }
 
-            // add the square difference to the cumulative sum
-            $squareSum += pow($value2 - $value1, 2);
+            // add the difference to the cumulative sum
+            $sumOfDifference += abs($value2 - $value1);
 
-            // add the square sum to the cumulative sum
-            $maxSum += pow($value2 + $value1, 2);
+            // add the sum to the cumulative sum
+            $maxSum += $value2 + $value1;
         }
 
-        return 1 - sqrt($squareSum) / sqrt($maxSum);
+        return 1 - $sumOfDifference / $maxSum;
     }
 
     /**
