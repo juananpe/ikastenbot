@@ -366,7 +366,8 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
         $resultingXml = $this->xu->delayTaskAndDependants(
             $this->ganDir.'TwelveTasks.gan',
             $task,
-            3
+            3,
+            false
         );
 
         // Get all the tasks and check if there are a correct amount of them
@@ -415,7 +416,8 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
         $resultingXml = $this->xu->delayTaskAndDependants(
             $this->ganDir.'TwelveTasks.gan',
             $task,
-            3
+            3,
+            false
         );
 
         // Get all the tasks and check if there are a correct amount of them
@@ -449,5 +451,117 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
 
         $xmlTask = $resultingXml->xpath('//task[@id="17"]')[0];
         $this->assertEquals('2021-05-24', $xmlTask->attributes()->start);
+    }
+
+    /**
+     * @covers \App\Service\XmlUtilsService::delayTaskAndDependants()
+     */
+    public function testModifyStartTaskOneDependency()
+    {
+        // Load the fixtures
+        $this->xu->extractStoreTasks(
+            $this->ganDir.'TwelveTasks.gan',
+            12345,
+            $this->ganttProject
+        );
+
+        $task = $this->em->getRepository(Task::class)->findOneBy(
+            [
+                'ganId' => 14,
+            ]
+        );
+
+        // Delay the task three days
+        $resultingXml = $this->xu->delayTaskAndDependants(
+            $this->ganDir.'TwelveTasks.gan',
+            $task,
+            3,
+            true
+        );
+
+        // Get all the tasks and check if there are a correct amount of them
+        $tasks = $this->em->getRepository(Task::class)->findAll();
+        $this->assertSame(12, \count($tasks));
+
+        // Load the expected tasks and compare them with the database tasks
+        $expectedTasks = Yaml::parseFile($this->dataDir.'expectedTasksWithModifiedStartOneDependency.yaml');
+        foreach ($tasks as $i => $task) {
+            $this->assertEquals($expectedTasks[$i]['gan_id'], $task->getGanId());
+            $this->assertEquals($expectedTasks[$i]['chat_id'], $task->getChat_id());
+            $this->assertEquals($expectedTasks[$i]['task_name'], $task->getName());
+            $this->assertEquals($expectedTasks[$i]['task_date'], $task->getDate()->format('Y-m-d'));
+            $this->assertEquals($expectedTasks[$i]['task_isMilestone'], $task->getIsMilestone());
+            $this->assertEquals($expectedTasks[$i]['task_duration'], $task->getDuration());
+        }
+
+        // Check that the XML was properly udpated
+        $xmlTask = $resultingXml->xpath('//task[@id="14"]')[0];
+        $this->assertEquals('2021-05-14', $xmlTask->attributes()->start);
+        $this->assertEquals('5', $xmlTask[0]->attributes()->duration);
+
+        $xmlTask = $resultingXml->xpath('//task[@id="0"]')[0];
+        $this->assertEquals('2021-05-21', $xmlTask->attributes()->start);
+    }
+
+    /**
+     * @covers \App\Service\XmlUtilsService::delayTaskAndDependants()
+     */
+    public function testModifyStartTaskAndDependenciesManyDependencies()
+    {
+        // Load the fixtures
+        $this->xu->extractStoreTasks(
+            $this->ganDir.'TwelveTasks.gan',
+            12345,
+            $this->ganttProject
+        );
+
+        $task = $this->em->getRepository(Task::class)->findOneBy(
+            [
+                'ganId' => 4,
+            ]
+        );
+
+        // Delay the task three days
+        $resultingXml = $this->xu->delayTaskAndDependants(
+            $this->ganDir.'TwelveTasks.gan',
+            $task,
+            3,
+            true
+        );
+
+        // Get all the tasks and check if there are a correct amount of them
+        $tasks = $this->em->getRepository(Task::class)->findAll();
+        $this->assertSame(12, \count($tasks));
+
+        // Load the expected tasks and compare them with the database tasks
+        $expectedTasks = Yaml::parseFile($this->dataDir.'expectedTasksWithModifiedStartManyDependencies.yaml');
+        foreach ($tasks as $i => $task) {
+            $this->assertEquals($expectedTasks[$i]['gan_id'], $task->getGanId());
+            $this->assertEquals($expectedTasks[$i]['chat_id'], $task->getChat_id());
+            $this->assertEquals($expectedTasks[$i]['task_name'], $task->getName());
+            $this->assertEquals($expectedTasks[$i]['task_date'], $task->getDate()->format('Y-m-d'));
+            $this->assertEquals($expectedTasks[$i]['task_isMilestone'], $task->getIsMilestone());
+            $this->assertEquals($expectedTasks[$i]['task_duration'], $task->getDuration());
+        }
+
+        // Check that the XML was properly udpated
+        $xmlTask = $resultingXml->xpath('//task[@id="4"]')[0];
+        $this->assertEquals('2021-05-23', $xmlTask->attributes()->start);
+        $this->assertEquals('3', $xmlTask[0]->attributes()->duration);
+
+        $xmlTask = $resultingXml->xpath('//task[@id="7"]')[0];
+        $this->assertEquals('2021-05-23', $xmlTask->attributes()->start);
+
+        $xmlTask = $resultingXml->xpath('//task[@id="24"]')[0];
+        $this->assertEquals('2021-05-23', $xmlTask->attributes()->start);
+
+        $xmlTask = $resultingXml->xpath('//task[@id="8"]')[0];
+        $this->assertEquals('2021-05-24', $xmlTask->attributes()->start);
+
+        $xmlTask = $resultingXml->xpath('//task[@id="17"]')[0];
+        $this->assertEquals('2021-05-24', $xmlTask->attributes()->start);
+
+        $xmlPrevTask = $resultingXml->xpath('//depend[@id="4"]')[0];
+        $this->assertEquals('3', $xmlPrevTask->attributes()->difference);
     }
 }
