@@ -54,7 +54,7 @@ class SimilarTaskFinderTest extends TestCase
             $this->createProxyTask(1, 7, 'Bolt the Bird', 789),
         ];
 
-        $em = (new DoctrineBootstrap())->getEntityManager();
+        $em = DoctrineBootstrap::instance()->getEntityManager();
         $proxyEm = new ProxyEntityManager($em, $this->dbTaskList);
         $sc = new StringComparator();
 
