@@ -341,6 +341,7 @@ class StringComparator
 
         // remove non-alphanumeric characters
         $alphanumeric = preg_replace('/[^\w\sá-úÁ-úñÑ]/', '', $loweCase);
+        $alphanumeric = $this->removeNumbersAtStart($alphanumeric);
 
         // remove articles and other common words that don't add information
         // TODO: completar para euskera
