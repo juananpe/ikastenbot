@@ -170,7 +170,8 @@ class SendGpFileCommand extends UserCommand
         $result = $ms->sendMessage();
 
         $gmn = new GanttMistakeNotifier($chat_id, $ms);
-        $gmn->notifyOfGanttMistakes($tasks);
+        $gmn->notifyLackOfMeetings($tasks);
+        $gmn->notifyLackOfMilestones($tasks);
 
         return $result;
     }
