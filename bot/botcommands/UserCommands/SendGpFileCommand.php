@@ -14,6 +14,9 @@ use App\Exception\NoTasksException;
 use App\Service\MessageFormatterUtilsService;
 use App\Service\MessageSenderService;
 use App\Service\NotificationManagerService;
+use App\Service\SimilarTaskFinder;
+use App\Service\SimilarTasksDurationNotifier;
+use App\Service\StringComparator;
 use App\Service\XmlUtilsService;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Conversation;
@@ -193,6 +196,11 @@ class SendGpFileCommand extends UserCommand
             $ms->prepareMessage($chat_id, $text, null, $selective_reply);
             $ms->sendMessage();
         }
+
+        // send message related to similar tasks' average durations
+        $stf = new SimilarTaskFinder(new StringComparator(), $em);
+        $notifier = new SimilarTasksDurationNotifier($chat_id, $stf, $ms);
+        $notifier->notifyOfAtypicalTasks($tasks);
 
         return $result;
     }
