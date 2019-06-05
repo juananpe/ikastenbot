@@ -43,7 +43,6 @@ class GanttMistakeNotifier
             $text .= PHP_EOL.'No he detectado ningún hito (milestone) en tu diagrama Gantt.';
             $text .= PHP_EOL.'Es muy recomendable que tu diagrama tenga hitos para ayudar con el seguimiento.';
             $this->mss->prepareMessage($this->chatId, $text);
-            echo "message to ".$this->chatId.PHP_EOL;
             $this->mss->sendMessage();
 
             return false;
@@ -72,7 +71,6 @@ class GanttMistakeNotifier
             $text .= PHP_EOL.'No he detectado ninguna tarea o hito haciendo referencia a reuniones de seguimiento.';
             $text .= PHP_EOL.'Deberías añadir reuniones regulares con el cliente/tutor del proyecto.';
             $this->mss->prepareMessage($this->chatId, $text);
-            echo "message to ".$this->chatId.PHP_EOL;
             $this->mss->sendMessage();
 
             return false;
