@@ -7,7 +7,6 @@ namespace App\Tests\Service;
 use App\Entity\Task;
 use App\Service\GanttMistakeNotifier;
 use App\Service\MessageSenderService;
-use Longman\TelegramBot\Entities\ServerResponse;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,7 +23,7 @@ final class GanttMistakeNotifierTest extends TestCase
 
     public function setUp()
     {
-        $mss = new ProxyMessageSenderService();
+        $mss = $this->createMock(MessageSenderService::class);
         $this->gmn = new GanttMistakeNotifier(0, $mss);
     }
 
@@ -35,6 +34,8 @@ final class GanttMistakeNotifierTest extends TestCase
     {
         $chatId = 0;
         $tasks = [];
+        self::assertEquals(false, $this->gmn->notifyLackOfMilestones($tasks));
+
         $tasks[] = $this->createProxyTask($chatId, 0, 'taks1', 1);
         $tasks[] = $this->createProxyTask($chatId, 2, 'taks2', 1);
         $tasks[] = $this->createProxyTask($chatId, 3, 'taks3', 1);
@@ -53,6 +54,8 @@ final class GanttMistakeNotifierTest extends TestCase
     {
         $chatId = 0;
         $tasks = [];
+        self::assertEquals(false, $this->gmn->notifyLackOfMeetings($tasks));
+
         $tasks[] = $this->createProxyTask($chatId, 0, 'taks1', 1);
         $tasks[] = $this->createProxyTask($chatId, 2, 'taks2', 1);
         $tasks[] = $this->createProxyTask($chatId, 3, 'taks3', 1);
@@ -74,25 +77,5 @@ final class GanttMistakeNotifierTest extends TestCase
         $task->setIsMilestone($isMilestone);
 
         return $task;
-    }
-}
-
-final class ProxyMessageSenderService extends MessageSenderService
-{
-    public function sendMessage(): ServerResponse
-    {
-        return new ProxyServerResponse();
-    }
-}
-
-final class ProxyServerResponse extends ServerResponse
-{
-    public function __construct()
-    {
-        parent::__construct([], '');
-    }
-
-    protected function validate()
-    {
     }
 }
