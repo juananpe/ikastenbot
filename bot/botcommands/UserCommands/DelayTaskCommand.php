@@ -275,12 +275,19 @@ class DelayTaskCommand extends UserCommand
 
                 // Delay the task and its dependants
                 $xmlUtils = new XmlUtilsService($em);
-                $newGanXml = $xmlUtils->delayTaskAndDependants(
-                    $ganFilePath,
-                    $task,
-                    (int) $text,
-                    $notes['mode']
-                );
+                if ($notes['mode']) {
+                    $newGanXml = $xmlUtils->delayTaskStart(
+                        $ganFilePath,
+                        $task,
+                        (int) $text
+                    );
+                } else {
+                    $newGanXml = $xmlUtils->extendTaskDuration(
+                        $ganFilePath,
+                        $task,
+                        (int) $text
+                    );
+                }
 
                 // Save the new Gan file
                 $fs = new Filesystem();
