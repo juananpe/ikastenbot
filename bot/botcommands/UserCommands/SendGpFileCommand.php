@@ -11,6 +11,7 @@ use App\Entity\GanttProject;
 use App\Entity\User;
 use App\Exception\IncorrectFileException;
 use App\Exception\NoTasksException;
+use App\Service\GanttMistakeNotifier;
 use App\Service\MessageFormatterUtilsService;
 use App\Service\MessageSenderService;
 use App\Service\NotificationManagerService;
@@ -171,31 +172,9 @@ class SendGpFileCommand extends UserCommand
         $ms->prepareMessage($chat_id, $this->prepareFormattedMessage($tasks), 'HTML', $selective_reply);
         $result = $ms->sendMessage();
 
-        // Check if the tasks contain milestones
-        if (!$this->hasMilestones($tasks)) {
-            // TODO añadir a la base de datos el mensaje
-            //$text = $db->getSystemMessageById(?, $user->getLanguageCode());
-
-            // If no milestones were found, send a warning message.
-            $text = 'ATENCIÓN:';
-            $text .= PHP_EOL.'No he detectado ningún hito (milestone) en tu diagrama Gantt.';
-            $text .= PHP_EOL.'Es muy recomendable que tu diagrama tenga hitos para ayudar con el seguimiento.';
-            $ms->prepareMessage($chat_id, $text, null, $selective_reply);
-            $ms->sendMessage();
-        }
-
-        // Check if the tasks contain tracking meetings
-        if (!$this->hasTrackingMeetings($tasks)) {
-            // TODO añadir a la base de datos el mensaje
-            //$text = $db->getSystemMessageById(?, $user->getLanguageCode());
-
-            // If no meetings were found, send a warning message.
-            $text = 'ATENCIÓN:';
-            $text .= PHP_EOL.'No he detectado ninguna tarea o hito haciendo referencia a reuniones de seguimiento.';
-            $text .= PHP_EOL.'Deberías añadir reuniones regulares con el cliente/tutor del proyecto.';
-            $ms->prepareMessage($chat_id, $text, null, $selective_reply);
-            $ms->sendMessage();
-        }
+        $gmn = new GanttMistakeNotifier($chat_id, $ms);
+        $gmn->notifyLackOfMeetings($tasks);
+        $gmn->notifyLackOfMilestones($tasks);
 
         // send message related to similar tasks' average durations
         $stf = new SimilarTaskFinder(new StringComparator(), $em);
@@ -203,48 +182,6 @@ class SendGpFileCommand extends UserCommand
         $notifier->notifyOfAtypicalTasks($tasks);
 
         return $result;
-    }
-
-    /**
-     * Detects whether a list of tasks contains a milestone.
-     *
-     * @param array $tasks the list of tasks
-     *
-     * @return bool True if at least one of the tasks is a milestone. False otherwise.
-     */
-    private function hasMilestones(array $tasks): bool
-    {
-        foreach ($tasks as $task) {
-            if ($task->getIsMilestone()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Detects whether a list of tasks contains task related to tracking meetings.
-     * For this, a number of key words are searched within the tasks's names.
-     *
-     * @param array $tasks the list of tasks
-     *
-     * @return bool True if at least one of the tasks is related to tracking meetings. False otherwise.
-     */
-    private function hasTrackingMeetings(array $tasks): bool
-    {
-        $keywords = ['meeting', 'reunión', 'reunion', 'tracking', 'seguimiento'];
-        foreach ($tasks as $task) {
-            foreach ($keywords as $string) {
-                // look for tasks containing any of the keywords
-                // that are milestones or have duration 1
-                if (false !== strpos(strtolower($task->getName()), $string)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     /**
