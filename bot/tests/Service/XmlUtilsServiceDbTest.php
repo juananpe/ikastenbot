@@ -345,7 +345,7 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
     }
 
     /**
-     * @covers \App\Service\XmlUtilsService::delayTaskAndDependants()
+     * @covers \App\Service\XmlUtilsService::extendTaskDuration()
      */
     public function testModifyDurationTaskOneDependency()
     {
@@ -363,11 +363,10 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
         );
 
         // Delay the task three days
-        $resultingXml = $this->xu->delayTaskAndDependants(
+        $resultingXml = $this->xu->extendTaskDuration(
             $this->ganDir.'TwelveTasks.gan',
             $task,
-            3,
-            false
+            3
         );
 
         // Get all the tasks and check if there are a correct amount of them
@@ -395,7 +394,7 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
     }
 
     /**
-     * @covers \App\Service\XmlUtilsService::delayTaskAndDependants()
+     * @covers \App\Service\XmlUtilsService::extendTaskDuration()
      */
     public function testModifyDurationTaskAndDependenciesManyDependencies()
     {
@@ -413,11 +412,10 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
         );
 
         // Delay the task three days
-        $resultingXml = $this->xu->delayTaskAndDependants(
+        $resultingXml = $this->xu->extendTaskDuration(
             $this->ganDir.'TwelveTasks.gan',
             $task,
-            3,
-            false
+            3
         );
 
         // Get all the tasks and check if there are a correct amount of them
@@ -454,7 +452,7 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
     }
 
     /**
-     * @covers \App\Service\XmlUtilsService::delayTaskAndDependants()
+     * @covers \App\Service\XmlUtilsService::delayTaskStart()
      */
     public function testModifyStartTaskOneDependency()
     {
@@ -472,11 +470,10 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
         );
 
         // Delay the task three days
-        $resultingXml = $this->xu->delayTaskAndDependants(
+        $resultingXml = $this->xu->delayTaskStart(
             $this->ganDir.'TwelveTasks.gan',
             $task,
-            3,
-            true
+            3
         );
 
         // Get all the tasks and check if there are a correct amount of them
@@ -504,7 +501,7 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
     }
 
     /**
-     * @covers \App\Service\XmlUtilsService::delayTaskAndDependants()
+     * @covers \App\Service\XmlUtilsService::delayTaskStart()
      */
     public function testModifyStartTaskAndDependenciesManyDependencies()
     {
@@ -522,11 +519,10 @@ final class XmlUtilsServiceDbTest extends DatabaseTestCase
         );
 
         // Delay the task three days
-        $resultingXml = $this->xu->delayTaskAndDependants(
+        $resultingXml = $this->xu->delayTaskStart(
             $this->ganDir.'TwelveTasks.gan',
             $task,
-            3,
-            true
+            3
         );
 
         // Get all the tasks and check if there are a correct amount of them

@@ -162,8 +162,9 @@ class XmlUtilsService
     }
 
     /**
-     * Delays the task and any nested or dependant tasks for the amount of
-     * days specified. The tasks are updated in the database and in the
+     * Increases the duration of a task by the amount of days specified.
+     * It also delays any nested or dependant tasks accordingly.
+     * The tasks are updated in the database and in the
      * provided XML.
      *
      * @param string $ganFilePath The path to the Gan file
@@ -171,53 +172,65 @@ class XmlUtilsService
      *                            iterating
      * @param int    $delay       The delay —in days— to be
      *                            applied
-     * @param bool   $delatyStart True to delay the start of the task,
-     *                            False to increase the duration of the task
      *
      * @return \SimpleXmlElement
      */
-    public function delayTaskAndDependants(string $ganFilePath, Task $task, int $delay, bool $delatyStart): \SimpleXmlElement
+    public function extendTaskDuration(string $ganFilePath, Task $task, int $delay): \SimpleXMLElement
     {
-        $xml = $this->openXmlFile($ganFilePath);
-
-        /*
-         * The first task's duration or start date is adjusted to sum the delay
-         * specified by the user. The dependant or nested tasks only need to change
-         * their start date, as we assume that those haven't been started yet.
-         */
-        if ($delatyStart) {
-            $task->setDate(
-                $task->getDate()->add(new \DateInterval('P'.$delay.'D'))
-            );
-        } else {
-            $task->setDuration(
-                $task->getDuration() + $delay
-            );
-        }
-
-        // Reset the reached status to get notified by the system
+        // modify the task from the database
+        $task->setDuration(
+            $task->getDuration() + $delay
+        );
         $task->setNotify(true);
 
-        $ganttProject = $task->getGanttProject();
+        // find the task in the gantt's xml and modify it
+        $xml = $this->openXmlFile($ganFilePath);
 
         $xmlTask = $xml->xpath('//task[@id="'.$task->getGanId().'"]')[0];
-        if ($delatyStart) {
-            // update start date
-            $xmlTask->attributes()->start = $task->getDate()->format('Y-m-d');
+        $xmlTask->attributes()->duration = $task->getDuration();
 
-            // update dependencies on previous tasks
-            $xmlPrevTasks = $xml->xpath('//depend[@id="'.$task->getGanId().'"]');
-            foreach ($xmlPrevTasks as $xmlPrevTask) {
-                $xmlPrevTask->attributes()->difference = $xmlPrevTask->attributes()->difference + $delay;
-            }
-        } else {
-            $xmlTask->attributes()->duration = $task->getDuration();
+        // delay the dependant tasks to account for the change
+        return $this->delayDependantTasks($task->getGanttProject(), $xml, $xmlTask, $delay);
+    }
+
+    /**
+     * Delays a task's start for the amount of days specified. It
+     * also delays any nested or dependant tasks accordingly.
+     * The tasks are updated in the database and in the
+     * provided XML.
+     *
+     * @param string $ganFilePath The path to the Gan file
+     * @param Task   $task        The task from which to begin
+     *                            iterating
+     * @param int    $delay       The delay —in days— to be
+     *                            applied
+     *
+     * @return \SimpleXmlElement
+     */
+    public function delayTaskStart(string $ganFilePath, Task $task, int $delay): \SimpleXMLElement
+    {
+        // modify the task from the database
+        $task->delayDate($delay);
+        $task->setNotify(true);
+
+        // find the task in the gantt's xml and modify it
+        $xml = $this->openXmlFile($ganFilePath);
+
+        $xmlTask = $xml->xpath('//task[@id="'.$task->getGanId().'"]')[0];
+        $xmlTask->attributes()->start = $task->getDate()->format('Y-m-d');
+
+        // update the task's dependencies on its predecessors
+        $xmlPrevTasks = $xml->xpath('//depend[@id="'.$task->getGanId().'"]');
+        foreach ($xmlPrevTasks as $xmlPrevTask) {
+            $xmlPrevTask->attributes()->difference = $xmlPrevTask->attributes()->difference + $delay;
         }
 
-        /**
-         * Delay the date of the tasks and save them both in the database and
-         * in the XML.
-         */
+        // delay the dependant tasks to account for the change
+        return $this->delayDependantTasks($task->getGanttProject(), $xml, $xmlTask, $delay);
+    }
+
+    private function delayDependantTasks(GanttProject $ganttProject, \SimpleXMLElement $xml, \SimpleXMLElement $xmlTask, int $delay)
+    {
         $taskPool = [];
         $this->findNestedTaskOrDepend($taskPool, $ganttProject, $xmlTask, true);
         $this->findNestedTaskOrDepend($taskPool, $ganttProject, $xmlTask, false);
