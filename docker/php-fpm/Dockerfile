@@ -6,9 +6,9 @@ FROM php:7.2-fpm as base
 # Install required packages:
 ## - git, zip and unzip for Composer
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    git=1:2.11.0-3+deb9u4 \
-    zip=3.0-11+b1 \
-    unzip=6.0-21 \
+    git \
+    zip \
+    unzip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
